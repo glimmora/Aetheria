@@ -137,12 +137,18 @@ export default function TileMap({
             width: TILE_SIZE,
             height: TILE_SIZE,
           }}
-          title={`${p.name} (Lv ${p.level} ${p.classDef?.name || p.classId})`}
+          onClick={(e) => { e.stopPropagation(); onTileClick(p.x, p.y) }}
+          title={`${p.name} (Lv ${p.level} ${p.classDef?.name || p.classId}) — click to inspect`}
         >
           <div className="entity-icon other-player-icon" style={{ background: p.classDef?.color || '#a8a29e' }}>
             {p.classDef?.icon || '★'}
           </div>
-          <div className="entity-name other-player-name">{p.name}</div>
+          {p.hp !== undefined && p.maxHp && p.hp < p.maxHp && (
+            <div className="other-player-hp-bar">
+              <div className="other-player-hp-fill" style={{ width: `${(p.hp / p.maxHp) * 100}%` }} />
+            </div>
+          )}
+          <div className="entity-name other-player-name">{p.name} <span style={{ color: '#a8a29e', fontSize: 9 }}>(Lv {p.level})</span></div>
         </div>
       ))}
 

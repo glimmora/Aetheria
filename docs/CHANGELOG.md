@@ -4,6 +4,52 @@ All notable changes to Aetheria: Nine Isles are documented here. The format is b
 
 ---
 
+## [2.1.0] — 2026-07-14
+
+### Added — Backend hardening + new features
+- **Rate limiting**: auth endpoints (20/15min per IP) and general endpoints (120/min per socket) via in-memory `RateLimiter` class
+- **Input validation on all socket events**: type-checks for strings, integers, ranges; rejects malformed payloads silently
+- **5-character limit per account** enforced server-side (`CONFIG.MAX_CHARACTERS_PER_ACCOUNT`)
+- **Single-session enforcement**: logging in from a second location kicks the first session with a friendly reason
+- **Travel level validation**: server validates the destination is reachable from the current island via a sailor NPC and that the player meets the level requirement
+- **HP broadcast to other players**: when a player takes damage, others on the island see their HP bar update (new `player:hp` event)
+- **Leaderboard**: top 50 players by level/XP — HTTP `GET /api/leaderboard` and socket `leaderboard:request`
+- **Online players list**: server broadcasts online players every 5s; client can also request on demand via `online:request`
+- **Player inspect**: click another player to see their class, level, stats, equipment, boss kills, islands visited
+- **Server stats endpoint**: `GET /api/stats` returns online players, active islands, total monsters, total characters, total users
+- **Cannot delete in-game characters**: server rejects deletion if the character has an active session
+- **Express body size limit** (64kb) to prevent abuse
+- **Better graceful shutdown**: unified handler for SIGINT/SIGTERM with progress logging
+- **Socket.io pingInterval/pingTimeout** for faster dead-connection detection
+
+### Added — Client features
+- **Online Players window** (press P): see who's online, filtered by "on your island" vs "elsewhere", with inspect buttons
+- **Leaderboard window** (press L): top 50 players with rank medals (🥇🥈🥉), class, level, boss kills
+- **Player Inspect dialog**: click any other player to see their full profile (stats, equipment, progression)
+- **Mini-map** (top-right corner): shows the whole island with colored dots for NPCs (yellow), monsters (red), bosses (gold), other players (purple), self (gold)
+- **Settings window** (gear icon): toggle damage numbers, chat, mini-map, auto-loot; settings persisted to localStorage
+- **Connection indicator** (bottom-left): shows Connected/Connecting/Disconnected/Kicked status with colored dot
+- **HP bars above other players**: visible when they've taken damage
+- **Online count in HUD**: "👥 N online" displayed in the top bar
+- **5-character limit UI**: character select shows "N/5 characters" and hides the "New Hero" button at limit
+- **Reconnect handling**: on reconnect, automatically re-selects the character if you were in-game
+- **Kick handling**: shows a friendly message and returns to character select
+- **Keyboard shortcuts**: P (online players), L (leaderboard), O/Esc (close windows), gear icon for settings
+- **Input focus awareness**: keyboard movement disabled while typing in chat input
+
+### Changed
+- `/health` now returns `players` (alias for `onlinePlayers`) for backwards compat
+- `GET /api/characters` now also returns `maxCharacters` so the client can enforce the limit
+- Travel validation moved entirely server-side (client just sends the destination)
+- Extended E2E test from 19 to 28 checks (online players, inspect, leaderboard, single-session, char limit, validation)
+
+### Fixed
+- Player HP changes are now visible to other players on the same island
+- Diagonal movement inputs no longer crash the server (silently rejected)
+- Character names are now properly validated for length (3-20) and character set on both sides
+
+---
+
 ## [2.0.0] — 2026-07-14
 
 ### Added

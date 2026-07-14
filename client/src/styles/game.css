@@ -1754,3 +1754,251 @@
   border-radius: 4px;
 }
 .chat-input:focus { border-color: var(--color-gold); outline: none; }
+
+/* ===== Online Players Window ===== */
+.online-section {
+  margin-bottom: 8px;
+}
+.online-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.online-portrait {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #fff;
+  border: 2px solid #000;
+  text-shadow: 0 1px 2px #000;
+  flex-shrink: 0;
+}
+.online-info { flex: 1; }
+.online-name {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ===== Player Inspect Window ===== */
+
+/* ===== Leaderboard ===== */
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+.leaderboard-row.rank-1 {
+  background: linear-gradient(90deg, rgba(251,191,36,0.25) 0%, rgba(0,0,0,0.4) 100%);
+  border-color: #fbbf24;
+}
+.leaderboard-row.rank-2 {
+  background: linear-gradient(90deg, rgba(203,213,225,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  border-color: #cbd5e1;
+}
+.leaderboard-row.rank-3 {
+  background: linear-gradient(90deg, rgba(217,119,6,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  border-color: #d97706;
+}
+.leaderboard-rank {
+  width: 36px;
+  text-align: center;
+  font-family: var(--font-title);
+  font-weight: 900;
+  font-size: 18px;
+  color: #fde047;
+}
+.leaderboard-portrait {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #fff;
+  border: 2px solid #000;
+  text-shadow: 0 1px 2px #000;
+}
+.leaderboard-info { flex: 1; }
+.leaderboard-name {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 15px;
+}
+.leaderboard-extra {
+  text-align: right;
+}
+
+/* ===== Settings ===== */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(139,90,43,0.3);
+}
+.settings-row:last-of-type { border-bottom: none; }
+.settings-divider {
+  height: 1px;
+  background: rgba(139,90,43,0.3);
+  margin: 12px 0;
+}
+.toggle-btn {
+  padding: 6px 16px;
+  border-radius: 14px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  min-width: 60px;
+}
+.toggle-btn.on {
+  background: linear-gradient(180deg, #15803d 0%, #052e16 100%);
+  border: 1px solid #22c55e;
+  color: #fff;
+}
+.toggle-btn.off {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--color-wood);
+  color: #a8a29e;
+}
+
+/* ===== Mini-map ===== */
+.minimap-container {
+  position: absolute;
+  top: 80px;
+  right: 12px;
+  background: rgba(0,0,0,0.85);
+  border: 2px solid var(--color-wood);
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 8;
+  max-width: 180px;
+  max-height: 180px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+}
+.minimap-tiles {
+  position: relative;
+}
+.minimap-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  z-index: 2;
+}
+.minimap-dot.npc {
+  background: #fde047;
+  border: 1px solid #000;
+}
+.minimap-dot.monster {
+  background: #f87171;
+  border: 1px solid #000;
+}
+.minimap-dot.monster.boss {
+  background: #fbbf24;
+  width: 6px; height: 6px;
+  box-shadow: 0 0 4px #fbbf24;
+}
+.minimap-dot.player {
+  background: #c4b5fd;
+  border: 1px solid #000;
+}
+.minimap-dot.self {
+  background: #fde047;
+  width: 6px; height: 6px;
+  border: 1px solid #000;
+  box-shadow: 0 0 6px #fde047;
+  z-index: 3;
+}
+.minimap-label {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  font-size: 9px;
+  color: #fde047;
+  text-shadow: 0 1px 2px #000;
+  font-family: var(--font-title);
+  font-weight: 700;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* ===== Connection indicator ===== */
+.connection-indicator {
+  position: absolute;
+  bottom: 80px;
+  left: 12px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid var(--color-wood);
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 9;
+  pointer-events: none;
+}
+.connection-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 4px currentColor;
+}
+
+/* ===== HUD online count ===== */
+.hud-online-count {
+  background: rgba(0,0,0,0.7);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-wood);
+  color: #c4b5fd;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ===== Connecting screen kick notice ===== */
+.connecting-kick {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: rgba(220,38,38,0.2);
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* ===== Other player HP bar (visible above other players) ===== */
+.other-player-hp-bar {
+  position: absolute;
+  bottom: -8px;
+  left: 4px;
+  right: 4px;
+  height: 3px;
+  background: #000;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.other-player-hp-fill {
+  height: 100%;
+  background: linear-gradient(180deg, #ef4444 0%, #991b1b 100%);
+  transition: width 0.3s;
+}

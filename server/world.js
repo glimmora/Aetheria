@@ -22,7 +22,7 @@ import {
 } from '../shared/quests.js'
 import { QUESTS } from '../shared/quests.js'
 import { CONFIG } from '../shared/protocol.js'
-import { saveCharacter, getCharacterByName } from './db.js'
+import { saveCharacter, getCharacterByName, countCharactersByOwner, getAllCharacters } from './db.js'
 import { validateCharName } from './auth.js'
 
 class IslandInstance {
@@ -228,8 +228,15 @@ class IslandInstance {
           this.sendTo(nearestPlayer.socketId, 'log:combat', {
             msg: `${m.name} hit you for ${result.damage}.`, type: 'damage'
           })
-          // broadcast to others on island that player took damage
-          this.broadcast('player:moved', this.serializePlayer(nearestPlayer), nearestPlayer.socketId)
+          // broadcast HP update + position to others on island (so they see the HP bar change)
+          this.broadcast('player:hp', {
+            id: nearestPlayer.socketId,
+            hp: nearestPlayer.character.hp,
+            maxHp: nearestPlayer.character.maxHp,
+            x: nearestPlayer.character.x,
+            y: nearestPlayer.character.y,
+            facing: nearestPlayer.character.facing,
+          }, nearestPlayer.socketId)
           if (nearestPlayer.character.hp <= 0) {
             this.handlePlayerDeath(nearestPlayer)
           }
@@ -741,9 +748,37 @@ export class World {
   playerTravel(session, targetIslandId) {
     const c = session.character
     const def = ISLAND_DEFS[targetIslandId]
-    if (!def) return
-    // remove from current island
+    if (!def) {
+      session.socket.emit('notify', { msg: 'Invalid destination.' })
+      return
+    }
+    // Validate: must be reachable from current island via a sailor NPC
     const currentIsland = this.islands.get(c.currentIsland)
+    let reachable = false
+    let requiredLevel = 1
+    if (currentIsland) {
+      for (const npc of currentIsland.npcs) {
+        if (!npc.travel) continue
+        const options = npc.travel.options || (npc.travel.to ? [{ to: npc.travel.to, reqLevel: npc.reqLevel || 1 }] : [])
+        for (const opt of options) {
+          if (opt.to === targetIslandId) {
+            reachable = true
+            requiredLevel = opt.reqLevel || 1
+            break
+          }
+        }
+        if (reachable) break
+      }
+    }
+    if (!reachable) {
+      session.socket.emit('notify', { msg: 'You cannot travel there from this island.' })
+      return
+    }
+    if (c.level < requiredLevel) {
+      session.socket.emit('notify', { msg: `You must be level ${requiredLevel} to travel to ${def.name}.` })
+      return
+    }
+    // remove from current island
     if (currentIsland) {
       currentIsland.removePlayer(session.socketId)
       currentIsland.players.delete(session.socketId)
@@ -781,6 +816,11 @@ export class World {
     const nameErr = validateCharName(name)
     if (nameErr) return { error: nameErr }
     if (getCharacterByName(name)) return { error: 'A character with that name already exists' }
+    // Enforce per-account character limit
+    const count = countCharactersByOwner(ownerUsername)
+    if (count >= CONFIG.MAX_CHARACTERS_PER_ACCOUNT) {
+      return { error: `Character limit reached (max ${CONFIG.MAX_CHARACTERS_PER_ACCOUNT} per account)` }
+    }
     const character = {
       id: `char_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       owner: ownerUsername.toLowerCase(),
@@ -830,4 +870,115 @@ export class World {
     saveCharacter(character)
     return { character }
   }
+
+  // ===== Online players list =====
+  getOnlinePlayersList() {
+    const list = []
+    for (const session of this.sessions.values()) {
+      if (!session.character) continue
+      const c = session.character
+      list.push({
+        id: session.socketId,
+        name: c.name,
+        class: c.class,
+        classDef: { name: c.classDef?.name, color: c.classDef?.color, icon: c.classDef?.icon },
+        level: c.level,
+        currentIsland: c.currentIsland,
+        hp: c.hp,
+        maxHp: c.maxHp,
+      })
+    }
+    return list
+  }
+
+  // ===== Inspect another player =====
+  inspectPlayer(session, targetSocketId) {
+    const target = this.sessions.get(targetSocketId)
+    if (!target || !target.character) {
+      session.socket.emit(SERVER_EVENTS_ERROR_MSG, { message: 'Player not found.' })
+      return
+    }
+    const c = target.character
+    const stats = computePlayerStats(c)
+    session.socket.emit('player:inspect', {
+      id: target.socketId,
+      name: c.name,
+      class: c.class,
+      classDef: { name: c.classDef?.name, color: c.classDef?.color, icon: c.classDef?.icon },
+      level: c.level,
+      hp: c.hp,
+      maxHp: stats.hp,
+      mp: c.mp,
+      maxMp: stats.mp,
+      gold: c.gold,
+      currentIsland: c.currentIsland,
+      killedBosses: c.killedBosses || [],
+      visitedIslands: c.visitedIslands || [],
+      // equipment (visible)
+      equipment: Object.fromEntries(
+        Object.entries(c.equipment || {}).map(([slot, eq]) => [slot, eq?.id || null])
+      ),
+      stats: {
+        attack: stats.attack,
+        defense: stats.defense,
+        magic: stats.magic,
+        speed: stats.speed,
+      },
+    })
+  }
+
+  // ===== Leaderboard =====
+  getLeaderboard(limit = CONFIG.LEADERBOARD_SIZE) {
+    const allChars = getAllCharacters()
+    allChars.sort((a, b) => {
+      if (b.level !== a.level) return b.level - a.level
+      if (b.xp !== a.xp) return b.xp - a.xp
+      return a.name.localeCompare(b.name)
+    })
+    return allChars.slice(0, limit).map((c, i) => ({
+      rank: i + 1,
+      name: c.name,
+      class: c.class,
+      classDef: { name: c.classDef?.name, color: c.classDef?.color, icon: c.classDef?.icon },
+      level: c.level,
+      currentIsland: c.currentIsland,
+      killedBosses: (c.killedBosses || []).length,
+    }))
+  }
+
+  // ===== Single-session enforcement =====
+  // Kick any existing session for the same character (prevents dupes)
+  kickExistingSessionForCharacter(characterId, exceptSocketId = null) {
+    for (const [socketId, session] of this.sessions.entries()) {
+      if (socketId === exceptSocketId) continue
+      if (session.character && session.character.id === characterId) {
+        // Kick the old session
+        try {
+          session.socket.emit('kick', { reason: 'Your character logged in from another location.' })
+          session.socket.disconnect(true)
+        } catch {}
+        this.removeSession(socketId)
+        return true
+      }
+    }
+    return false
+  }
+
+  // ===== Server stats =====
+  getServerStats() {
+    let totalMonsters = 0
+    let totalIslands = 0
+    for (const island of this.islands.values()) {
+      totalIslands++
+      totalMonsters += island.monsters.size
+    }
+    return {
+      onlinePlayers: this.sessions.size,
+      activeIslands: totalIslands,
+      totalMonsters,
+      uptime: process.uptime(),
+    }
+  }
 }
+
+const SERVER_EVENTS_ERROR_MSG = 'error'

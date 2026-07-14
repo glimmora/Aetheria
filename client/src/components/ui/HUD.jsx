@@ -10,7 +10,9 @@ import { xpForLevel } from '../../../../shared/combat.js'
 export default function HUD({
   player, currentIsland, combatLog,
   onToggleInventory, onToggleQuestLog, onToggleCharacter, onToggleMap, onToggleHelp,
+  onToggleOnline, onToggleLeaderboard, onToggleSettings,
   onUseSkill, targetMonster, gameTime,
+  serverStats, onlineCount,
 }) {
   if (!player) return null
   const stats = computePlayerStats(player)
@@ -18,6 +20,7 @@ export default function HUD({
   const mpPct = (player.mp / stats.mp) * 100
   const xpPct = (player.xp / xpForLevel(player.level)) * 100
   const skills = getSkillsForClass(player.class, player.level)
+  const islandName = currentIsland?.name || (typeof currentIsland === 'string' ? currentIsland.replace(/_/g, ' ') : '')
 
   return (
     <>
@@ -48,7 +51,7 @@ export default function HUD({
         </div>
 
         <div className="hud-location">
-          <div className="hud-island-name">{currentIsland.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+          <div className="hud-island-name">{islandName}</div>
           <div className="hud-stats">
             <span className="hud-stat">⚔ {stats.attack}</span>
             <span className="hud-stat">🛡 {stats.defense}</span>
@@ -58,13 +61,17 @@ export default function HUD({
         </div>
 
         <div className="hud-resource">
+          <div className="hud-online-count">👥 {onlineCount || 0} online</div>
           <div className="hud-gold">🪙 {player.gold}</div>
           <div className="hud-buttons">
             <button className="hud-btn" onClick={onToggleCharacter} title="Character (C)">C</button>
             <button className="hud-btn" onClick={onToggleInventory} title="Inventory (I)">I</button>
             <button className="hud-btn" onClick={onToggleQuestLog} title="Quest Log (Q)">Q</button>
             <button className="hud-btn" onClick={onToggleMap} title="World Map (M)">M</button>
+            <button className="hud-btn" onClick={onToggleOnline} title="Online Players (P)">P</button>
+            <button className="hud-btn" onClick={onToggleLeaderboard} title="Leaderboard (L)">L</button>
             <button className="hud-btn" onClick={onToggleHelp} title="Help (?)">?</button>
+            <button className="hud-btn" onClick={onToggleSettings} title="Settings">⚙</button>
           </div>
         </div>
       </div>

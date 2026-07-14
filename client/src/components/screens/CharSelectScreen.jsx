@@ -6,16 +6,22 @@ import React, { useState } from 'react'
 import { CLASSES } from '../../../../shared/classes.js'
 import { ISLAND_DEFS } from '../../../../shared/islands.js'
 
-export default function CharSelectScreen({ username, characters, onSelect, onCreate, onDelete, onLogout }) {
+export default function CharSelectScreen({ username, characters, maxCharacters, onSelect, onCreate, onDelete, onLogout }) {
   const [showCreate, setShowCreate] = useState(false)
   const [name, setName] = useState('')
   const [selectedClass, setSelectedClass] = useState('warrior')
   const [error, setError] = useState(null)
+  const max = maxCharacters || 5
+  const atLimit = characters.length >= max
 
   const handleCreate = () => {
     setError(null)
     if (!name.trim() || name.trim().length < 3) {
       setError('Name must be at least 3 characters')
+      return
+    }
+    if (name.trim().length > 20) {
+      setError('Name must be at most 20 characters')
       return
     }
     onCreate(name.trim(), selectedClass)
@@ -29,7 +35,7 @@ export default function CharSelectScreen({ username, characters, onSelect, onCre
         <div className="char-select-header">
           <div>
             <h1 className="aetheria-title" style={{ fontSize: 28 }}>Your Heroes</h1>
-            <div className="text-dim text-sm">Welcome back, <span className="text-gold">{username}</span></div>
+            <div className="text-dim text-sm">Welcome back, <span className="text-gold">{username}</span> · {characters.length}/{max} characters</div>
           </div>
           <button className="aetheria-btn" onClick={onLogout}>Logout</button>
         </div>
@@ -73,7 +79,7 @@ export default function CharSelectScreen({ username, characters, onSelect, onCre
                   </div>
                 )
               })}
-              {characters.length > 0 && characters.length < 5 && (
+              {characters.length > 0 && !atLimit && (
                 <div className="char-card char-card-new" onClick={() => setShowCreate(true)}>
                   <div className="char-card-new-icon">+</div>
                   <div className="char-card-new-text">New Hero</div>

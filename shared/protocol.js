@@ -13,6 +13,7 @@ export const SERVER_EVENTS = {
   PLAYER_JOINED: 'player:joined',    // Another player entered the island
   PLAYER_LEFT: 'player:left',        // Another player left the island
   PLAYER_MOVED: 'player:moved',      // Another player moved
+  PLAYER_HP_UPDATE: 'player:hp',     // Another player's HP changed (visible HP bar)
   FLOATING_TEXT: 'fx:floating',      // Floating combat text to display
   COMBAT_LOG: 'log:combat',          // Combat log entry
   NOTIFICATION: 'notify',            // Toast notification
@@ -26,18 +27,25 @@ export const SERVER_EVENTS = {
   CHARACTER_DELETED: 'character:deleted',
   ERROR: 'error',                    // Generic error
   WELCOME: 'welcome',                // Server greeting on connect
+  ONLINE_PLAYERS: 'online:players',  // List of online players (island + global)
+  PLAYER_INSPECT: 'player:inspect',  // Detailed info about another player
+  LEADERBOARD: 'leaderboard',        // Top players by level
+  KICK: 'kick',                      // Server kicked the client (e.g., duplicate login)
+  NEARBY_NPC: 'npc:nearby',          // NPC walked into
+  CHAT: 'chat',                      // Chat message
+  STATS: 'server:stats',             // Server statistics
 }
 
 export const CLIENT_EVENTS = {
   // Client → Server
-  AUTH_LOGIN: 'auth:login',          // { username, password }
-  AUTH_REGISTER: 'auth:register',    // { username, password }
+  AUTH_LOGIN: 'auth:login',
+  AUTH_REGISTER: 'auth:register',
   AUTH_LOGOUT: 'auth:logout',
   CHARACTER_LIST: 'character:list',
   CHARACTER_CREATE: 'character:create', // { name, classId }
   CHARACTER_SELECT: 'character:select', // { characterId }
   CHARACTER_DELETE: 'character:delete', // { characterId }
-  MOVE: 'move',                       // { dx, dy } or { x, y }
+  MOVE: 'move',                       // { dx, dy }
   ATTACK: 'attack',                   // { monsterId }
   SKILL: 'skill',                     // { skillId, targetMonsterId? }
   USE_ITEM: 'item:use',               // { itemId }
@@ -49,7 +57,10 @@ export const CLIENT_EVENTS = {
   TURN_IN_QUEST: 'quest:turnin',      // { questId }
   TRAVEL: 'travel',                   // { islandId }
   RESPAWN: 'respawn',
-  CHAT: 'chat',                       // { message } (island-local chat)
+  CHAT: 'chat',                       // { message }
+  REQUEST_ONLINE: 'online:request',   // Ask for online players list
+  INSPECT_PLAYER: 'player:inspect',   // { playerId } — request another player's details
+  REQUEST_LEADERBOARD: 'leaderboard:request',
   DISCONNECT: 'disconnect',
 }
 
@@ -66,6 +77,12 @@ export const CONFIG = {
   STARTING_GOLD: 50,
   CHAT_MAX_LENGTH: 200,
   CHAT_COOLDOWN_MS: 1000,
+  MAX_CHARACTERS_PER_ACCOUNT: 5,
+  AUTH_RATE_LIMIT_PER_15MIN: 20,    // per IP
+  AUTH_RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000,
+  GENERAL_RATE_LIMIT_PER_MIN: 120,  // per IP for non-auth endpoints
+  LEADERBOARD_SIZE: 50,
+  SESSION_TIMEOUT_MS: 5 * 60 * 1000, // reserved for future AFK handling
 }
 
 export function ok(payload) { return { ok: true, ...payload } }

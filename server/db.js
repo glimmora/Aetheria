@@ -80,6 +80,9 @@ export function createUser(username, passwordHash) {
   saveAll()
   return user
 }
+export function getAllUsersCount() {
+  return users.size
+}
 
 // ---- Characters ----
 export function getCharacter(id) {
@@ -87,6 +90,15 @@ export function getCharacter(id) {
 }
 export function getCharactersByOwner(username) {
   return [...characters.values()].filter(c => c.owner === username.toLowerCase())
+}
+export function countCharactersByOwner(username) {
+  const lower = username.toLowerCase()
+  let n = 0
+  for (const c of characters.values()) if (c.owner === lower) n++
+  return n
+}
+export function getAllCharacters() {
+  return [...characters.values()]
 }
 export function saveCharacter(char) {
   characters.set(char.id, char)

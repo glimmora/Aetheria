@@ -16,33 +16,38 @@ import QuestLogWindow from '../ui/QuestLogWindow.jsx'
 import { CharacterWindow, WorldMapWindow, HelpWindow } from '../ui/MiscWindows.jsx'
 import DeathScreen from '../ui/DeathScreen.jsx'
 import ChatBox from '../ui/ChatBox.jsx'
+import {
+  OnlinePlayersWindow, PlayerInspectWindow, LeaderboardWindow,
+  SettingsWindow, MiniMap, ConnectionIndicator,
+} from '../ui/SocialWindows.jsx'
 import { getSkillsForClass } from '../../../../shared/classes.js'
-import { getItem } from '../../../../shared/items.js'
 import { QUESTS } from '../../../../shared/quests.js'
-import { QUEST_STATUS, getQuestProgressText } from '../../../../shared/quests.js'
 
 export default function GameScreen({ game }) {
   const {
     player, currentIsland, map, npcs, monsters, otherPlayers,
     combatLog, floatingTexts, notification, isDead, chatMessages, nearbyNpc,
+    onlinePlayers, leaderboard, inspectData, serverStats,
+    connectionState,
     activeInventory, activeQuestLog, activeCharacter, activeMap, activeHelp,
+    activeOnline, activeLeaderboard, activeSettings,
     activeDialog, activeShop, activeQuestDialog, activeTravel,
     setActiveInventory, setActiveQuestLog, setActiveCharacter, setActiveMap, setActiveHelp,
+    setActiveOnline, setActiveLeaderboard, setActiveSettings,
     setActiveDialog, setActiveShop, setActiveQuestDialog, setActiveTravel,
-    setNearbyNpc,
+    setNearbyNpc, setInspectData,
+    settings,
     sendMove, sendAttack, sendSkill, sendUseItem, sendEquipItem, sendUnequipItem,
     sendBuyItem, sendSellItem, sendAcceptQuest, sendTurnInQuest, sendTravel, sendRespawn, sendChat,
+    inspectPlayer, requestLeaderboard,
     quitToMenu,
   } = game
-
-  // Combine all monsters for rendering
-  const allMonsters = monsters
-  // Combine player + otherPlayers for entity rendering
-  const otherPlayersList = otherPlayers
 
   // Keyboard input
   useEffect(() => {
     const handler = (e) => {
+      // Don't capture keys when typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
       const key = e.key.toLowerCase()
       if (key === 'w' || key === 'arrowup') { e.preventDefault(); sendMove(0, -1) }
       else if (key === 's' || key === 'arrowdown') { e.preventDefault(); sendMove(0, 1) }
@@ -52,25 +57,33 @@ export default function GameScreen({ game }) {
       else if (key === 'q') { e.preventDefault(); setActiveQuestLog(!activeQuestLog) }
       else if (key === 'c') { e.preventDefault(); setActiveCharacter(!activeCharacter) }
       else if (key === 'm') { e.preventDefault(); setActiveMap(!activeMap) }
-      else if (key === '?' || key === '/') { e.preventDefault(); setActiveHelp(!activeHelp) }
-      else if (key === 'escape') {
+      else if (key === 'p') { e.preventDefault(); setActiveOnline(!activeOnline) }
+      else if (key === 'l') { e.preventDefault(); setActiveLeaderboard(!activeLeaderboard); requestLeaderboard() }
+      else if (key === 'o' || key === 'escape') {
         e.preventDefault()
-        setActiveDialog(null); setActiveShop(null); setActiveQuestDialog(null); setActiveTravel(null)
-        if (activeInventory) setActiveInventory(false)
-        if (activeQuestLog) setActiveQuestLog(false)
-        if (activeCharacter) setActiveCharacter(false)
-        if (activeMap) setActiveMap(false)
-        if (activeHelp) setActiveHelp(false)
-        setNearbyNpc(null)
+        if (activeDialog) { setActiveDialog(null); return }
+        if (activeShop) { setActiveShop(null); return }
+        if (activeQuestDialog) { setActiveQuestDialog(null); return }
+        if (activeTravel) { setActiveTravel(null); return }
+        if (inspectData) { setInspectData(null); return }
+        if (nearbyNpc) { setNearbyNpc(null); return }
+        if (activeInventory) { setActiveInventory(false); return }
+        if (activeQuestLog) { setActiveQuestLog(false); return }
+        if (activeCharacter) { setActiveCharacter(false); return }
+        if (activeMap) { setActiveMap(false); return }
+        if (activeHelp) { setActiveHelp(false); return }
+        if (activeOnline) { setActiveOnline(false); return }
+        if (activeLeaderboard) { setActiveLeaderboard(false); return }
+        if (activeSettings) { setActiveSettings(false); return }
       }
+      else if (key === '?' || key === '/') { e.preventDefault(); setActiveHelp(!activeHelp) }
       else if (key >= '1' && key <= '6') {
         e.preventDefault()
         const idx = parseInt(key) - 1
         const skills = getSkillsForClass(player.class, player.level)
         const skillId = skills[idx]?.id
         if (skillId) {
-          // auto-target nearest monster
-          const candidates = allMonsters
+          const candidates = monsters
             .filter(m => Math.abs(m.x - player.x) + Math.abs(m.y - player.y) <= 6)
             .sort((a, b) => Math.abs(a.x - player.x) + Math.abs(a.y - player.y) - Math.abs(b.x - player.x) - Math.abs(b.y - player.y))
           sendSkill(skillId, candidates[0]?.id)
@@ -79,12 +92,24 @@ export default function GameScreen({ game }) {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [player, allMonsters, activeInventory, activeQuestLog, activeCharacter, activeMap, activeHelp, sendMove, sendSkill, setActiveInventory, setActiveQuestLog, setActiveCharacter, setActiveMap, setActiveHelp, setActiveDialog, setActiveShop, setActiveQuestDialog, setActiveTravel, setNearbyNpc])
+  }, [player, monsters, activeInventory, activeQuestLog, activeCharacter, activeMap, activeHelp,
+      activeOnline, activeLeaderboard, activeSettings, activeDialog, activeShop, activeQuestDialog,
+      activeTravel, inspectData, nearbyNpc,
+      sendMove, sendSkill, setActiveInventory, setActiveQuestLog, setActiveCharacter, setActiveMap,
+      setActiveHelp, setActiveOnline, setActiveLeaderboard, setActiveSettings,
+      setActiveDialog, setActiveShop, setActiveQuestDialog, setActiveTravel, setNearbyNpc, setInspectData,
+      requestLeaderboard])
 
   // ---- Tile click handler ----
   const handleTileClick = (tileX, tileY) => {
     if (!player || isDead) return
-    const monster = allMonsters.find(m => m.x === tileX && m.y === tileY)
+    // Check if clicked on another player (inspect)
+    const other = otherPlayers.find(p => p.x === tileX && p.y === tileY)
+    if (other) {
+      inspectPlayer(other.id)
+      return
+    }
+    const monster = monsters.find(m => m.x === tileX && m.y === tileY)
     if (monster) {
       sendAttack(monster.id)
       return
@@ -122,10 +147,10 @@ export default function GameScreen({ game }) {
         currentIsland={currentIsland}
         map={map}
         player={player}
-        monsters={allMonsters}
+        monsters={monsters}
         npcs={npcs}
-        otherPlayers={otherPlayersList}
-        floatingTexts={floatingTexts}
+        otherPlayers={otherPlayers}
+        floatingTexts={settings.showDamageNumbers ? floatingTexts : []}
         onTileClick={handleTileClick}
       />
 
@@ -133,16 +158,34 @@ export default function GameScreen({ game }) {
         player={player}
         currentIsland={currentIsland}
         combatLog={combatLog}
+        serverStats={serverStats}
+        onlineCount={onlinePlayers.length}
         onToggleInventory={() => setActiveInventory(!activeInventory)}
         onToggleQuestLog={() => setActiveQuestLog(!activeQuestLog)}
         onToggleCharacter={() => setActiveCharacter(!activeCharacter)}
         onToggleMap={() => setActiveMap(!activeMap)}
         onToggleHelp={() => setActiveHelp(!activeHelp)}
+        onToggleOnline={() => setActiveOnline(!activeOnline)}
+        onToggleLeaderboard={() => { setActiveLeaderboard(!activeLeaderboard); requestLeaderboard() }}
+        onToggleSettings={() => setActiveSettings(!activeSettings)}
         onUseSkill={(skillId, tgt) => sendSkill(skillId, tgt?.id)}
         gameTime={Date.now()}
       />
 
-      <ChatBox messages={chatMessages} onSend={sendChat} />
+      {settings.showChat && <ChatBox messages={chatMessages} onSend={sendChat} />}
+
+      {settings.showMinimap && (
+        <MiniMap
+          map={map}
+          player={player}
+          monsters={monsters}
+          npcs={npcs}
+          otherPlayers={otherPlayers}
+          currentIsland={currentIsland}
+        />
+      )}
+
+      <ConnectionIndicator connectionState={connectionState} />
 
       {notification && (
         <div className="notification-toast" key={notification.id}>
@@ -150,12 +193,11 @@ export default function GameScreen({ game }) {
         </div>
       )}
 
-      {/* NPC interaction: if a player walks into an NPC, auto-open dialog */}
       {nearbyNpc && !activeDialog && (
         <div className="npc-prompt" onClick={() => { setActiveDialog({ npc: nearbyNpc }); setNearbyNpc(null) }}>
           <span className="npc-prompt-icon">!</span>
           <span>Talk to <b>{nearbyNpc.name}</b></span>
-          <span className="text-xs text-dim">(click)</span>
+          <span className="text-xs text-dim">(click or Esc to dismiss)</span>
         </div>
       )}
 
@@ -226,6 +268,29 @@ export default function GameScreen({ game }) {
         onClose={() => setActiveMap(false)}
       />
       <HelpWindow active={activeHelp} onClose={() => setActiveHelp(false)} />
+      <OnlinePlayersWindow
+        active={activeOnline}
+        onlinePlayers={onlinePlayers}
+        currentIsland={player.currentIsland}
+        onClose={() => setActiveOnline(false)}
+        onInspect={(pid) => { inspectPlayer(pid) }}
+      />
+      <PlayerInspectWindow
+        inspectData={inspectData}
+        onClose={() => setInspectData(null)}
+      />
+      <LeaderboardWindow
+        active={activeLeaderboard}
+        leaderboard={leaderboard}
+        onClose={() => setActiveLeaderboard(false)}
+      />
+      <SettingsWindow
+        active={activeSettings}
+        settings={settings}
+        onUpdate={game.updateSettings}
+        onClose={() => setActiveSettings(false)}
+        onLogout={game.logout}
+      />
 
       {isDead && (
         <DeathScreen
