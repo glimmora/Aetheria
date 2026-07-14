@@ -3,10 +3,10 @@
 ---
 Task ID: 1
 Agent: Main (Super Z)
-Task: Build a TibiaMe-inspired browser MMORPG with React + Vite, 9 unique islands, 8-18 NPCs per island, many structured quests. Full English. Senior developer quality.
+Task: Build a browser MMORPG with React + Vite, 9 unique islands, 8-18 NPCs per island, many structured quests. Full English. Senior developer quality.
 
 Work Log:
-- Analyzed TibiaMe's core gameplay loop (top-down 2D MMORPG, tile-based, real-time combat, NPC dialog, quests, leveling)
+- Analyzed classic top-down 2D MMORPG gameplay loops (tile-based movement, real-time combat, NPC dialog, quests, leveling)
 - Set up Vite + React 18 project manually (no Next.js skill since user requested Vite)
 - Created comprehensive game data files:
   - 4 playable classes (Warrior, Mage, Ranger, Healer) with growth curves, skills, starting items
@@ -42,7 +42,7 @@ Work Log:
 
 Stage Summary:
 - Project type: Type 3 (Interactive Web Development) using React + Vite (per user's explicit request)
-- Game name: "Aetheria: Nine Isles" — original branding inspired by TibiaMe's mechanics
+- Game name: "Aetheria: Nine Isles" — original branding, standalone project
 - Total content: 9 islands, 113 NPCs, 89 quests, 35+ monsters, 60+ items, 4 classes, 14 skills
 - Architecture: data → systems → hooks → components (clean separation of concerns)
 - Dev server: http://localhost:3000

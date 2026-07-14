@@ -1,6 +1,6 @@
 // ============================================================
 // Aetheria: Nine Isles - Classes
-// Four playable classes inspired by TibiaMe's role system
+// Four playable classes with distinct playstyles
 // ============================================================
 
 export const CLASSES = {

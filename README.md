@@ -1,6 +1,6 @@
 # ⚔️ Aetheria: Nine Isles
 
-A multiplayer browser MMORPG inspired by the classic **TibiaMe**, built with **React + Vite** (client) and **Node.js + Express + Socket.io** (server) in a **single shared world**.
+A multiplayer browser MMORPG, built with **React + Vite** (client) and **Node.js + Express + Socket.io** (server) in a **single shared world**.
 
 > Top-down 2D tile-based MMO with real-time combat, **9 unique islands**, **113 NPCs**, **89 quests**, **35+ monsters** (including 8 bosses and a final boss), **4 playable classes**, and **server-authoritative multiplayer** — see other players, chat, and (eventually) trade on the same islands.
 
@@ -126,10 +126,6 @@ Both must pass before merging. The E2E test starts an isolated session, register
 - [ ] Migrate persistence to PostgreSQL for >100 concurrent players
 
 ---
-
-## 📜 Inspiration
-
-Mechanics inspired by **TibiaMe** (the mobile MMO by CipSoft). All branding, names, art, and code are original.
 
 ## 📄 License
 

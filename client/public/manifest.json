@@ -1,7 +1,7 @@
 {
   "name": "Aetheria: Nine Isles",
   "short_name": "Aetheria",
-  "description": "A multiplayer browser MMORPG inspired by the classic TibiaMe",
+  "description": "A multiplayer browser MMORPG",
   "start_url": "/",
   "display": "fullscreen",
   "orientation": "any",

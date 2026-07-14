@@ -284,7 +284,7 @@ The AI is intentionally simple but believable. Each monster:
 4. **Attack** — if within `attackRange` tiles, attack every `Math.max(600, 1500 - speed*50)` ms
 5. **Leash** — if no player within `aggroRange * 2`, lose aggro and return to idle
 
-Monsters do not pathfind around obstacles — they step greedily toward the player (try X axis, then Y axis). This can cause them to get stuck on walls, which is acceptable for a TibiaMe-inspired game (the original had similar behavior).
+Monsters do not pathfind around obstacles — they step greedily toward the player (try X axis, then Y axis). This can cause them to get stuck on walls, which is acceptable for this style of tile-based MMO.
 
 Ranged monsters (attackRange > 1) stop chasing once in range and shoot from where they stand.
 

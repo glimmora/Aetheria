@@ -81,7 +81,7 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
         </div>
 
         <div className="auth-footer">
-          Aetheria: Nine Isles · Multiplayer Edition · TibiaMe-inspired
+          Aetheria: Nine Isles · Multiplayer Edition
         </div>
       </div>
     </div>
