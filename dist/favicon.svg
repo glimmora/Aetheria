@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0c1e4a"/>
+    </linearGradient>
+    <linearGradient id="isle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" fill="url(#sea)"/>
+  <circle cx="20" cy="20" r="8" fill="url(#isle)"/>
+  <circle cx="44" cy="18" r="6" fill="url(#isle)"/>
+  <circle cx="32" cy="34" r="10" fill="url(#isle)"/>
+  <circle cx="46" cy="44" r="7" fill="url(#isle)"/>
+  <circle cx="18" cy="46" r="6" fill="url(#isle)"/>
+  <text x="32" y="38" text-anchor="middle" fill="#fde047" font-family="serif" font-size="14" font-weight="bold">A</text>
+</svg>
