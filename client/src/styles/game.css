@@ -2064,3 +2064,429 @@
   border-color: var(--neon-cyan);
   box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.15);
 }
+
+/* ============================================================
+   MOBILE / RESPONSIVE STYLES
+   ============================================================ */
+
+/* ---- Prevent text selection, callouts, tap highlight ---- */
+* {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* ---- Touch-friendly: larger tap targets on mobile ---- */
+@media (pointer: coarse) {
+  .tile {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hud-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  .aetheria-btn {
+    padding: 14px 28px;
+    font-size: 14px;
+  }
+}
+
+/* ---- Mobile game screen adjustments ---- */
+.game-screen.mobile .tile-map-container {
+  border-radius: var(--r-md);
+}
+
+/* ---- Tablet (768px and below) ---- */
+@media (max-width: 768px) {
+  .hud-top {
+    flex-wrap: wrap;
+    gap: 6px;
+    right: 12px;
+  }
+  .hud-player-info {
+    min-width: unset;
+    flex: 1;
+    padding: 8px 10px;
+  }
+  .hud-portrait {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .hud-name { font-size: 12px; }
+  .hud-class { font-size: 10px; }
+  .hud-bar { height: 9px; }
+  .hud-bar-text { font-size: 9px; }
+  .hud-location {
+    padding: 6px 10px;
+  }
+  .hud-island-name { font-size: 12px; }
+  .hud-stats { font-size: 11px; gap: 8px; }
+  .hud-gold { font-size: 13px; padding: 4px 10px; }
+  .hud-online-count { font-size: 11px; padding: 4px 8px; }
+  .hud-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  .hud-combat-log {
+    width: 200px;
+    max-height: 120px;
+    font-size: 11px;
+    opacity: 0.85;
+  }
+  .hud-skill-bar {
+    gap: 4px;
+    padding: 6px;
+    bottom: 8px;
+  }
+  .skill-slot {
+    width: 52px;
+    height: 52px;
+  }
+  .skill-icon { font-size: 22px; }
+  .skill-name { font-size: 8px; }
+  .skill-cost { font-size: 8px; }
+  .minimap-container {
+    max-width: 120px;
+    max-height: 120px;
+    top: 70px;
+    right: 8px;
+  }
+  .chat-box {
+    width: 220px;
+    bottom: 8px;
+    left: 8px;
+    font-size: 12px;
+  }
+  .chat-box.expanded { height: 180px; }
+  .chat-messages { height: 110px; }
+  .connection-indicator {
+    bottom: 70px;
+    left: 8px;
+    font-size: 10px;
+  }
+  .game-menu-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+  .notification-toast {
+    font-size: 13px;
+    padding: 10px 20px;
+    top: 110px;
+  }
+  .npc-prompt {
+    font-size: 12px;
+    padding: 8px 16px;
+    top: 110px;
+  }
+  /* Full-screen windows on tablet */
+  .aetheria-window {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+  }
+  /* Inventory layout stacks vertically */
+  .inventory-layout {
+    grid-template-columns: 1fr;
+  }
+  .equipment-panel { order: 1; }
+  .inventory-grid-panel { order: 2; }
+  .inventory-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  /* Character select: 1 column */
+  .char-select-grid {
+    grid-template-columns: 1fr;
+  }
+  .char-create-classes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* World map: 2 columns */
+  .worldmap-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* Auth logo smaller */
+  .auth-logo-glow, .auth-logo-title {
+    font-size: 52px;
+  }
+  .auth-content { max-width: 380px; }
+  .auth-card { padding: 24px; }
+  /* Leaderboard rows more compact */
+  .leaderboard-row { padding: 10px; gap: 10px; }
+  .leaderboard-portrait { width: 36px; height: 36px; font-size: 18px; }
+  .leaderboard-name { font-size: 14px; }
+  /* Character stats: 2 columns on narrow */
+  .char-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .char-create-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---- Phone (480px and below) ---- */
+@media (max-width: 480px) {
+  .hud-top {
+    left: 8px;
+    right: 50px;
+  }
+  .hud-player-info {
+    min-width: unset;
+    padding: 6px 8px;
+    gap: 8px;
+  }
+  .hud-portrait {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    border-width: 1.5px;
+  }
+  .hud-bars { gap: 2px; }
+  .hud-name { font-size: 11px; }
+  .hud-class { font-size: 9px; }
+  .hud-bar { height: 8px; }
+  .hud-bar-text { font-size: 8px; }
+  .hud-location {
+    display: none; /* hide on phone to save space */
+  }
+  .hud-resource {
+    align-items: flex-end;
+  }
+  .hud-gold { font-size: 12px; padding: 3px 8px; }
+  .hud-online-count { font-size: 10px; padding: 3px 6px; }
+  .hud-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+  .hud-combat-log {
+    display: none; /* hide on phone to save space */
+  }
+  .hud-skill-bar {
+    gap: 3px;
+    padding: 4px;
+  }
+  .skill-slot {
+    width: 46px;
+    height: 46px;
+  }
+  .skill-icon { font-size: 20px; }
+  .skill-name { font-size: 7px; }
+  .skill-cost { font-size: 7px; }
+  .skill-key { font-size: 9px; }
+  .minimap-container {
+    max-width: 90px;
+    max-height: 90px;
+    top: 60px;
+    right: 6px;
+  }
+  .chat-box {
+    width: 180px;
+    bottom: 70px;
+    left: 6px;
+    font-size: 11px;
+  }
+  .chat-box.expanded { height: 160px; }
+  .chat-messages { height: 95px; }
+  .chat-header { padding: 5px 8px; font-size: 10px; }
+  .connection-indicator {
+    bottom: 64px;
+    left: 6px;
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  .game-menu-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+    top: 8px;
+    right: 8px;
+  }
+  .notification-toast {
+    font-size: 12px;
+    padding: 8px 16px;
+    top: 80px;
+    max-width: 90vw;
+  }
+  .npc-prompt {
+    font-size: 11px;
+    padding: 6px 12px;
+    top: 80px;
+    gap: 6px;
+  }
+  .npc-prompt-icon { width: 18px; height: 18px; font-size: 11px; }
+  .map-edge-info {
+    font-size: 10px;
+    padding: 4px 12px;
+  }
+  /* Windows: truly full-screen on phone */
+  .aetheria-window {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: 92vh !important;
+    border-radius: var(--r-md);
+  }
+  .aetheria-window-header {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  .aetheria-window-body { padding: 12px; }
+  /* Inventory grid: 4 columns on phone */
+  .inventory-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+  .inv-slot { font-size: 20px; }
+  .equipment-slots { gap: 4px; }
+  .char-create-classes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .char-create-class-card { padding: 14px; }
+  .char-create-class-icon { font-size: 36px; }
+  .char-create-class-name { font-size: 14px; }
+  .char-create-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .worldmap-grid {
+    grid-template-columns: 1fr;
+  }
+  .auth-logo-glow, .auth-logo-title {
+    font-size: 42px;
+    letter-spacing: 0.15em;
+  }
+  .auth-logo-sub {
+    font-size: 13px;
+    letter-spacing: 0.4em;
+  }
+  .auth-content { width: 94%; }
+  .auth-card { padding: 20px; }
+  .auth-input { padding: 10px 14px; font-size: 15px; }
+  .auth-tab { padding: 8px; font-size: 12px; }
+  .char-select-bg { padding: 16px; }
+  .char-select-header { margin-bottom: 18px; }
+  .char-card {
+    padding: 14px;
+    gap: 12px;
+  }
+  .char-card-portrait { width: 52px; height: 52px; font-size: 26px; }
+  .char-card-name { font-size: 17px; }
+  .char-card-class { font-size: 13px; }
+  .char-card-actions { gap: 4px; }
+  .char-card-actions .aetheria-btn { padding: 8px 14px; font-size: 12px; }
+  .death-panel { padding: 32px; }
+  .death-title { font-size: 36px; }
+  .death-actions { flex-direction: column; }
+  /* Shop items more compact */
+  .shop-item { padding: 8px; gap: 8px; }
+  .shop-item-icon { font-size: 22px; width: 30px; }
+  .shop-item-name { font-size: 13px; }
+  .shop-buy-panel {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .shop-buy-controls { justify-content: center; }
+  /* Travel options */
+  .travel-option { padding: 10px; }
+  .travel-option-name { font-size: 16px; }
+  /* Quest log tabs */
+  .questlog-tab { padding: 6px 2px; font-size: 10px; }
+  /* Toggle buttons larger on phone */
+  .toggle-btn { padding: 8px 20px; font-size: 13px; }
+  .settings-mode-buttons { display: flex; gap: 4px; }
+  .mode-btn {
+    padding: 6px 12px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border-glass);
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .mode-btn.active {
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.25) 0%, rgba(167, 139, 250, 0.2) 100%);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 6px var(--neon-cyan-soft);
+  }
+}
+
+/* ---- Desktop mode buttons (non-phone) ---- */
+@media (min-width: 481px) {
+  .settings-mode-buttons {
+    display: flex;
+    gap: 4px;
+  }
+  .mode-btn {
+    padding: 6px 14px;
+    border-radius: var(--r-pill);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border-glass);
+    color: var(--text-muted);
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .mode-btn:hover {
+    border-color: var(--border-accent);
+    color: var(--text-secondary);
+  }
+  .mode-btn.active {
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.25) 0%, rgba(167, 139, 250, 0.2) 100%);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 6px var(--neon-cyan-soft);
+  }
+}
+
+/* ---- Landscape phone adjustments ---- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hud-top { top: 6px; }
+  .hud-skill-bar { bottom: 6px; }
+  .minimap-container { display: none; }
+  .chat-box { display: none; }
+  .hud-combat-log { display: none; }
+}
+
+/* ---- Safe area insets (iPhone notch) ---- */
+@supports (padding: max(0px)) {
+  .game-screen {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .hud-top {
+    top: max(12px, env(safe-area-inset-top));
+  }
+  .hud-skill-bar {
+    bottom: max(14px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ---- Path destination marker (visual feedback for tap-to-move) ---- */
+.path-destination {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--neon-cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  animation: pathDestPulse 0.8s ease-in-out infinite;
+  box-shadow: 0 0 12px var(--neon-cyan-soft);
+}
+@keyframes pathDestPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+}

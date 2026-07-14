@@ -8,6 +8,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { io } from 'socket.io-client'
 import { SERVER_EVENTS, CLIENT_EVENTS, CONFIG } from '../../../shared/protocol.js'
+import { findPath } from '../utils/pathfinding.js'
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:4000' : '')
 
@@ -54,15 +55,27 @@ export function useGame() {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem('aetheria_settings')
-      return saved ? JSON.parse(saved) : { showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true }
+      return saved ? JSON.parse(saved) : {
+        showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true,
+        movementMode: 'both', // 'wasd' | 'tap' | 'both'
+      }
     } catch {
-      return { showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true }
+      return { showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true, movementMode: 'both' }
     }
   })
+  const [isMobile] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      || (window.matchMedia?.('(pointer: coarse)')?.matches ?? false)
+  })
+  const [pathTarget, setPathTarget] = useState(null) // {x, y} for visual marker
 
   const socketRef = useRef(null)
   const characterIdRef = useRef(null)
   const reconnectTimerRef = useRef(null)
+  const pathQueueRef = useRef([])        // queued {dx, dy} steps for tap-to-move
+  const pathTimerRef = useRef(null)      // interval that drains the path queue
+  const currentPathTargetRef = useRef(null) // {x, y} of the current path target
 
   const notify = useCallback((msg, duration = 3500) => {
     setNotification({ msg, id: Date.now() + Math.random(), leaving: false })
@@ -319,8 +332,74 @@ export function useGame() {
   }, [])
 
   // ---- In-game actions ----
-  const sendMove = useCallback((dx, dy) => socketRef.current?.emit(CLIENT_EVENTS.MOVE, { dx, dy }), [])
-  const sendAttack = useCallback((monsterId) => socketRef.current?.emit(CLIENT_EVENTS.ATTACK, { monsterId }), [])
+  const sendMove = useCallback((dx, dy) => {
+    // Cancel any active path when manual movement is used
+    if (pathQueueRef.current.length > 0) {
+      pathQueueRef.current = []
+      currentPathTargetRef.current = null
+    }
+    socketRef.current?.emit(CLIENT_EVENTS.MOVE, { dx, dy })
+  }, [])
+
+  // Tap-to-move: compute path and queue steps
+  const sendMoveTo = useCallback((targetX, targetY) => {
+    if (!map || !player) return
+    // Cancel any existing path
+    if (pathTimerRef.current) {
+      clearInterval(pathTimerRef.current)
+      pathTimerRef.current = null
+    }
+    const path = findPath(map, player.x, player.y, targetX, targetY)
+    if (!path || path.length === 0) {
+      notify('Cannot reach that location.')
+      setPathTarget(null)
+      return
+    }
+    pathQueueRef.current = path
+    currentPathTargetRef.current = { x: targetX, y: targetY }
+    setPathTarget({ x: targetX, y: targetY })
+    // Drain the queue at a steady pace (slightly faster than server cooldown
+    // — the server will ignore moves that come too fast, but the visual
+    // transition smooths it out)
+    const stepDelay = 130
+    pathTimerRef.current = setInterval(() => {
+      const sock = socketRef.current
+      if (!sock || !sock.connected) {
+        clearInterval(pathTimerRef.current)
+        pathTimerRef.current = null
+        pathQueueRef.current = []
+        setPathTarget(null)
+        return
+      }
+      const step = pathQueueRef.current.shift()
+      if (!step) {
+        clearInterval(pathTimerRef.current)
+        pathTimerRef.current = null
+        currentPathTargetRef.current = null
+        setPathTarget(null)
+        return
+      }
+      sock.emit(CLIENT_EVENTS.MOVE, step)
+    }, stepDelay)
+  }, [map, player, notify])
+
+  const stopMoveTo = useCallback(() => {
+    if (pathTimerRef.current) {
+      clearInterval(pathTimerRef.current)
+      pathTimerRef.current = null
+    }
+    pathQueueRef.current = []
+    currentPathTargetRef.current = null
+    setPathTarget(null)
+  }, [])
+
+  const isMoving = useCallback(() => pathQueueRef.current.length > 0, [])
+
+  const sendAttack = useCallback((monsterId) => {
+    // Cancel pathing when attacking
+    stopMoveTo()
+    socketRef.current?.emit(CLIENT_EVENTS.ATTACK, { monsterId })
+  }, [stopMoveTo])
   const sendSkill = useCallback((skillId, targetMonsterId) => socketRef.current?.emit(CLIENT_EVENTS.SKILL, { skillId, targetMonsterId }), [])
   const sendUseItem = useCallback((itemId) => socketRef.current?.emit(CLIENT_EVENTS.USE_ITEM, { itemId }), [])
   const sendEquipItem = useCallback((itemId) => socketRef.current?.emit(CLIENT_EVENTS.EQUIP_ITEM, { itemId }), [])
@@ -377,12 +456,13 @@ export function useGame() {
     setActiveOnline, setActiveLeaderboard, setActiveSettings,
     setActiveDialog, setActiveShop, setActiveQuestDialog, setActiveTravel,
     setNearbyNpc, setInspectData,
-    // settings
-    settings, updateSettings,
+    // settings + mobile
+    settings, updateSettings, isMobile, pathTarget,
     // actions
     register, login, logout,
     createCharacter, selectCharacter, deleteCharacter,
-    sendMove, sendAttack, sendSkill, sendUseItem, sendEquipItem, sendUnequipItem,
+    sendMove, sendMoveTo, stopMoveTo, isMoving,
+    sendAttack, sendSkill, sendUseItem, sendEquipItem, sendUnequipItem,
     sendBuyItem, sendSellItem, sendAcceptQuest, sendTurnInQuest, sendTravel, sendRespawn, sendChat,
     requestOnlinePlayers, inspectPlayer, requestLeaderboard,
     quitToMenu, notify,

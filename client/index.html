@@ -3,9 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="Aetheria: Nine Isles - A browser MMORPG inspired by the classic TibiaMe" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Mobile viewport: prevent zoom, fit to screen -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- iOS PWA / standalone mode -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Aetheria" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Theme color for browser UI -->
+    <meta name="theme-color" content="#05060f" />
+
+    <!-- Description -->
+    <meta name="description" content="Aetheria: Nine Isles - A multiplayer browser MMORPG inspired by the classic TibiaMe" />
+
+    <!-- Prevent tap highlight on mobile -->
+    <meta name="format-detection" content="telephone=no" />
+
     <title>Aetheria: Nine Isles</title>
+
+    <!-- Prevent FOUC: set background immediately -->
+    <style>
+      html, body { background: #05060f; margin: 0; padding: 0; overscroll-behavior: none; }
+      #root { width: 100vw; height: 100vh; height: 100dvh; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

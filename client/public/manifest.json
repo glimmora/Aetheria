@@ -1,0 +1,21 @@
+{
+  "name": "Aetheria: Nine Isles",
+  "short_name": "Aetheria",
+  "description": "A multiplayer browser MMORPG inspired by the classic TibiaMe",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#05060f",
+  "theme_color": "#05060f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "en",
+  "dir": "ltr"
+}

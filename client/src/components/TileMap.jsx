@@ -16,6 +16,7 @@ export default function TileMap({
   npcs,
   otherPlayers = [],
   floatingTexts,
+  pathTarget,
   onTileClick,
 }) {
   if (!map || !player) return null
@@ -140,6 +141,17 @@ export default function TileMap({
           <div className="entity-name other-player-name">{p.name} <span style={{ color: '#64748b', fontSize: 9 }}>(Lv {p.level})</span></div>
         </div>
       ))}
+
+      {/* Path destination marker (tap-to-move) */}
+      {pathTarget && pathTarget.x >= camX && pathTarget.x < camX + viewW
+        && pathTarget.y >= camY && pathTarget.y < camY + viewH && (
+        <div
+          className="path-destination"
+          style={{
+            transform: `translate3d(${(pathTarget.x - camX) * TILE_SIZE + 2}px, ${(pathTarget.y - camY) * TILE_SIZE + 2}px, 0)`,
+          }}
+        />
+      )}
 
       {/* Player (self) */}
       <div

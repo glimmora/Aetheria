@@ -213,6 +213,26 @@ export function SettingsWindow({ active, settings, onUpdate, onClose, onLogout }
               {settings.autoLoot ? 'ON' : 'OFF'}
             </button>
           </div>
+          <div className="settings-row">
+            <div>
+              <div className="font-bold">Movement Mode</div>
+              <div className="text-xs text-dim">Tap-to-move pathfinding for click/touch</div>
+            </div>
+            <div className="settings-mode-buttons">
+              <button
+                className={`mode-btn ${(settings.movementMode || 'both') === 'tap' ? 'active' : ''}`}
+                onClick={() => onUpdate({ movementMode: 'tap' })}
+              >Tap</button>
+              <button
+                className={`mode-btn ${(settings.movementMode || 'both') === 'wasd' ? 'active' : ''}`}
+                onClick={() => onUpdate({ movementMode: 'wasd' })}
+              >WASD</button>
+              <button
+                className={`mode-btn ${(settings.movementMode || 'both') === 'both' ? 'active' : ''}`}
+                onClick={() => onUpdate({ movementMode: 'both' })}
+              >Both</button>
+            </div>
+          </div>
           <div className="settings-divider" />
           <div className="text-xs text-dim mb-2">Settings are saved to your browser localStorage.</div>
           <button className="aetheria-btn aetheria-btn-danger w-full" onClick={onLogout}>

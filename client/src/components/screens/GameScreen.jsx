@@ -36,8 +36,9 @@ export default function GameScreen({ game }) {
     setActiveOnline, setActiveLeaderboard, setActiveSettings,
     setActiveDialog, setActiveShop, setActiveQuestDialog, setActiveTravel,
     setNearbyNpc, setInspectData,
-    settings,
-    sendMove, sendAttack, sendSkill, sendUseItem, sendEquipItem, sendUnequipItem,
+    settings, isMobile,
+    sendMove, sendMoveTo, stopMoveTo,
+    sendAttack, sendSkill, sendUseItem, sendEquipItem, sendUnequipItem,
     sendBuyItem, sendSellItem, sendAcceptQuest, sendTurnInQuest, sendTravel, sendRespawn, sendChat,
     inspectPlayer, requestLeaderboard,
     quitToMenu,
@@ -100,7 +101,7 @@ export default function GameScreen({ game }) {
       setActiveDialog, setActiveShop, setActiveQuestDialog, setActiveTravel, setNearbyNpc, setInspectData,
       requestLeaderboard])
 
-  // ---- Tile click handler ----
+  // ---- Tile click handler (supports tap-to-move) ----
   const handleTileClick = (tileX, tileY) => {
     if (!player || isDead) return
     // Check if clicked on another player (inspect)
@@ -121,14 +122,23 @@ export default function GameScreen({ game }) {
         setActiveDialog({ npc })
         return
       }
+      // NPC is far — walk to it if tap mode is enabled
+      if (settings.movementMode !== 'wasd') {
+        sendMoveTo(tileX, tileY)
+      }
+      return
     }
-    const dx = Math.sign(tileX - player.x)
-    const dy = Math.sign(tileY - player.y)
-    if (dx !== 0 && dy === 0) sendMove(dx, 0)
-    else if (dx === 0 && dy !== 0) sendMove(0, dy)
-    else if (dx !== 0 && dy !== 0) {
-      if (Math.abs(tileX - player.x) > Math.abs(tileY - player.y)) sendMove(dx, 0)
-      else sendMove(0, dy)
+    // Empty tile — if adjacent, step directly; if far, use pathfinding (when enabled)
+    const dist = Math.abs(tileX - player.x) + Math.abs(tileY - player.y)
+    if (dist === 0) return
+    if (dist === 1) {
+      // Adjacent — single step (preserves snappy WASD-feel for nearby clicks)
+      const dx = tileX - player.x
+      const dy = tileY - player.y
+      sendMove(dx, dy)
+    } else if (settings.movementMode !== 'wasd') {
+      // Far — compute path and walk there
+      sendMoveTo(tileX, tileY)
     }
   }
 
@@ -142,7 +152,7 @@ export default function GameScreen({ game }) {
   }
 
   return (
-    <div className="game-screen" style={{ background: currentIsland?.backgroundColor || '#000' }}>
+    <div className={`game-screen ${isMobile ? 'mobile' : ''}`} style={{ background: currentIsland?.backgroundColor || '#000' }}>
       <TileMap
         currentIsland={currentIsland}
         map={map}
@@ -151,6 +161,7 @@ export default function GameScreen({ game }) {
         npcs={npcs}
         otherPlayers={otherPlayers}
         floatingTexts={settings.showDamageNumbers ? floatingTexts : []}
+        pathTarget={game.pathTarget}
         onTileClick={handleTileClick}
       />
 
