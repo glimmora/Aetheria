@@ -23,12 +23,11 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
 
   return (
     <div className="auth-bg">
-      <div className="auth-stars" />
       <div className="auth-content">
         <div className="auth-logo">
           <div className="auth-logo-glow">AETHERIA</div>
           <h1 className="auth-logo-title">AETHERIA</h1>
-          <div className="auth-logo-sub">Nine Isles · Multiplayer</div>
+          <div className="auth-logo-sub">Nine Isles</div>
         </div>
 
         <div className="auth-card aetheria-panel">

@@ -1,28 +1,67 @@
 /* ============================================
-   Aetheria: Nine Isles - Global Styles
+   Aetheria: Nine Isles — Modern Gaming UI
+   Design system: dark glassmorphism + neon accents
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
-  --color-sea-deep: #0a1628;
-  --color-sea: #1e3a8a;
-  --color-gold: #fbbf24;
-  --color-gold-bright: #fde047;
-  --color-parchment: #f5e6c8;
-  --color-parchment-dark: #c9b68a;
-  --color-wood: #5b3a1a;
-  --color-wood-light: #8b5a2b;
-  --color-blood: #991b1b;
-  --color-mana: #1e40af;
-  --color-xp: #15803d;
-  --color-health: #dc2626;
-  --color-text: #e8dcc0;
-  --color-text-dim: #a89878;
+  /* ---- Core palette ---- */
+  --bg-void:        #05060f;
+  --bg-deep:        #0a0d1f;
+  --bg-panel:       #11152b;
+  --bg-panel-light: #1a1f3a;
+  --bg-glass:       rgba(17, 21, 43, 0.72);
+  --bg-glass-light: rgba(26, 31, 58, 0.55);
 
-  --font-title: 'Cinzel', serif;
-  --font-pixel: 'Press Start 2P', monospace;
-  --font-mono: 'VT323', monospace;
+  /* ---- Accent neon colors ---- */
+  --neon-cyan:      #22d3ee;
+  --neon-cyan-soft: rgba(34, 211, 238, 0.5);
+  --neon-magenta:   #e879f9;
+  --neon-violet:    #a78bfa;
+  --neon-gold:      #fbbf24;
+  --neon-gold-bright: #fde047;
+  --neon-emerald:   #34d399;
+  --neon-rose:      #fb7185;
+  --neon-amber:     #f59e0b;
+
+  /* ---- Status colors ---- */
+  --hp:             #ef4444;
+  --hp-glow:        rgba(239, 68, 68, 0.6);
+  --mp:             #3b82f6;
+  --mp-glow:        rgba(59, 130, 246, 0.6);
+  --xp:             #fbbf24;
+  --xp-glow:        rgba(251, 191, 36, 0.6);
+
+  /* ---- Text ---- */
+  --text-primary:   #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted:     #64748b;
+  --text-faint:     #475569;
+
+  /* ---- Borders ---- */
+  --border-glass:   rgba(148, 163, 184, 0.15);
+  --border-accent:  rgba(34, 211, 238, 0.4);
+  --border-gold:    rgba(251, 191, 36, 0.4);
+
+  /* ---- Shadows & glows ---- */
+  --glow-cyan:      0 0 24px rgba(34, 211, 238, 0.35);
+  --glow-gold:      0 0 24px rgba(251, 191, 36, 0.4);
+  --glow-magenta:   0 0 24px rgba(232, 121, 249, 0.35);
+  --shadow-panel:   0 24px 64px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-card:    0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* ---- Fonts ---- */
+  --font-display:   'Cinzel', serif;
+  --font-ui:        'Rajdhani', 'Segoe UI', sans-serif;
+  --font-mono:      'JetBrains Mono', 'Consolas', monospace;
+
+  /* ---- Radii ---- */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-pill: 999px;
 }
 
 * {
@@ -35,12 +74,14 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  font-family: var(--font-mono);
-  font-size: 18px;
-  background: #000;
-  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  background: var(--bg-void);
+  color: var(--text-primary);
   user-select: none;
   -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button {
@@ -57,132 +98,205 @@ input {
   outline: none;
 }
 
+/* ---- Scrollbars ---- */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.3);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-wood-light);
-  border-radius: 4px;
+  background: linear-gradient(180deg, var(--neon-cyan) 0%, var(--neon-violet) 100%);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gold);
+  background: linear-gradient(180deg, var(--neon-gold-bright) 0%, var(--neon-magenta) 100%);
 }
 
 /* ============================================
-   Reusable UI atoms
+   Modern buttons
    ============================================ */
 
 .aetheria-btn {
-  font-family: var(--font-title);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 10px 24px;
-  background: linear-gradient(180deg, #4a3018 0%, #2a1810 100%);
-  color: var(--color-gold-bright);
-  border: 2px solid var(--color-wood-light);
-  border-radius: 6px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 11px 28px;
+  background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(10, 13, 31, 0.95) 100%);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--r-md);
   text-transform: uppercase;
-  font-size: 14px;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 0 #1a0e08, 0 6px 12px rgba(0,0,0,0.6);
+  font-size: 13px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.aetheria-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(34, 211, 238, 0.12) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 .aetheria-btn:hover:not(:disabled) {
-  background: linear-gradient(180deg, #5a4028 0%, #3a2018 100%);
-  border-color: var(--color-gold);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
   transform: translateY(-1px);
-  box-shadow: 0 5px 0 #1a0e08, 0 8px 16px rgba(0,0,0,0.7);
+  box-shadow: var(--glow-cyan), 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+.aetheria-btn:hover:not(:disabled)::before {
+  opacity: 1;
 }
 .aetheria-btn:active:not(:disabled) {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 #1a0e08;
+  transform: translateY(0);
+  box-shadow: 0 0 12px var(--neon-cyan-soft);
 }
 .aetheria-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
+
 .aetheria-btn-primary {
-  background: linear-gradient(180deg, #1e3a8a 0%, #0c1e4a 100%);
-  border-color: #4a7fd8;
-  color: #fff;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(59, 130, 246, 0.25) 100%);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px var(--neon-cyan-soft);
 }
-.aetheria-btn-danger {
-  background: linear-gradient(180deg, #991b1b 0%, #4a0a0a 100%);
-  border-color: #dc2626;
+.aetheria-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.35) 0%, rgba(59, 130, 246, 0.4) 100%);
   color: #fff;
-}
-.aetheria-btn-success {
-  background: linear-gradient(180deg, #15803d 0%, #052e16 100%);
-  border-color: #22c55e;
-  color: #fff;
+  box-shadow: var(--glow-cyan), 0 8px 24px rgba(34, 211, 238, 0.3);
 }
 
+.aetheria-btn-danger {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(127, 29, 29, 0.25) 100%);
+  border-color: var(--hp);
+  color: var(--neon-rose);
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+.aetheria-btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.35) 0%, rgba(127, 29, 29, 0.4) 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.5), 0 8px 20px rgba(0,0,0,0.5);
+  border-color: var(--neon-rose);
+}
+
+.aetheria-btn-success {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.2) 0%, rgba(6, 78, 59, 0.25) 100%);
+  border-color: var(--neon-emerald);
+  color: var(--neon-emerald);
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+}
+.aetheria-btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.35) 0%, rgba(6, 78, 59, 0.4) 100%);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(52, 211, 153, 0.5), 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* ============================================
+   Glass panels & windows
+   ============================================ */
+
 .aetheria-panel {
-  background: linear-gradient(180deg, rgba(20,12,4,0.96) 0%, rgba(10,6,2,0.98) 100%);
-  border: 3px solid var(--color-wood);
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 10px 30px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.5);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: var(--shadow-panel);
+  position: relative;
+}
+.aetheria-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.3) 0%, transparent 40%, transparent 60%, rgba(232, 121, 249, 0.2) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .aetheria-title {
-  font-family: var(--font-title);
+  font-family: var(--font-display);
   font-weight: 900;
-  letter-spacing: 0.1em;
-  color: var(--color-gold-bright);
-  text-shadow: 0 0 10px rgba(253,224,71,0.6), 0 2px 4px #000, 0 4px 8px #000;
+  letter-spacing: 0.15em;
+  background: linear-gradient(135deg, var(--neon-gold-bright) 0%, var(--neon-gold) 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
 }
 
 .aetheria-window {
   position: absolute;
-  background: linear-gradient(180deg, rgba(20,12,4,0.97) 0%, rgba(8,4,2,0.99) 100%);
-  border: 3px solid var(--color-wood);
-  border-radius: 10px;
-  box-shadow: 0 0 0 1px #000, 0 20px 50px rgba(0,0,0,0.8);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: var(--shadow-panel), 0 0 0 1px rgba(34, 211, 238, 0.08);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  animation: windowEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
+@keyframes windowEnter {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 .aetheria-window-header {
-  background: linear-gradient(180deg, #5b3a1a 0%, #3a2018 100%);
-  padding: 8px 14px;
-  font-family: var(--font-title);
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.12) 0%, rgba(167, 139, 250, 0.08) 100%);
+  padding: 12px 18px;
+  font-family: var(--font-ui);
   font-weight: 700;
-  color: var(--color-gold-bright);
+  color: var(--neon-cyan);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  letter-spacing: 0.08em;
-  border-bottom: 2px solid #1a0e08;
-  cursor: move;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid var(--border-accent);
   flex-shrink: 0;
   font-size: 13px;
   text-transform: uppercase;
+  text-shadow: 0 0 8px var(--neon-cyan-soft);
 }
 .aetheria-window-body {
-  padding: 12px;
+  padding: 16px;
   overflow: auto;
   flex: 1;
 }
 .aetheria-window-close {
-  width: 22px;
-  height: 22px;
-  background: #4a0a0a;
-  border: 1px solid #dc2626;
-  color: #fff;
-  border-radius: 4px;
-  font-size: 14px;
+  width: 24px;
+  height: 24px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: var(--neon-rose);
+  border-radius: var(--r-sm);
+  font-size: 16px;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s;
 }
 .aetheria-window-close:hover {
-  background: #dc2626;
+  background: rgba(239, 68, 68, 0.35);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
 }
 
+/* ============================================
+   Utility classes
+   ============================================ */
 .flex { display: flex; }
 .flex-col { display: flex; flex-direction: column; }
 .flex-1 { flex: 1; }
@@ -196,12 +310,12 @@ input {
 .text-center { text-align: center; }
 .text-sm { font-size: 13px; }
 .text-xs { font-size: 11px; }
-.text-gold { color: var(--color-gold-bright); }
-.text-dim { color: var(--color-text-dim); }
-.text-red { color: #f87171; }
-.text-green { color: #4ade80; }
-.text-blue { color: #60a5fa; }
-.text-purple { color: #c084fc; }
+.text-gold { color: var(--neon-gold-bright); }
+.text-dim { color: var(--text-muted); }
+.text-red { color: var(--neon-rose); }
+.text-green { color: var(--neon-emerald); }
+.text-blue { color: var(--neon-cyan); }
+.text-purple { color: var(--neon-violet); }
 .font-bold { font-weight: 700; }
 .mt-1 { margin-top: 4px; }
 .mt-2 { margin-top: 8px; }
@@ -209,3 +323,26 @@ input {
 .mb-2 { margin-bottom: 8px; }
 .p-2 { padding: 8px; }
 .w-full { width: 100%; }
+
+/* ============================================
+   Shared animations
+   ============================================ */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px currentColor; }
+  50% { box-shadow: 0 0 24px currentColor, 0 0 40px currentColor; }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
