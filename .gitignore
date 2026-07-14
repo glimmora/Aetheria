@@ -1,2 +1,9 @@
 skills/
-node_modules/
+**/node_modules/
+**/dist/
+/data/
+server/data/
+server/.env
+client/.env
+.env
+*.log
