@@ -6,10 +6,15 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'aetheria-dev-secret-change-me-in-production'
-const JWT_EXPIRES_IN = '7d'
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'
+const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 10
+
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('[SECURITY] WARNING: JWT_SECRET not set! Using insecure default. Set JWT_SECRET in .env')
+}
 
 export async function hashPassword(plain) {
-  return bcrypt.hash(plain, 10)
+  return bcrypt.hash(plain, BCRYPT_ROUNDS)
 }
 
 export async function verifyPassword(plain, hash) {

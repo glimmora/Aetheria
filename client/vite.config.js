@@ -4,21 +4,23 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0',
-    port: 5173,
+    host: process.env.VITE_DEV_HOST || '0.0.0.0',
+    port: parseInt(process.env.VITE_DEV_PORT) || 5173,
     strictPort: false,
     proxy: {
-      '/api': 'http://localhost:4000',
-      '/socket.io': { target: 'http://localhost:4000', ws: true },
+      '/api': `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 4000}`,
+      '/socket.io': {
+        target: `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 4000}`,
+        ws: true,
+      },
     },
   },
   preview: {
-    host: '0.0.0.0',
-    port: 4173,
+    host: process.env.VITE_DEV_HOST || '0.0.0.0',
+    port: parseInt(process.env.VITE_PREVIEW_PORT) || 4173,
   },
   resolve: {
     alias: {
-      // Client can import shared data via the same `shared/` folder at root
       shared: '/home/z/my-project/shared',
     },
   },

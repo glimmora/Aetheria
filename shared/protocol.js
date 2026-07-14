@@ -64,25 +64,48 @@ export const CLIENT_EVENTS = {
   DISCONNECT: 'disconnect',
 }
 
-export const TICK_RATE_HZ = 10
+export const TICK_RATE_HZ = parseInt(process.env.TICK_RATE_HZ) || 10
 export const TICK_INTERVAL_MS = 1000 / TICK_RATE_HZ
 
-// Constants shared with client
+// Constants shared with client — all env-configurable
+function envInt(name, def) {
+  const v = process.env[name]
+  if (v === undefined || v === '') return def
+  const n = parseInt(v)
+  return Number.isFinite(n) ? n : def
+}
+
 export const CONFIG = {
-  MOVE_COOLDOWN_MS: 140,
-  ATTACK_COOLDOWN_MS: 700,
-  RESPAWN_HP_PENALTY_GOLD_PCT: 10,
-  AUTOSAVE_INTERVAL_MS: 30000,
-  MAX_INVENTORY_SLOTS: 60,
-  STARTING_GOLD: 50,
-  CHAT_MAX_LENGTH: 200,
-  CHAT_COOLDOWN_MS: 1000,
-  MAX_CHARACTERS_PER_ACCOUNT: 5,
-  AUTH_RATE_LIMIT_PER_15MIN: 20,    // per IP
-  AUTH_RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000,
-  GENERAL_RATE_LIMIT_PER_MIN: 120,  // per IP for non-auth endpoints
-  LEADERBOARD_SIZE: 50,
-  SESSION_TIMEOUT_MS: 5 * 60 * 1000, // reserved for future AFK handling
+  // Gameplay
+  MOVE_COOLDOWN_MS: envInt('MOVE_COOLDOWN_MS', 140),
+  ATTACK_COOLDOWN_MS: envInt('ATTACK_COOLDOWN_MS', 700),
+  RESPAWN_HP_PENALTY_GOLD_PCT: envInt('RESPAWN_HP_PENALTY_GOLD_PCT', 10),
+  MAX_INVENTORY_SLOTS: envInt('MAX_INVENTORY_SLOTS', 60),
+  STARTING_GOLD: envInt('STARTING_GOLD', 50),
+
+  // Chat
+  CHAT_MAX_LENGTH: envInt('CHAT_MAX_LENGTH', 200),
+  CHAT_COOLDOWN_MS: envInt('CHAT_COOLDOWN_MS', 1000),
+
+  // Account
+  MAX_CHARACTERS_PER_ACCOUNT: envInt('MAX_CHARACTERS_PER_ACCOUNT', 5),
+
+  // Rate limits
+  AUTH_RATE_LIMIT_PER_15MIN: envInt('AUTH_RATE_LIMIT_PER_15MIN', 20),
+  AUTH_RATE_LIMIT_WINDOW_MS: envInt('AUTH_RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000),
+  GENERAL_RATE_LIMIT_PER_MIN: envInt('GENERAL_RATE_LIMIT_PER_MIN', 120),
+
+  // Server ops
+  AUTOSAVE_INTERVAL_MS: envInt('AUTOSAVE_INTERVAL_MS', 30000),
+  LEADERBOARD_SIZE: envInt('LEADERBOARD_SIZE', 50),
+  SESSION_TIMEOUT_MS: envInt('SESSION_TIMEOUT_MS', 5 * 60 * 1000),
+  ONLINE_BROADCAST_INTERVAL_MS: envInt('ONLINE_BROADCAST_INTERVAL_MS', 5000),
+  STALE_SESSION_CLEANUP_INTERVAL_MS: envInt('STALE_SESSION_CLEANUP_INTERVAL_MS', 60000),
+
+  // Monster respawns
+  MONSTER_RESPAWN_MIN_MS: envInt('MONSTER_RESPAWN_MIN_MS', 60000),
+  MONSTER_RESPAWN_MAX_MS: envInt('MONSTER_RESPAWN_MAX_MS', 120000),
+  BOSS_RESPAWN_MS: envInt('BOSS_RESPAWN_MS', 120000),
 }
 
 export function ok(payload) { return { ok: true, ...payload } }

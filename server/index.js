@@ -12,7 +12,7 @@ import { Server as SocketIOServer } from 'socket.io'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
-import { SERVER_EVENTS, CLIENT_EVENTS, TICK_INTERVAL_MS, CONFIG } from '../shared/protocol.js'
+import { SERVER_EVENTS, CLIENT_EVENTS, TICK_RATE_HZ, TICK_INTERVAL_MS, CONFIG } from '../shared/protocol.js'
 import { World } from './world.js'
 import * as db from './db.js'
 import {
@@ -24,18 +24,28 @@ import { ISLAND_DEFS } from '../shared/islands.js'
 import { getSuspiciousLog } from './security.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const PORT = process.env.PORT || 4000
+const PORT = parseInt(process.env.PORT) || 4000
+const HOST = process.env.HOST || '0.0.0.0'
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+const CLIENT_ORIGIN_PRODUCTION = process.env.CLIENT_ORIGIN // explicit, no fallback in prod
+const BODY_LIMIT = process.env.BODY_LIMIT || '64kb'
+const PING_INTERVAL = parseInt(process.env.SOCKET_PING_INTERVAL) || 10000
+const PING_TIMEOUT = parseInt(process.env.SOCKET_PING_TIMEOUT) || 5000
 
 const app = express()
-app.use(cors({ origin: true, credentials: true }))
-app.use(express.json({ limit: '64kb' }))
+// CORS: in production, set CLIENT_ORIGIN to your exact domain for security.
+// In dev, allow any origin for convenience (Vite dev server, mobile, etc.)
+const corsOrigin = process.env.NODE_ENV === 'production'
+  ? (CLIENT_ORIGIN_PRODUCTION || false)
+  : true
+app.use(cors({ origin: corsOrigin, credentials: true }))
+app.use(express.json({ limit: BODY_LIMIT }))
 
 const httpServer = http.createServer(app)
 const io = new SocketIOServer(httpServer, {
-  cors: { origin: '*', methods: ['GET', 'POST'] },
-  pingInterval: 10000,
-  pingTimeout: 5000,
+  cors: { origin: corsOrigin, methods: ['GET', 'POST'] },
+  pingInterval: PING_INTERVAL,
+  pingTimeout: PING_TIMEOUT,
 })
 
 const world = new World()
@@ -419,7 +429,7 @@ setInterval(() => {
   }
 }, CONFIG.AUTOSAVE_INTERVAL_MS)
 
-// ---- Periodic online players broadcast (every 5s) ----
+// ---- Periodic online players broadcast ----
 setInterval(() => {
   if (world.sessions.size === 0) return
   const list = world.getOnlinePlayersList()
@@ -428,17 +438,18 @@ setInterval(() => {
       session.socket.emit(SERVER_EVENTS.ONLINE_PLAYERS, { players: list })
     }
   }
-}, 5000)
+}, CONFIG.ONLINE_BROADCAST_INTERVAL_MS)
 
 // ---- Init ----
 await db.loadAll()
-httpServer.listen(PORT, () => {
-  console.log(`\n  ⚔️  Aetheria Server running on http://localhost:${PORT}`)
-  console.log(`  🌐  CORS origin: ${CLIENT_ORIGIN}`)
-  console.log(`  ⏱   Tick rate: ${1000 / TICK_INTERVAL_MS} Hz`)
+httpServer.listen(PORT, HOST, () => {
+  console.log(`\n  ⚔️  Aetheria Server running on http://${HOST}:${PORT}`)
+  console.log(`  🌐  CORS origin: ${typeof corsOrigin === 'string' ? corsOrigin : (corsOrigin ? 'any (dev)' : 'disabled')}`)
+  console.log(`  ⏱   Tick rate: ${TICK_RATE_HZ} Hz`)
   console.log(`  💾  Autosave: every ${CONFIG.AUTOSAVE_INTERVAL_MS / 1000}s`)
   console.log(`  🛡   Rate limits: auth=${CONFIG.AUTH_RATE_LIMIT_PER_15MIN}/15min, general=${CONFIG.GENERAL_RATE_LIMIT_PER_MIN}/min`)
-  console.log(`  👤  Max characters per account: ${CONFIG.MAX_CHARACTERS_PER_ACCOUNT}\n`)
+  console.log(`  👤  Max characters per account: ${CONFIG.MAX_CHARACTERS_PER_ACCOUNT}`)
+  console.log(`  🔧  NODE_ENV: ${process.env.NODE_ENV || 'development'}\n`)
 })
 
 // graceful shutdown
@@ -473,11 +484,10 @@ io.engine.on('connection_error', (err) => {
 
 // ---- Periodic cleanup: remove stale sessions (safety net) ----
 setInterval(() => {
-  const now = Date.now()
   for (const [socketId, session] of world.sessions.entries()) {
     if (!session.socket || !session.socket.connected) {
       console.log(`[cleanup] Removing stale session ${socketId}`)
       world.removeSession(socketId)
     }
   }
-}, 60000) // every 60 seconds
+}, CONFIG.STALE_SESSION_CLEANUP_INTERVAL_MS)

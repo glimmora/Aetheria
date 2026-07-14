@@ -619,7 +619,9 @@ export class World {
     // schedule respawn (capture islandId to avoid stale reference)
     const islandId = island.islandId
     const monsterDefId = monster.defId
-    const respawnMs = monster.boss ? 120000 : 60000 + Math.random() * 60000
+    const respawnMs = monster.boss
+      ? CONFIG.BOSS_RESPAWN_MS
+      : CONFIG.MONSTER_RESPAWN_MIN_MS + Math.random() * (CONFIG.MONSTER_RESPAWN_MAX_MS - CONFIG.MONSTER_RESPAWN_MIN_MS)
     setTimeout(() => {
       const isl = this.islands.get(islandId)
       if (isl && isl.players.size > 0) {
