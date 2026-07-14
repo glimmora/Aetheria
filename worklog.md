@@ -48,3 +48,53 @@ Stage Summary:
 - Dev server: http://localhost:3000
 - Production build: /home/z/my-project/dist/
 - Smoke test: 72/72 passing
+
+---
+Task ID: 2
+Agent: Main (Super Z)
+Task: Implement Skenario B - convert Aetheria from single-player client-only to full multiplayer client-server architecture
+
+Work Log:
+- Restructured project into 3 folders:
+  * client/ — React 18 + Vite frontend (moved all UI code here)
+  * server/ — Node.js + Express + Socket.io backend (new)
+  * shared/ — game data + protocol (moved data/ and systems/ here, single source of truth for both sides)
+- Created shared/protocol.js defining all socket event names and config constants
+- Merged systems/quests.js logic into shared/quests.js (QUEST_STATUS, acceptQuest, turnInQuest, etc.)
+- Fixed all shared/ internal imports to use relative paths (./ instead of ../data/ and ../systems/)
+- Fixed all client/ imports to reach shared/ via ../../../../shared/ (4 levels up from components/ui/)
+- Built server:
+  * db.js — JSON-file persistence layer for users and characters (swappable for Postgres/Mongo)
+  * auth.js — bcrypt password hashing + JWT token sign/verify + input validators
+  * world.js — authoritative game engine: IslandInstance (map, monsters, players, AI tick),
+    World (manages all islands, sessions, player actions: move/attack/skill/equip/buy/sell/
+    accept-quest/turn-in-quest/travel/chat/respawn)
+  * index.js — Express HTTP routes (/api/register, /api/login, /api/characters, /health)
+    + Socket.io server with JWT auth middleware + 10 Hz game tick loop + 30s autosave
+- Built client networking hook (useGame.js): manages socket connection, auth flow,
+  receives state:sync / player:update / monster:spawn/update/despawn / player:joined/left/moved
+  / fx:floating / log:combat / notify / player:death/respawn/levelup / chat events
+- Created AuthScreen (login/register with tabbed UI) and CharSelectScreen (list/create/delete chars)
+- Created ChatBox component for island-local chat
+- Refactored GameScreen to consume server-authoritative state (no more local useGameState)
+- Updated TileMap to receive map as prop (instead of generating it client-side) and render otherPlayers
+- Removed obsolete MainMenu.jsx, CharacterCreation.jsx, useGameState.js, save.js (replaced by JWT auth)
+- Updated vite.config.js with proxy /api → 4000 and /socket.io → 4000 (ws)
+- Updated .gitignore to exclude /data/ (server runtime data)
+- Wrote comprehensive README.md describing architecture, quickstart, controls, islands, tests, protocol
+- Added scripts: fix-imports.sh (one-time fix), e2e-test.js (19 multiplayer end-to-end checks)
+- Updated smoke-test.js to import from shared/ instead of src/data/ and src/systems/
+- Installed deps: socket.io, socket.io-client, express, cors, bcryptjs, jsonwebtoken, dotenv, concurrently
+- All tests passing: 50/50 smoke + 19/19 E2E
+- Committed and pushed to GitHub (commit 36b7eb2)
+
+Stage Summary:
+- Architecture: server-authoritative multiplayer over WebSocket
+- Server: Node 24, Express 4, Socket.io 4, 10 Hz tick, JSON file DB, JWT auth
+- Client: React 18, Vite 5, socket.io-client
+- Shared: 9 files (classes, items, monsters, islands, quests, tiles, islandGenerator, combat, inventory, protocol)
+- Real-time features: see other players on same island, island-local chat, synchronized monster AI
+- Auth: register/login with bcrypt + JWT (7-day tokens), character persistence across sessions
+- Tests: 50 smoke + 19 E2E = 69 automated checks, all passing
+- Pushed to: https://github.com/glimmora/Aetheria (commit 36b7eb2)
+- Running: server on :4000, client on :5173
