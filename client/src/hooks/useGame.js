@@ -124,8 +124,15 @@ export function useGame() {
     })
     sock.on('disconnect', (reason) => {
       setConnectionState('disconnected')
+      // Clear pathfinding on disconnect
+      if (pathTimerRef.current) {
+        clearInterval(pathTimerRef.current)
+        pathTimerRef.current = null
+      }
+      pathQueueRef.current = []
+      setPathTarget(null)
       if (reason === 'io server disconnect') {
-        // server kicked us — don't auto-reconnect
+        // server kicked us — socket.io won't auto-reconnect; show kick screen
       }
     })
     sock.on('reconnect', () => {
@@ -268,13 +275,19 @@ export function useGame() {
   }, [token, notify])
 
   // ---- Auth actions ----
-  const register = useCallback((uname, password) => {
+  const register = useCallback(async (uname, password) => {
     setAuthError(null)
-    fetch(`${SERVER_URL}/api/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: uname, password }),
-    }).then(r => r.json()).then(data => {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+      const r = await fetch(`${SERVER_URL}/api/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: uname, password }),
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+      const data = await r.json()
       if (data.ok) {
         localStorage.setItem('aetheria_token', data.token)
         setToken(data.token)
@@ -282,18 +295,27 @@ export function useGame() {
         setScreen('char_select')
         socketRef.current?.emit(CLIENT_EVENTS.CHARACTER_LIST)
       } else {
-        setAuthError(data.error)
+        setAuthError(data.error || 'Registration failed')
       }
-    }).catch(e => setAuthError(e.message || 'Network error'))
+    } catch (e) {
+      if (e.name === 'AbortError') setAuthError('Request timed out. Check your connection.')
+      else setAuthError('Network error. Is the server running?')
+    }
   }, [])
 
-  const login = useCallback((uname, password) => {
+  const login = useCallback(async (uname, password) => {
     setAuthError(null)
-    fetch(`${SERVER_URL}/api/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: uname, password }),
-    }).then(r => r.json()).then(data => {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+      const r = await fetch(`${SERVER_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: uname, password }),
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+      const data = await r.json()
       if (data.ok) {
         localStorage.setItem('aetheria_token', data.token)
         setToken(data.token)
@@ -301,9 +323,12 @@ export function useGame() {
         setScreen('char_select')
         socketRef.current?.emit(CLIENT_EVENTS.CHARACTER_LIST)
       } else {
-        setAuthError(data.error)
+        setAuthError(data.error || 'Login failed')
       }
-    }).catch(e => setAuthError(e.message || 'Network error'))
+    } catch (e) {
+      if (e.name === 'AbortError') setAuthError('Request timed out. Check your connection.')
+      else setAuthError('Network error. Is the server running?')
+    }
   }, [])
 
   const logout = useCallback(() => {

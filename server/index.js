@@ -182,8 +182,19 @@ io.on('connection', (socket) => {
   console.log(`[socket] ${socket.userPayload.username} connected (${socket.id})`)
   socket.emit(SERVER_EVENTS.WELCOME, { username: socket.userPayload.username })
 
+  // Wrapper: catch errors in handlers so one bad event doesn't crash the server
+  function safeHandler(fn) {
+    return (...args) => {
+      try { fn(...args) }
+      catch (e) {
+        console.error(`[socket] Handler error from ${socket.id}:`, e.message)
+        try { socket.emit(SERVER_EVENTS.ERROR, { message: 'Internal server error' }) } catch {}
+      }
+    }
+  }
+
   // ---- Character list ----
-  socket.on(CLIENT_EVENTS.CHARACTER_LIST, () => {
+  socket.on(CLIENT_EVENTS.CHARACTER_LIST, safeHandler(() => {
     if (!generalLimiter.check(socket.id)) {
       socket.emit(SERVER_EVENTS.ERROR, { message: 'Too many requests. Slow down.' })
       return
@@ -195,7 +206,7 @@ io.on('connection', (socket) => {
       })),
       maxCharacters: CONFIG.MAX_CHARACTERS_PER_ACCOUNT,
     })
-  })
+  }))
 
   // ---- Character create ----
   socket.on(CLIENT_EVENTS.CHARACTER_CREATE, (data = {}) => {
@@ -430,3 +441,32 @@ async function shutdown(signal) {
 }
 process.on('SIGINT', () => shutdown('SIGINT'))
 process.on('SIGTERM', () => shutdown('SIGTERM'))
+
+// ---- Global error handlers: prevent crashes from unhandled errors ----
+process.on('uncaughtException', (err) => {
+  console.error('[server] UNCAUGHT EXCEPTION:', err.message)
+  console.error(err.stack)
+  // Don't exit — try to keep serving. Log the error and continue.
+  // In production, you may want to exit + restart via PM2.
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[server] UNHANDLED REJECTION:', reason)
+  // Don't exit — log and continue
+})
+
+// ---- Socket.io server-level error handling ----
+io.engine.on('connection_error', (err) => {
+  console.error('[socket.io] Connection error:', err.message)
+})
+
+// ---- Periodic cleanup: remove stale sessions (safety net) ----
+setInterval(() => {
+  const now = Date.now()
+  for (const [socketId, session] of world.sessions.entries()) {
+    if (!session.socket || !session.socket.connected) {
+      console.log(`[cleanup] Removing stale session ${socketId}`)
+      world.removeSession(socketId)
+    }
+  }
+}, 60000) // every 60 seconds

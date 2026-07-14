@@ -135,7 +135,7 @@ class IslandInstance {
     for (const p of this.players.values()) {
       if (p.socketId === exceptSocketId) continue
       if (p.socket && p.socket.connected) {
-        p.socket.emit(event, data)
+        try { p.socket.emit(event, data) } catch (e) { /* socket may have died */ }
       }
     }
   }
@@ -143,7 +143,7 @@ class IslandInstance {
   sendTo(socketId, event, data) {
     const p = this.players.get(socketId)
     if (p && p.socket && p.socket.connected) {
-      p.socket.emit(event, data)
+      try { p.socket.emit(event, data) } catch (e) { /* socket may have died */ }
     }
   }
 
@@ -345,7 +345,7 @@ export class World {
     const islandState = island.addPlayer(session)
     island.players.set(session.socketId, session)
     // send full state to the joining player
-    session.socket.emit('state:sync', {
+    this.safeEmit(session.socket, 'state:sync', {
       islandId,
       islandDef: {
         id: island.def.id, name: island.def.name, subtitle: island.def.subtitle,
@@ -381,7 +381,7 @@ export class World {
     const nx = c.x + dx, ny = c.y + dy
     if (island.isPositionBlocked(nx, ny, session.socketId)) {
       c.facing = facing
-      session.socket.emit('player:update', { ...island.serializePlayerSelf(session), onlyFacing: true })
+      this.safeEmit(session.socket, 'player:update', { ...island.serializePlayerSelf(session), onlyFacing: true })
       return
     }
     // Check if a monster is on the target tile — if so, attack instead
@@ -401,7 +401,7 @@ export class World {
     // check NPC interaction (auto-trigger dialog if walked into NPC)
     const npc = island.npcs.find(n => n.x === nx && n.y === ny)
     if (npc) {
-      session.socket.emit('npc:nearby', { npc })
+      this.safeEmit(session.socket, 'npc:nearby', { npc })
     }
   }
 
@@ -421,6 +421,8 @@ export class World {
     if (now - session.lastAttack < CONFIG.ATTACK_COOLDOWN_MS) return
     const c = session.character
     if (c.hp <= 0) return
+    // Guard: monster may have died between request and processing
+    if (!island.monsters.has(monster.id) || monster.hp <= 0) return
     const stats = computePlayerStats(c)
     const attackSpeedMs = Math.max(400, 900 - stats.speed * 15)
     if (now - session.lastAttack < attackSpeedMs) return
@@ -430,13 +432,13 @@ export class World {
     const weaponDef = weapon?.id ? getItem(weapon.id) : null
     const range = weaponDef?.class === 'ranger' ? 6 : (weaponDef?.class === 'mage' ? 6 : (weaponDef?.class === 'healer' ? 5 : 1))
     if (dx + dy > range) {
-      session.socket.emit('notify', { msg: 'Too far to attack!' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Too far to attack!' })
       return
     }
     session.lastAttack = now
     c.facing = monster.x < c.x ? 'left' : (monster.x > c.x ? 'right' : c.facing)
     const result = calculateBasicAttackDamage(c, monster)
-    monster.hp -= result.damage
+    monster.hp = Math.max(0, monster.hp - result.damage)
     monster.aggro = true
     monster.targetSocketId = session.socketId
     // fx
@@ -445,7 +447,7 @@ export class World {
       text: `-${result.damage}${result.crit ? '!' : ''}`,
       color: result.crit ? '#fbbf24' : '#f87171', kind: 'damage'
     })
-    session.socket.emit('log:combat', {
+    this.safeEmit(session.socket, 'log:combat', {
       msg: `You hit ${monster.name} for ${result.damage}${result.crit ? ' (CRIT)' : ''}.`,
       type: 'player'
     })
@@ -464,11 +466,11 @@ export class World {
     if (!skill) return
     const now = Date.now()
     if (session.skillCooldowns[skillId] && now - session.skillCooldowns[skillId] < skill.cooldown) {
-      session.socket.emit('notify', { msg: `${skill.name} is on cooldown.` })
+      this.safeEmit(session.socket, 'notify', { msg: `${skill.name} is on cooldown.` })
       return
     }
     if (c.mp < skill.manaCost) {
-      session.socket.emit('notify', { msg: 'Not enough mana!' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Not enough mana!' })
       return
     }
     const island = this.islands.get(c.currentIsland)
@@ -480,14 +482,14 @@ export class World {
       const heal = Math.floor(stats.magic * skill.healMultiplier)
       c.hp = Math.min(c.maxHp, c.hp + heal)
       island.broadcast('fx:floating', { x: c.x, y: c.y, text: `+${heal}`, color: '#4ade80', kind: 'heal' })
-      session.socket.emit('log:combat', { msg: `You cast ${skill.name} and heal ${heal} HP.`, type: 'player' })
-      session.socket.emit('player:update', island.serializePlayerSelf(session))
+      this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name} and heal ${heal} HP.`, type: 'player' })
+      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
       return
     }
     if (skill.buff) {
       c.buffs = [...(c.buffs || []), { ...skill.buff, startTime: now, skillId }]
-      session.socket.emit('log:combat', { msg: `You cast ${skill.name}.`, type: 'player' })
-      session.socket.emit('player:update', island.serializePlayerSelf(session))
+      this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name}.`, type: 'player' })
+      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
       return
     }
     // offensive skill
@@ -500,7 +502,7 @@ export class World {
         if (d < nearestDist && d <= 6) { nearestDist = d; nearest = m }
       }
       if (!nearest) {
-        session.socket.emit('notify', { msg: 'No target!' })
+        this.safeEmit(session.socket, 'notify', { msg: 'No target!' })
         // refund MP
         c.mp += skill.manaCost
         delete session.skillCooldowns[skillId]
@@ -510,13 +512,13 @@ export class World {
     }
     const monster = island.monsters.get(targetMonsterId)
     if (!monster || monster.hp <= 0) {
-      session.socket.emit('notify', { msg: 'Invalid target.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Invalid target.' })
       c.mp += skill.manaCost
       delete session.skillCooldowns[skillId]
       return
     }
     const result = calculateSkillDamage(c, monster, skillId)
-    monster.hp -= result.damage
+    monster.hp = Math.max(0, monster.hp - result.damage)
     monster.aggro = true
     monster.targetSocketId = session.socketId
     island.broadcast('fx:floating', {
@@ -524,16 +526,18 @@ export class World {
       text: `-${result.damage}${result.crit ? '!' : ''}✦`,
       color: result.crit ? '#fbbf24' : '#c084fc', kind: 'damage'
     })
-    session.socket.emit('log:combat', { msg: `You cast ${skill.name} on ${monster.name} for ${result.damage}.`, type: 'player' })
+    this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name} on ${monster.name} for ${result.damage}.`, type: 'player' })
     if (monster.hp <= 0) {
       this.handleMonsterDeath(session, monster, island)
     } else {
       island.broadcast('monster:update', [{ id: monster.id, x: monster.x, y: monster.y, hp: monster.hp, aggro: true }])
     }
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
   }
 
   handleMonsterDeath(session, monster, island) {
+    // Guard: prevent double-kill (monster already removed by a concurrent attack)
+    if (!island.monsters.has(monster.id)) return
     island.monsters.delete(monster.id)
     island.broadcast('monster:despawn', { id: monster.id })
     // XP, gold, drops
@@ -548,35 +552,51 @@ export class World {
       if (drop.id === 'gold_coin') {
         goldGained += drop.qty
       } else {
+        // Enforce inventory limit
+        if (c.inventory.length >= CONFIG.MAX_INVENTORY_SLOTS) {
+          this.safeEmit(session.socket, 'notify', { msg: 'Inventory full! Drop lost.' })
+          break
+        }
         c.inventory = addItemToInventory(c.inventory, drop.id, drop.qty)
         const def = getItem(drop.id)
-        session.socket.emit('notify', { msg: `Looted: ${def?.icon || ''} ${def?.name || drop.id} x${drop.qty}` })
+        this.safeEmit(session.socket, 'notify', { msg: `Looted: ${def?.icon || ''} ${def?.name || drop.id} x${drop.qty}` })
       }
     }
-    if (goldGained > 0) c.gold += goldGained
+    if (goldGained > 0) c.gold = Math.max(0, c.gold + goldGained)
     const xpResult = applyXp(c, monster.xp)
-    session.socket.emit('fx:floating', { x: monster.x, y: monster.y, text: `+${monster.xp} XP`, color: '#22d3ee', kind: 'xp' })
-    session.socket.emit('log:combat', {
+    this.safeEmit(session.socket, 'fx:floating', { x: monster.x, y: monster.y, text: `+${monster.xp} XP`, color: '#22d3ee', kind: 'xp' })
+    this.safeEmit(session.socket, 'log:combat', {
       msg: `You slain ${monster.name}! +${monster.xp} XP${goldGained ? `, +${goldGained} gold` : ''}.`,
       type: 'kill'
     })
     if (xpResult.leveledUp) {
-      session.socket.emit('player:levelup', { level: c.level })
-      session.socket.emit('notify', { msg: `Level Up! You are now level ${c.level}!` })
-      session.socket.emit('fx:floating', { x: c.x, y: c.y, text: 'LEVEL UP!', color: '#fde047', kind: 'levelup' })
-      session.socket.emit('log:combat', { msg: `Level up! You are now level ${c.level}!`, type: 'system' })
+      this.safeEmit(session.socket, 'player:levelup', { level: c.level })
+      this.safeEmit(session.socket, 'notify', { msg: `Level Up! You are now level ${c.level}!` })
+      this.safeEmit(session.socket, 'fx:floating', { x: c.x, y: c.y, text: 'LEVEL UP!', color: '#fde047', kind: 'levelup' })
+      this.safeEmit(session.socket, 'log:combat', { msg: `Level up! You are now level ${c.level}!`, type: 'system' })
     }
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     // check quest completion
     this.checkQuests(session, island)
-    // schedule respawn
+    // schedule respawn (capture islandId to avoid stale reference)
+    const islandId = island.islandId
+    const monsterDefId = monster.defId
     const respawnMs = monster.boss ? 120000 : 60000 + Math.random() * 60000
     setTimeout(() => {
-      if (island.players.size > 0) {
-        island.spawnMonster(monster.defId)
+      const isl = this.islands.get(islandId)
+      if (isl && isl.players.size > 0) {
+        isl.spawnMonster(monsterDefId)
       }
     }, respawnMs)
     saveCharacter(c)
+  }
+
+  // Safe socket emit — catches errors if socket disconnected mid-operation
+  safeEmit(socket, event, data) {
+    if (!socket || !socket.connected) return
+    try { socket.emit(event, data) } catch (e) {
+      // Socket may have been destroyed between check and emit
+    }
   }
 
   rollDrops(monster) {
@@ -595,12 +615,14 @@ export class World {
 
   handlePlayerDeath(session) {
     const c = session.character
-    const goldLost = Math.floor(c.gold * CONFIG.RESPAWN_HP_PENALTY_GOLD_PCT / 100)
-    c.gold -= goldLost
+    if (c.hp > 0) return // not actually dead, ignore
+    const goldLost = Math.min(c.gold, Math.floor(c.gold * CONFIG.RESPAWN_HP_PENALTY_GOLD_PCT / 100))
+    c.gold = Math.max(0, c.gold - goldLost)
     c.hp = 0
-    session.socket.emit('player:death', { goldLost })
-    session.socket.emit('log:combat', { msg: `You died! Lost ${goldLost} gold.`, type: 'death' })
-    session.socket.emit('player:update', this.islands.get(c.currentIsland)?.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'player:death', { goldLost })
+    this.safeEmit(session.socket, 'log:combat', { msg: `You died! Lost ${goldLost} gold.`, type: 'death' })
+    const island = this.islands.get(c.currentIsland)
+    this.safeEmit(session.socket, 'player:update', island?.serializePlayerSelf(session))
     saveCharacter(c)
   }
 
@@ -615,7 +637,7 @@ export class World {
     const island = this.islands.get(c.currentIsland)
     if (island) {
       island.broadcast('player:moved', island.serializePlayer(session))
-      session.socket.emit('player:respawn', island.serializePlayerSelf(session))
+      this.safeEmit(session.socket, 'player:respawn', island.serializePlayerSelf(session))
     }
     saveCharacter(c)
   }
@@ -628,8 +650,8 @@ export class World {
     c.equipment = result.player.equipment
     c.inventory = result.inventory
     const island = this.islands.get(c.currentIsland)
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
-    session.socket.emit('notify', { msg: `Equipped ${getItem(itemId)?.name}.` })
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'notify', { msg: `Equipped ${getItem(itemId)?.name}.` })
     saveCharacter(c)
   }
   playerUnequip(session, slot) {
@@ -638,7 +660,7 @@ export class World {
     c.equipment = result.player.equipment
     c.inventory = result.inventory
     const island = this.islands.get(c.currentIsland)
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     saveCharacter(c)
   }
   playerUseItem(session, itemId) {
@@ -646,8 +668,8 @@ export class World {
     const result = useConsumable(c, c.inventory, itemId)
     if (result.message) {
       const island = this.islands.get(c.currentIsland)
-      session.socket.emit('player:update', island.serializePlayerSelf(session))
-      session.socket.emit('notify', { msg: result.message })
+      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+      this.safeEmit(session.socket, 'notify', { msg: result.message })
       saveCharacter(c)
     }
   }
@@ -663,32 +685,32 @@ export class World {
     if (!entry) return
     const total = entry.price * qty
     if (c.gold < total) {
-      session.socket.emit('notify', { msg: 'Not enough gold!' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Not enough gold!' })
       return
     }
     const result = buyItem(c.inventory, c.gold, itemId, qty, entry.price)
     if (!result.success) {
-      session.socket.emit('notify', { msg: 'Purchase failed.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Purchase failed.' })
       return
     }
     c.inventory = result.inventory
     c.gold = result.gold
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
-    session.socket.emit('notify', { msg: `Bought ${qty}x ${getItem(itemId)?.name} for ${total} gold.` })
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'notify', { msg: `Bought ${qty}x ${getItem(itemId)?.name} for ${total} gold.` })
     saveCharacter(c)
   }
   playerSell(session, itemId, qty) {
     const c = session.character
     const result = sellItem(c.inventory, itemId, qty)
     if (result.gold === 0) {
-      session.socket.emit('notify', { msg: 'Cannot sell this item.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Cannot sell this item.' })
       return
     }
     c.inventory = result.inventory
     c.gold = (c.gold || 0) + result.gold
     const island = this.islands.get(c.currentIsland)
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
-    session.socket.emit('notify', { msg: `Sold ${qty}x ${getItem(itemId)?.name} for ${result.gold} gold.` })
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'notify', { msg: `Sold ${qty}x ${getItem(itemId)?.name} for ${result.gold} gold.` })
     saveCharacter(c)
   }
 
@@ -696,19 +718,19 @@ export class World {
   playerAcceptQuest(session, questId) {
     const c = session.character
     if (!canAcceptQuest(c, c.questProgress, questId)) {
-      session.socket.emit('notify', { msg: 'You cannot accept this quest yet.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'You cannot accept this quest yet.' })
       return
     }
     c.questProgress = acceptQuest(c.questProgress, questId)
-    session.socket.emit('notify', { msg: `Quest accepted: ${QUESTS[questId]?.title}` })
+    this.safeEmit(session.socket, 'notify', { msg: `Quest accepted: ${QUESTS[questId]?.title}` })
     const island = this.islands.get(c.currentIsland)
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     saveCharacter(c)
   }
   playerTurnInQuest(session, questId) {
     const c = session.character
     if (c.questProgress[questId] !== QUEST_STATUS.COMPLETE) {
-      session.socket.emit('notify', { msg: 'Quest not yet complete.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Quest not yet complete.' })
       return
     }
     const result = turnInQuest(c, c.inventory, c.questProgress, questId)
@@ -722,13 +744,13 @@ export class World {
       delete c.pendingXp
       const xpResult = applyXp(c, xp)
       if (xpResult.leveledUp) {
-        session.socket.emit('player:levelup', { level: c.level })
-        session.socket.emit('notify', { msg: `Level Up! You are now level ${c.level}!` })
+        this.safeEmit(session.socket, 'player:levelup', { level: c.level })
+        this.safeEmit(session.socket, 'notify', { msg: `Level Up! You are now level ${c.level}!` })
       }
     }
     const island = this.islands.get(c.currentIsland)
-    session.socket.emit('player:update', island.serializePlayerSelf(session))
-    session.socket.emit('notify', { msg: `Quest complete: ${QUESTS[questId]?.title}` })
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'notify', { msg: `Quest complete: ${QUESTS[questId]?.title}` })
     saveCharacter(c)
   }
 
@@ -738,9 +760,9 @@ export class World {
     if (result.newlyCompleted.length > 0) {
       c.questProgress = result.questProgress
       for (const qId of result.newlyCompleted) {
-        session.socket.emit('notify', { msg: `Quest Complete: ${QUESTS[qId].title}! Return to the quest giver.` })
+        this.safeEmit(session.socket, 'notify', { msg: `Quest Complete: ${QUESTS[qId].title}! Return to the quest giver.` })
       }
-      session.socket.emit('player:update', island.serializePlayerSelf(session))
+      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     }
   }
 
@@ -749,7 +771,7 @@ export class World {
     const c = session.character
     const def = ISLAND_DEFS[targetIslandId]
     if (!def) {
-      session.socket.emit('notify', { msg: 'Invalid destination.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'Invalid destination.' })
       return
     }
     // Validate: must be reachable from current island via a sailor NPC
@@ -771,11 +793,11 @@ export class World {
       }
     }
     if (!reachable) {
-      session.socket.emit('notify', { msg: 'You cannot travel there from this island.' })
+      this.safeEmit(session.socket, 'notify', { msg: 'You cannot travel there from this island.' })
       return
     }
     if (c.level < requiredLevel) {
-      session.socket.emit('notify', { msg: `You must be level ${requiredLevel} to travel to ${def.name}.` })
+      this.safeEmit(session.socket, 'notify', { msg: `You must be level ${requiredLevel} to travel to ${def.name}.` })
       return
     }
     // remove from current island
@@ -788,7 +810,7 @@ export class World {
     c.x = start.x; c.y = start.y
     c.hp = c.maxHp; c.mp = c.maxMp; c.buffs = []
     this.playerJoinIsland(session, targetIslandId)
-    session.socket.emit('notify', { msg: `Traveled to ${def.name}.` })
+    this.safeEmit(session.socket, 'notify', { msg: `Traveled to ${def.name}.` })
     saveCharacter(c)
   }
 
@@ -895,12 +917,12 @@ export class World {
   inspectPlayer(session, targetSocketId) {
     const target = this.sessions.get(targetSocketId)
     if (!target || !target.character) {
-      session.socket.emit(SERVER_EVENTS_ERROR_MSG, { message: 'Player not found.' })
+      this.safeEmit(session.socket, SERVER_EVENTS_ERROR_MSG, { message: 'Player not found.' })
       return
     }
     const c = target.character
     const stats = computePlayerStats(c)
-    session.socket.emit('player:inspect', {
+    this.safeEmit(session.socket, 'player:inspect', {
       id: target.socketId,
       name: c.name,
       class: c.class,
@@ -954,7 +976,7 @@ export class World {
       if (session.character && session.character.id === characterId) {
         // Kick the old session
         try {
-          session.socket.emit('kick', { reason: 'Your character logged in from another location.' })
+          this.safeEmit(session.socket, 'kick', { reason: 'Your character logged in from another location.' })
           session.socket.disconnect(true)
         } catch {}
         this.removeSession(socketId)

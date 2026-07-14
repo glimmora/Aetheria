@@ -63,14 +63,16 @@ export function calculateBasicAttackDamage(attacker, defender, rng = Math.random
   const weapon = attacker.equipment?.weapon
   const weaponDef = weapon?.id ? getItem(weapon.id) : null
   const element = weaponDef?.element || 'none'
-  const baseAttack = stats.attack
+  const baseAttack = Math.max(0, stats.attack || 0)
   const variance = 0.85 + rng() * 0.3
   let damage = baseAttack * variance
   // elemental multiplier
   const elemMult = getElementalMultiplier(element, defender.element || 'none')
   damage *= elemMult
   // defense reduction
-  damage = Math.max(1, damage - (defender.defense || 0) * 0.6)
+  damage = Math.max(1, damage - Math.max(0, defender.defense || 0) * 0.6)
+  // Guard against NaN/Infinity
+  if (!Number.isFinite(damage)) damage = 1
   return { damage: Math.floor(damage), element, crit: variance > 1.1 }
 }
 
