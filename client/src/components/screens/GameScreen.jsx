@@ -188,7 +188,7 @@ export default function GameScreen({ game }) {
       <ConnectionIndicator connectionState={connectionState} />
 
       {notification && (
-        <div className="notification-toast" key={notification.id}>
+        <div className={`notification-toast ${notification.leaving ? 'leaving' : ''}`} key={notification.id}>
           {notification.msg}
         </div>
       )}

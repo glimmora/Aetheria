@@ -1,7 +1,6 @@
 // ============================================================
 // Aetheria Client - Tile Map Renderer
-// Renders the visible portion of the island map + entities.
-// Now receives the map directly from the server's state sync.
+// Uses transform: translate3d() for GPU-accelerated movement.
 // ============================================================
 
 import React from 'react'
@@ -22,7 +21,7 @@ export default function TileMap({
   if (!map || !player) return null
   const w = map[0].length, h = map.length
 
-  // Camera: center on player
+  // Camera: center on player with smooth clamping
   const viewW = Math.min(25, w)
   const viewH = Math.min(17, h)
   let camX = player.x - Math.floor(viewW / 2)
@@ -42,8 +41,7 @@ export default function TileMap({
           key={`${x}-${y}`}
           className="tile"
           style={{
-            left: x * TILE_SIZE,
-            top: y * TILE_SIZE,
+            transform: `translate3d(${x * TILE_SIZE}px, ${y * TILE_SIZE}px, 0)`,
             width: TILE_SIZE,
             height: TILE_SIZE,
             background: info.color,
@@ -55,6 +53,12 @@ export default function TileMap({
       )
     }
   }
+
+  const entityStyle = (ex, ey) => ({
+    transform: `translate3d(${(ex - camX) * TILE_SIZE}px, ${(ey - camY) * TILE_SIZE}px, 0)`,
+    width: TILE_SIZE,
+    height: TILE_SIZE,
+  })
 
   const visibleMonsters = monsters.filter(m =>
     m.x >= camX && m.x < camX + viewW && m.y >= camY && m.y < camY + viewH
@@ -85,12 +89,7 @@ export default function TileMap({
         <div
           key={npc.id}
           className="entity npc"
-          style={{
-            left: (npc.x - camX) * TILE_SIZE,
-            top: (npc.y - camY) * TILE_SIZE,
-            width: TILE_SIZE,
-            height: TILE_SIZE,
-          }}
+          style={entityStyle(npc.x, npc.y)}
           onClick={(e) => { e.stopPropagation(); onTileClick(npc.x, npc.y) }}
           title={npc.name}
         >
@@ -107,12 +106,7 @@ export default function TileMap({
         <div
           key={m.id}
           className={`entity monster ${m.boss ? 'boss' : ''}`}
-          style={{
-            left: (m.x - camX) * TILE_SIZE,
-            top: (m.y - camY) * TILE_SIZE,
-            width: TILE_SIZE,
-            height: TILE_SIZE,
-          }}
+          style={entityStyle(m.x, m.y)}
           onClick={(e) => { e.stopPropagation(); onTileClick(m.x, m.y) }}
           title={`${m.name} (Lv ${m.level})`}
         >
@@ -131,12 +125,7 @@ export default function TileMap({
         <div
           key={p.id}
           className="entity other-player"
-          style={{
-            left: (p.x - camX) * TILE_SIZE,
-            top: (p.y - camY) * TILE_SIZE,
-            width: TILE_SIZE,
-            height: TILE_SIZE,
-          }}
+          style={entityStyle(p.x, p.y)}
           onClick={(e) => { e.stopPropagation(); onTileClick(p.x, p.y) }}
           title={`${p.name} (Lv ${p.level} ${p.classDef?.name || p.classId}) — click to inspect`}
         >
@@ -148,19 +137,14 @@ export default function TileMap({
               <div className="other-player-hp-fill" style={{ width: `${(p.hp / p.maxHp) * 100}%` }} />
             </div>
           )}
-          <div className="entity-name other-player-name">{p.name} <span style={{ color: '#a8a29e', fontSize: 9 }}>(Lv {p.level})</span></div>
+          <div className="entity-name other-player-name">{p.name} <span style={{ color: '#64748b', fontSize: 9 }}>(Lv {p.level})</span></div>
         </div>
       ))}
 
       {/* Player (self) */}
       <div
         className="entity player"
-        style={{
-          left: (player.x - camX) * TILE_SIZE,
-          top: (player.y - camY) * TILE_SIZE,
-          width: TILE_SIZE,
-          height: TILE_SIZE,
-        }}
+        style={entityStyle(player.x, player.y)}
       >
         <div className="entity-icon player-icon" style={{ background: player.classDef?.color || '#fde047' }}>
           {player.classDef?.icon || '★'}
@@ -174,8 +158,7 @@ export default function TileMap({
           key={f.id}
           className={`floating-text ${f.kind}`}
           style={{
-            left: (f.x - camX) * TILE_SIZE + TILE_SIZE / 2,
-            top: (f.y - camY) * TILE_SIZE,
+            transform: `translate3d(${(f.x - camX) * TILE_SIZE + TILE_SIZE / 2}px, ${(f.y - camY) * TILE_SIZE}px, 0)`,
             color: f.color,
           }}
         >

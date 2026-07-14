@@ -65,8 +65,12 @@ export function useGame() {
   const reconnectTimerRef = useRef(null)
 
   const notify = useCallback((msg, duration = 3500) => {
-    setNotification({ msg, id: Date.now() + Math.random() })
-    if (duration > 0) setTimeout(() => setNotification(null), duration)
+    setNotification({ msg, id: Date.now() + Math.random(), leaving: false })
+    if (duration > 0) {
+      // Start fade-out 300ms before removal
+      setTimeout(() => setNotification(prev => prev ? { ...prev, leaving: true } : null), duration - 300)
+      setTimeout(() => setNotification(null), duration)
+    }
   }, [])
 
   const updateSettings = useCallback((newSettings) => {
