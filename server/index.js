@@ -21,6 +21,7 @@ import {
 } from './auth.js'
 import { CLASSES } from '../shared/classes.js'
 import { ISLAND_DEFS } from '../shared/islands.js'
+import { getSuspiciousLog } from './security.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = process.env.PORT || 4000
@@ -87,6 +88,16 @@ app.get('/api/stats', (req, res) => {
     totalCharacters: db.getAllCharacters().length,
     totalUsers: db.getAllUsersCount(),
   })
+})
+
+// Security audit log (admin only — protected by JWT, could add role check)
+app.get('/api/security/audit', (req, res) => {
+  const auth = req.headers.authorization
+  if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'No token' })
+  const token = auth.slice(7)
+  const payload = verifyToken(token)
+  if (!payload) return res.status(401).json({ error: 'Invalid token' })
+  res.json({ ok: true, suspicious: getSuspiciousLog() })
 })
 
 app.get('/api/leaderboard', (req, res) => {

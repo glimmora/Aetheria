@@ -24,6 +24,12 @@ import { QUESTS } from '../shared/quests.js'
 import { CONFIG } from '../shared/protocol.js'
 import { saveCharacter, getCharacterByName, countCharactersByOwner, getAllCharacters } from './db.js'
 import { validateCharName } from './auth.js'
+import {
+  withLock, logSuspicious, validateMovement, validateAttackTarget,
+  validateSkillUse, validateEquip, validateNpcProximity, validateShopBuy,
+  validateShopSell, validateQuestAccept, validateQuestTurnIn, validateTravel,
+  validateRespawn, sanitizeChatMessage, validateUseItem,
+} from './security.js'
 
 class IslandInstance {
   constructor(islandId) {
@@ -364,56 +370,78 @@ export class World {
 
   playerMove(session, dx, dy) {
     if (!session) return
-    const now = Date.now()
-    if (now - session.lastMove < CONFIG.MOVE_COOLDOWN_MS) return
-    const c = session.character
-    if (c.hp <= 0) return
-    const island = this.islands.get(c.currentIsland)
-    if (!island) return
-    const stats = computePlayerStats(c)
-    const speedMs = Math.max(80, 200 - stats.speed * 8)
-    if (now - session.lastMove < speedMs) return
-    let facing = c.facing
-    if (dx < 0) facing = 'left'
-    else if (dx > 0) facing = 'right'
-    else if (dy < 0) facing = 'up'
-    else if (dy > 0) facing = 'down'
-    const nx = c.x + dx, ny = c.y + dy
-    if (island.isPositionBlocked(nx, ny, session.socketId)) {
-      c.facing = facing
-      this.safeEmit(session.socket, 'player:update', { ...island.serializePlayerSelf(session), onlyFacing: true })
+    // Validate movement input (anti-teleport: must be 1-tile cardinal)
+    if (!validateMovement(dx, dy)) {
+      logSuspicious(session.socketId, session.character?.name, 'move', `invalid dx=${dx} dy=${dy}`)
       return
     }
-    // Check if a monster is on the target tile — if so, attack instead
-    let attackingMonster = null
-    for (const m of island.monsters.values()) {
-      if (m.x === nx && m.y === ny && m.hp > 0) { attackingMonster = m; break }
-    }
-    if (attackingMonster) {
-      c.facing = facing
-      this.playerAttackMonster(session, attackingMonster, island)
-      return
-    }
-    c.x = nx; c.y = ny; c.facing = facing
-    session.lastMove = now
-    // broadcast movement to others on island
-    island.broadcast('player:moved', island.serializePlayer(session), session.socketId)
-    // check NPC interaction (auto-trigger dialog if walked into NPC)
-    const npc = island.npcs.find(n => n.x === nx && n.y === ny)
-    if (npc) {
-      this.safeEmit(session.socket, 'npc:nearby', { npc })
+    const result = withLock(session.socketId, () => {
+      const now = Date.now()
+      if (now - session.lastMove < CONFIG.MOVE_COOLDOWN_MS) return 'cooldown'
+      const c = session.character
+      if (c.hp <= 0) return 'dead'
+      const island = this.islands.get(c.currentIsland)
+      if (!island) return 'no-island'
+      const stats = computePlayerStats(c)
+      const speedMs = Math.max(80, 200 - stats.speed * 8)
+      if (now - session.lastMove < speedMs) return 'speed-cooldown'
+      let facing = c.facing
+      if (dx < 0) facing = 'left'
+      else if (dx > 0) facing = 'right'
+      else if (dy < 0) facing = 'up'
+      else if (dy > 0) facing = 'down'
+      const nx = c.x + dx, ny = c.y + dy
+      if (island.isPositionBlocked(nx, ny, session.socketId)) {
+        c.facing = facing
+        this.safeEmit(session.socket, 'player:update', { ...island.serializePlayerSelf(session), onlyFacing: true })
+        return 'blocked'
+      }
+      // Check if a monster is on the target tile — if so, attack instead
+      let attackingMonster = null
+      for (const m of island.monsters.values()) {
+        if (m.x === nx && m.y === ny && m.hp > 0) { attackingMonster = m; break }
+      }
+      if (attackingMonster) {
+        c.facing = facing
+        this.playerAttackMonster(session, attackingMonster, island)
+        return 'attacked'
+      }
+      c.x = nx; c.y = ny; c.facing = facing
+      session.lastMove = now
+      // broadcast movement to others on island
+      island.broadcast('player:moved', island.serializePlayer(session), session.socketId)
+      // check NPC interaction (auto-trigger dialog if walked into NPC)
+      const npc = island.npcs.find(n => n.x === nx && n.y === ny)
+      if (npc) {
+        this.safeEmit(session.socket, 'npc:nearby', { npc })
+      }
+      return 'moved'
+    })
+    if (result === null) {
+      // Action was locked — another action in progress
+      logSuspicious(session.socketId, session.character?.name, 'move', 'action lock conflict')
     }
   }
 
   playerAttack(session, monsterId) {
     if (!session) return
-    const c = session.character
-    if (c.hp <= 0) return
-    const island = this.islands.get(c.currentIsland)
-    if (!island) return
-    const monster = island.monsters.get(monsterId)
-    if (!monster || monster.hp <= 0) return
-    this.playerAttackMonster(session, monster, island)
+    const result = withLock(session.socketId, () => {
+      const c = session.character
+      if (c.hp <= 0) return
+      const island = this.islands.get(c.currentIsland)
+      if (!island) return
+      const monster = island.monsters.get(monsterId)
+      // Validate target (anti-cheat: must exist, be alive, be on this island)
+      const targetCheck = validateAttackTarget(session, monster, island)
+      if (!targetCheck.ok) {
+        logSuspicious(session.socketId, c.name, 'attack', `${targetCheck.reason}: ${monsterId}`)
+        return
+      }
+      this.playerAttackMonster(session, monster, island)
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, session.character?.name, 'attack', 'action lock conflict')
+    }
   }
 
   playerAttackMonster(session, monster, island) {
@@ -426,7 +454,7 @@ export class World {
     const stats = computePlayerStats(c)
     const attackSpeedMs = Math.max(400, 900 - stats.speed * 15)
     if (now - session.lastAttack < attackSpeedMs) return
-    // range check
+    // range check (anti-cheat: can't attack from across the map)
     const dx = Math.abs(c.x - monster.x), dy = Math.abs(c.y - monster.y)
     const weapon = c.equipment?.weapon
     const weaponDef = weapon?.id ? getItem(weapon.id) : null
@@ -460,79 +488,89 @@ export class World {
 
   playerUseSkill(session, skillId, targetMonsterId) {
     if (!session) return
-    const c = session.character
-    if (c.hp <= 0) return
-    const skill = SKILLS[skillId]
-    if (!skill) return
-    const now = Date.now()
-    if (session.skillCooldowns[skillId] && now - session.skillCooldowns[skillId] < skill.cooldown) {
-      this.safeEmit(session.socket, 'notify', { msg: `${skill.name} is on cooldown.` })
+    // Validate skill (anti-cheat: must belong to player's class, meet unlock level)
+    const skillCheck = validateSkillUse(session, skillId)
+    if (!skillCheck.ok) {
+      logSuspicious(session.socketId, session.character?.name, 'skill', `${skillCheck.reason}: ${skillId}`)
       return
     }
-    if (c.mp < skill.manaCost) {
-      this.safeEmit(session.socket, 'notify', { msg: 'Not enough mana!' })
-      return
-    }
-    const island = this.islands.get(c.currentIsland)
-    if (!island) return
-    c.mp -= skill.manaCost
-    session.skillCooldowns[skillId] = now
-    if (skill.healMultiplier) {
-      const stats = computePlayerStats(c)
-      const heal = Math.floor(stats.magic * skill.healMultiplier)
-      c.hp = Math.min(c.maxHp, c.hp + heal)
-      island.broadcast('fx:floating', { x: c.x, y: c.y, text: `+${heal}`, color: '#4ade80', kind: 'heal' })
-      this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name} and heal ${heal} HP.`, type: 'player' })
-      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
-      return
-    }
-    if (skill.buff) {
-      c.buffs = [...(c.buffs || []), { ...skill.buff, startTime: now, skillId }]
-      this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name}.`, type: 'player' })
-      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
-      return
-    }
-    // offensive skill
-    if (!targetMonsterId) {
-      // auto-target nearest monster in range
-      let nearest = null, nearestDist = Infinity
-      for (const m of island.monsters.values()) {
-        if (m.hp <= 0) continue
-        const d = Math.abs(m.x - c.x) + Math.abs(m.y - c.y)
-        if (d < nearestDist && d <= 6) { nearestDist = d; nearest = m }
+    const result = withLock(session.socketId, () => {
+      const c = session.character
+      const skill = skillCheck.skill
+      const now = Date.now()
+      if (session.skillCooldowns[skillId] && now - session.skillCooldowns[skillId] < skill.cooldown) {
+        this.safeEmit(session.socket, 'notify', { msg: `${skill.name} is on cooldown.` })
+        return
       }
-      if (!nearest) {
-        this.safeEmit(session.socket, 'notify', { msg: 'No target!' })
-        // refund MP
+      if (c.mp < skill.manaCost) {
+        this.safeEmit(session.socket, 'notify', { msg: 'Not enough mana!' })
+        return
+      }
+      const island = this.islands.get(c.currentIsland)
+      if (!island) return
+      c.mp -= skill.manaCost
+      session.skillCooldowns[skillId] = now
+      if (skill.healMultiplier) {
+        const stats = computePlayerStats(c)
+        const heal = Math.floor(stats.magic * skill.healMultiplier)
+        c.hp = Math.min(c.maxHp, c.hp + heal)
+        island.broadcast('fx:floating', { x: c.x, y: c.y, text: `+${heal}`, color: '#4ade80', kind: 'heal' })
+        this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name} and heal ${heal} HP.`, type: 'player' })
+        this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+        return
+      }
+      if (skill.buff) {
+        c.buffs = [...(c.buffs || []), { ...skill.buff, startTime: now, skillId }]
+        this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name}.`, type: 'player' })
+        this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+        return
+      }
+      // offensive skill
+      let target = targetMonsterId
+      if (!target) {
+        // auto-target nearest monster in range
+        let nearest = null, nearestDist = Infinity
+        for (const m of island.monsters.values()) {
+          if (m.hp <= 0) continue
+          const d = Math.abs(m.x - c.x) + Math.abs(m.y - c.y)
+          if (d < nearestDist && d <= 6) { nearestDist = d; nearest = m }
+        }
+        if (!nearest) {
+          this.safeEmit(session.socket, 'notify', { msg: 'No target!' })
+          // refund MP
+          c.mp += skill.manaCost
+          delete session.skillCooldowns[skillId]
+          return
+        }
+        target = nearest.id
+      }
+      const monster = island.monsters.get(target)
+      if (!monster || monster.hp <= 0) {
+        this.safeEmit(session.socket, 'notify', { msg: 'Invalid target.' })
         c.mp += skill.manaCost
         delete session.skillCooldowns[skillId]
         return
       }
-      targetMonsterId = nearest.id
-    }
-    const monster = island.monsters.get(targetMonsterId)
-    if (!monster || monster.hp <= 0) {
-      this.safeEmit(session.socket, 'notify', { msg: 'Invalid target.' })
-      c.mp += skill.manaCost
-      delete session.skillCooldowns[skillId]
-      return
-    }
-    const result = calculateSkillDamage(c, monster, skillId)
-    monster.hp = Math.max(0, monster.hp - result.damage)
-    monster.aggro = true
-    monster.targetSocketId = session.socketId
-    island.broadcast('fx:floating', {
-      x: monster.x, y: monster.y,
-      text: `-${result.damage}${result.crit ? '!' : ''}✦`,
-      color: result.crit ? '#fbbf24' : '#c084fc', kind: 'damage'
+      const dmgResult = calculateSkillDamage(c, monster, skillId)
+      monster.hp = Math.max(0, monster.hp - dmgResult.damage)
+      monster.aggro = true
+      monster.targetSocketId = session.socketId
+      island.broadcast('fx:floating', {
+        x: monster.x, y: monster.y,
+        text: `-${dmgResult.damage}${dmgResult.crit ? '!' : ''}✦`,
+        color: dmgResult.crit ? '#fbbf24' : '#c084fc', kind: 'damage'
+      })
+      this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name} on ${monster.name} for ${dmgResult.damage}.`, type: 'player' })
+      if (monster.hp <= 0) {
+        this.handleMonsterDeath(session, monster, island)
+      } else {
+        island.broadcast('monster:update', [{ id: monster.id, x: monster.x, y: monster.y, hp: monster.hp, aggro: true }])
+      }
+      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     })
-    this.safeEmit(session.socket, 'log:combat', { msg: `You cast ${skill.name} on ${monster.name} for ${result.damage}.`, type: 'player' })
-    if (monster.hp <= 0) {
-      this.handleMonsterDeath(session, monster, island)
-    } else {
-      island.broadcast('monster:update', [{ id: monster.id, x: monster.x, y: monster.y, hp: monster.hp, aggro: true }])
+    if (result === null) {
+      logSuspicious(session.socketId, session.character?.name, 'skill', 'action lock conflict')
     }
-    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
   }
 
   handleMonsterDeath(session, monster, island) {
@@ -627,6 +665,12 @@ export class World {
   }
 
   playerRespawn(session) {
+    // Validate (anti-cheat: must actually be dead to respawn — prevents free HP/MP refill)
+    const check = validateRespawn(session)
+    if (!check.ok) {
+      logSuspicious(session.socketId, session.character?.name, 'respawn', check.reason)
+      return
+    }
     const c = session.character
     const start = getIslandStart(c.currentIsland)
     c.hp = c.maxHp
@@ -644,71 +688,154 @@ export class World {
 
   // ===== Inventory actions =====
   playerEquip(session, itemId) {
-    const c = session.character
-    if (!hasItem(c.inventory, itemId, 1)) return
-    const result = equipItem(c, c.inventory, itemId)
-    c.equipment = result.player.equipment
-    c.inventory = result.inventory
-    const island = this.islands.get(c.currentIsland)
+    // Validate (anti-cheat: must be equipment, match class, meet level)
+    const check = validateEquip(session, itemId)
+    if (!check.ok) {
+      logSuspicious(session.socketId, session.character?.name, 'equip', `${check.reason}: ${itemId}`)
+      this.safeEmit(session.socket, 'notify', { msg: `Cannot equip: ${check.reason}` })
+      return
+    }
+    const result = withLock(session.socketId, () => {
+      const c = session.character
+      if (!hasItem(c.inventory, itemId, 1)) {
+        return { error: 'item not in inventory' }
+      }
+      const equipResult = equipItem(c, c.inventory, itemId)
+      c.equipment = equipResult.player.equipment
+      c.inventory = equipResult.inventory
+      return { ok: true }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, session.character?.name, 'equip', 'action lock conflict')
+      return
+    }
+    if (result.error) {
+      this.safeEmit(session.socket, 'notify', { msg: result.error })
+      return
+    }
+    const island = this.islands.get(session.character.currentIsland)
     this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     this.safeEmit(session.socket, 'notify', { msg: `Equipped ${getItem(itemId)?.name}.` })
-    saveCharacter(c)
+    saveCharacter(session.character)
   }
+
   playerUnequip(session, slot) {
-    const c = session.character
-    const result = unequipItem(c, c.inventory, slot)
-    c.equipment = result.player.equipment
-    c.inventory = result.inventory
-    const island = this.islands.get(c.currentIsland)
-    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
-    saveCharacter(c)
-  }
-  playerUseItem(session, itemId) {
-    const c = session.character
-    const result = useConsumable(c, c.inventory, itemId)
-    if (result.message) {
-      const island = this.islands.get(c.currentIsland)
-      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
-      this.safeEmit(session.socket, 'notify', { msg: result.message })
-      saveCharacter(c)
+    // Validate slot name (anti-cheat: only valid equipment slots)
+    if (!['weapon', 'armor', 'helmet', 'shield', 'boots', 'trinket'].includes(slot)) {
+      logSuspicious(session.socketId, session.character?.name, 'unequip', `invalid slot: ${slot}`)
+      return
     }
+    const result = withLock(session.socketId, () => {
+      const c = session.character
+      if (!c.equipment || !c.equipment[slot]) {
+        return { error: 'slot is empty' }
+      }
+      const equipResult = unequipItem(c, c.inventory, slot)
+      c.equipment = equipResult.player.equipment
+      c.inventory = equipResult.inventory
+      return { ok: true }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, session.character?.name, 'unequip', 'action lock conflict')
+      return
+    }
+    if (result.error) {
+      this.safeEmit(session.socket, 'notify', { msg: result.error })
+      return
+    }
+    const island = this.islands.get(session.character.currentIsland)
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+    saveCharacter(session.character)
+  }
+
+  playerUseItem(session, itemId) {
+    // Validate (anti-cheat: must be consumable, meet level)
+    const check = validateUseItem(session, itemId)
+    if (!check.ok) {
+      logSuspicious(session.socketId, session.character?.name, 'use-item', `${check.reason}: ${itemId}`)
+      return
+    }
+    const result = withLock(session.socketId, () => {
+      const c = session.character
+      if (!hasItem(c.inventory, itemId, 1)) {
+        return { error: 'item not in inventory' }
+      }
+      const useResult = useConsumable(c, c.inventory, itemId)
+      if (!useResult.message) return { error: 'cannot use' }
+      return { ok: true, message: useResult.message }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, session.character?.name, 'use-item', 'action lock conflict')
+      return
+    }
+    if (result.error) {
+      this.safeEmit(session.socket, 'notify', { msg: result.error })
+      return
+    }
+    const island = this.islands.get(session.character.currentIsland)
+    this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
+    this.safeEmit(session.socket, 'notify', { msg: result.message })
+    saveCharacter(session.character)
   }
 
   // ===== Shop =====
   playerBuy(session, npcId, itemId, qty) {
     const c = session.character
     const island = this.islands.get(c.currentIsland)
-    if (!island) return
-    const npc = island.npcs.find(n => n.id === npcId)
-    if (!npc || !npc.shop) return
-    const entry = npc.shop.items.find(i => i.id === itemId)
-    if (!entry) return
-    const total = entry.price * qty
-    if (c.gold < total) {
-      this.safeEmit(session.socket, 'notify', { msg: 'Not enough gold!' })
+    // Validate (anti-cheat: must be near NPC, item in shop, qty valid, enough gold)
+    const check = validateShopBuy(session, island, npcId, itemId, qty)
+    if (!check.ok) {
+      logSuspicious(session.socketId, c.name, 'buy', `${check.reason}: npc=${npcId} item=${itemId} qty=${qty}`)
+      this.safeEmit(session.socket, 'notify', { msg: check.reason === 'not enough gold' ? 'Not enough gold!' : 'Cannot buy that.' })
       return
     }
-    const result = buyItem(c.inventory, c.gold, itemId, qty, entry.price)
-    if (!result.success) {
-      this.safeEmit(session.socket, 'notify', { msg: 'Purchase failed.' })
+    const result = withLock(session.socketId, () => {
+      // Re-check gold inside lock (in case it changed)
+      if (c.gold < check.total) return { error: 'not enough gold' }
+      const buyResult = buyItem(c.inventory, c.gold, itemId, qty, check.entry.price)
+      if (!buyResult.success) return { error: 'purchase failed' }
+      c.inventory = buyResult.inventory
+      c.gold = buyResult.gold
+      return { ok: true }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, c.name, 'buy', 'action lock conflict')
       return
     }
-    c.inventory = result.inventory
-    c.gold = result.gold
+    if (result.error) {
+      this.safeEmit(session.socket, 'notify', { msg: result.error === 'not enough gold' ? 'Not enough gold!' : 'Purchase failed.' })
+      return
+    }
     this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
-    this.safeEmit(session.socket, 'notify', { msg: `Bought ${qty}x ${getItem(itemId)?.name} for ${total} gold.` })
+    this.safeEmit(session.socket, 'notify', { msg: `Bought ${qty}x ${getItem(itemId)?.name} for ${check.total} gold.` })
     saveCharacter(c)
   }
+
   playerSell(session, itemId, qty) {
     const c = session.character
-    const result = sellItem(c.inventory, itemId, qty)
-    if (result.gold === 0) {
+    const island = this.islands.get(c.currentIsland)
+    // Validate (anti-cheat: item exists, is sellable, player has enough)
+    const check = validateShopSell(session, island, itemId, qty)
+    if (!check.ok) {
+      logSuspicious(session.socketId, c.name, 'sell', `${check.reason}: item=${itemId} qty=${qty}`)
+      this.safeEmit(session.socket, 'notify', { msg: 'Cannot sell that.' })
+      return
+    }
+    const result = withLock(session.socketId, () => {
+      const sellResult = sellItem(c.inventory, itemId, qty)
+      if (sellResult.gold === 0) return { error: 'sell failed' }
+      c.inventory = sellResult.inventory
+      c.gold = Math.max(0, (c.gold || 0) + sellResult.gold)
+      return { ok: true, gold: sellResult.gold }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, c.name, 'sell', 'action lock conflict')
+      return
+    }
+    if (result.error) {
       this.safeEmit(session.socket, 'notify', { msg: 'Cannot sell this item.' })
       return
     }
-    c.inventory = result.inventory
-    c.gold = (c.gold || 0) + result.gold
-    const island = this.islands.get(c.currentIsland)
     this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     this.safeEmit(session.socket, 'notify', { msg: `Sold ${qty}x ${getItem(itemId)?.name} for ${result.gold} gold.` })
     saveCharacter(c)
@@ -717,38 +844,59 @@ export class World {
   // ===== Quests =====
   playerAcceptQuest(session, questId) {
     const c = session.character
-    if (!canAcceptQuest(c, c.questProgress, questId)) {
-      this.safeEmit(session.socket, 'notify', { msg: 'You cannot accept this quest yet.' })
+    const island = this.islands.get(c.currentIsland)
+    // Validate (anti-cheat: must be on correct island, near quest giver, meet level)
+    const check = validateQuestAccept(session, island, questId)
+    if (!check.ok) {
+      logSuspicious(session.socketId, c.name, 'quest-accept', `${check.reason}: ${questId}`)
+      this.safeEmit(session.socket, 'notify', { msg: check.reason.includes('level') ? check.reason : 'You cannot accept this quest.' })
       return
     }
-    c.questProgress = acceptQuest(c.questProgress, questId)
+    const result = withLock(session.socketId, () => {
+      c.questProgress = acceptQuest(c.questProgress, questId)
+      return { ok: true }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, c.name, 'quest-accept', 'action lock conflict')
+      return
+    }
     this.safeEmit(session.socket, 'notify', { msg: `Quest accepted: ${QUESTS[questId]?.title}` })
-    const island = this.islands.get(c.currentIsland)
     this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     saveCharacter(c)
   }
+
   playerTurnInQuest(session, questId) {
     const c = session.character
-    if (c.questProgress[questId] !== QUEST_STATUS.COMPLETE) {
-      this.safeEmit(session.socket, 'notify', { msg: 'Quest not yet complete.' })
+    const island = this.islands.get(c.currentIsland)
+    // Validate (anti-cheat: must be complete, near quest giver, have items for collect quests)
+    const check = validateQuestTurnIn(session, island, questId)
+    if (!check.ok) {
+      logSuspicious(session.socketId, c.name, 'quest-turnin', `${check.reason}: ${questId}`)
+      this.safeEmit(session.socket, 'notify', { msg: check.reason === 'quest not complete' ? 'Quest not yet complete.' : 'Cannot turn in this quest.' })
       return
     }
-    const result = turnInQuest(c, c.inventory, c.questProgress, questId)
-    // update character
-    Object.assign(c, result.player)
-    c.inventory = result.inventory
-    c.questProgress = result.questProgress
-    // apply pending XP
-    if (c.pendingXp) {
-      const xp = c.pendingXp
-      delete c.pendingXp
-      const xpResult = applyXp(c, xp)
-      if (xpResult.leveledUp) {
-        this.safeEmit(session.socket, 'player:levelup', { level: c.level })
-        this.safeEmit(session.socket, 'notify', { msg: `Level Up! You are now level ${c.level}!` })
+    const result = withLock(session.socketId, () => {
+      const turnInResult = turnInQuest(c, c.inventory, c.questProgress, questId)
+      // update character
+      Object.assign(c, turnInResult.player)
+      c.inventory = turnInResult.inventory
+      c.questProgress = turnInResult.questProgress
+      // apply pending XP
+      if (c.pendingXp) {
+        const xp = c.pendingXp
+        delete c.pendingXp
+        const xpResult = applyXp(c, xp)
+        if (xpResult.leveledUp) {
+          this.safeEmit(session.socket, 'player:levelup', { level: c.level })
+          this.safeEmit(session.socket, 'notify', { msg: `Level Up! You are now level ${c.level}!` })
+        }
       }
+      return { ok: true }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, c.name, 'quest-turnin', 'action lock conflict')
+      return
     }
-    const island = this.islands.get(c.currentIsland)
     this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
     this.safeEmit(session.socket, 'notify', { msg: `Quest complete: ${QUESTS[questId]?.title}` })
     saveCharacter(c)
@@ -769,15 +917,19 @@ export class World {
   // ===== Travel =====
   playerTravel(session, targetIslandId) {
     const c = session.character
-    const def = ISLAND_DEFS[targetIslandId]
-    if (!def) {
-      this.safeEmit(session.socket, 'notify', { msg: 'Invalid destination.' })
+    // Validate (anti-cheat: must be alive, valid destination)
+    const check = validateTravel(session, targetIslandId)
+    if (!check.ok) {
+      logSuspicious(session.socketId, c.name, 'travel', `${check.reason}: ${targetIslandId}`)
+      this.safeEmit(session.socket, 'notify', { msg: check.reason === 'player is dead' ? 'You cannot travel while dead.' : 'Invalid destination.' })
       return
     }
+    const def = check.def
     // Validate: must be reachable from current island via a sailor NPC
     const currentIsland = this.islands.get(c.currentIsland)
     let reachable = false
     let requiredLevel = 1
+    let sailorNpc = null
     if (currentIsland) {
       for (const npc of currentIsland.npcs) {
         if (!npc.travel) continue
@@ -786,6 +938,7 @@ export class World {
           if (opt.to === targetIslandId) {
             reachable = true
             requiredLevel = opt.reqLevel || 1
+            sailorNpc = npc
             break
           }
         }
@@ -793,6 +946,7 @@ export class World {
       }
     }
     if (!reachable) {
+      logSuspicious(session.socketId, c.name, 'travel', `unreachable: ${targetIslandId}`)
       this.safeEmit(session.socket, 'notify', { msg: 'You cannot travel there from this island.' })
       return
     }
@@ -800,16 +954,29 @@ export class World {
       this.safeEmit(session.socket, 'notify', { msg: `You must be level ${requiredLevel} to travel to ${def.name}.` })
       return
     }
-    // remove from current island
-    if (currentIsland) {
-      currentIsland.removePlayer(session.socketId)
-      currentIsland.players.delete(session.socketId)
+    // Proximity check: must be near the sailor NPC
+    const dist = Math.abs(c.x - sailorNpc.x) + Math.abs(c.y - sailorNpc.y)
+    if (dist > 3) {
+      this.safeEmit(session.socket, 'notify', { msg: 'You must be near the sailor to travel.' })
+      return
     }
-    // place on new island
-    const start = getIslandStart(targetIslandId)
-    c.x = start.x; c.y = start.y
-    c.hp = c.maxHp; c.mp = c.maxMp; c.buffs = []
-    this.playerJoinIsland(session, targetIslandId)
+    const result = withLock(session.socketId, () => {
+      // remove from current island
+      if (currentIsland) {
+        currentIsland.removePlayer(session.socketId)
+        currentIsland.players.delete(session.socketId)
+      }
+      // place on new island
+      const start = getIslandStart(targetIslandId)
+      c.x = start.x; c.y = start.y
+      c.hp = c.maxHp; c.mp = c.maxMp; c.buffs = []
+      this.playerJoinIsland(session, targetIslandId)
+      return { ok: true }
+    })
+    if (result === null) {
+      logSuspicious(session.socketId, c.name, 'travel', 'action lock conflict')
+      return
+    }
     this.safeEmit(session.socket, 'notify', { msg: `Traveled to ${def.name}.` })
     saveCharacter(c)
   }
@@ -819,14 +986,17 @@ export class World {
     const c = session.character
     const now = Date.now()
     if (now - session.lastChat < CONFIG.CHAT_COOLDOWN_MS) return
-    if (!message || message.length > CONFIG.CHAT_MAX_LENGTH) return
+    // Sanitize (anti-XSS: strip HTML tags, control chars, event handlers)
+    const cleanMsg = sanitizeChatMessage(message)
+    if (!cleanMsg) return
+    if (cleanMsg.length > CONFIG.CHAT_MAX_LENGTH) return
     session.lastChat = now
     const island = this.islands.get(c.currentIsland)
     if (!island) return
     island.broadcast('chat', {
       playerId: session.socketId,
       playerName: c.name,
-      message,
+      message: cleanMsg,
       classColor: c.classDef?.color,
     })
   }
