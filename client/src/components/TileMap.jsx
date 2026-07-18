@@ -17,6 +17,7 @@ export default function TileMap({
   otherPlayers = [],
   floatingTexts,
   pathTarget,
+  particles = [],
   onTileClick,
 }) {
   if (!map || !player) return null
@@ -41,6 +42,7 @@ export default function TileMap({
         <div
           key={`${x}-${y}`}
           className="tile"
+          data-tile={tile}
           style={{
             transform: `translate3d(${x * TILE_SIZE}px, ${y * TILE_SIZE}px, 0)`,
             width: TILE_SIZE,
@@ -111,7 +113,7 @@ export default function TileMap({
           onClick={(e) => { e.stopPropagation(); onTileClick(m.x, m.y) }}
           title={`${m.name} (Lv ${m.level})`}
         >
-          <div className="entity-icon monster-icon" style={{ background: m.color, fontSize: m.boss ? 20 : 16 }}>
+          <div className={`entity-icon monster-icon ${m.aggro ? 'aggro' : ''}`} style={{ background: m.color, fontSize: m.boss ? 20 : 16 }}>
             {m.icon}
           </div>
           <div className="entity-hp-bar">
@@ -177,6 +179,28 @@ export default function TileMap({
           {f.text}
         </div>
       ))}
+
+      {/* Particle effects layer */}
+      <div className="particle-layer">
+        {particles.filter(p =>
+          p.x >= camX && p.x < camX + viewW && p.y >= camY && p.y < camY + viewH
+        ).map(p => (
+          <div
+            key={p.id}
+            className={`particle particle-dot ${p.rise ? 'rise' : ''} ${p.fall ? 'fall' : ''}`}
+            style={{
+              left: (p.x - camX) * TILE_SIZE + TILE_SIZE / 2,
+              top: (p.y - camY) * TILE_SIZE + TILE_SIZE / 2,
+              '--dx': `${p.dx}px`,
+              '--dy': `${p.dy}px`,
+              '--size': `${p.size}px`,
+              '--color': p.color,
+              animationDuration: `${p.duration}ms`,
+              animationDelay: `${p.delay}ms`,
+            }}
+          />
+        ))}
+      </div>
 
       <div className="map-edge-info">
         {currentIsland?.name} — {currentIsland?.subtitle}

@@ -69,6 +69,9 @@ export function useGame() {
       || (window.matchMedia?.('(pointer: coarse)')?.matches ?? false)
   })
   const [pathTarget, setPathTarget] = useState(null) // {x, y} for visual marker
+  const [particles, setParticles] = useState([])
+  const [screenEffect, setScreenEffect] = useState(null) // 'damage' | 'heal' | 'levelup' | null
+  const particlesRef = useRef([])
 
   const socketRef = useRef(null)
   const characterIdRef = useRef(null)
@@ -91,6 +94,49 @@ export function useGame() {
     setSettings(merged)
     localStorage.setItem('mythral_settings', JSON.stringify(merged))
   }, [settings])
+
+  // ---- Particle effects ----
+  const spawnParticles = useCallback((x, y, type) => {
+    const EFFECTS = {
+      hit: { count: 8, duration: 600, colors: ['#fbbf24', '#fde047', '#fb7185'], size: 4, distance: 30 },
+      crit: { count: 16, duration: 800, colors: ['#fbbf24', '#fde047', '#fff', '#fb7185'], size: 6, distance: 50 },
+      heal: { count: 10, duration: 1000, colors: ['#4ade80', '#86efac', '#bbf7d0'], size: 4, distance: 20, rise: true },
+      xp: { count: 6, duration: 900, colors: ['#22d3ee', '#67e8f9'], size: 3, distance: 10, rise: true },
+      levelup: { count: 24, duration: 1500, colors: ['#fde047', '#fbbf24', '#fff', '#a78bfa', '#22d3ee'], size: 6, distance: 80 },
+      death: { count: 12, duration: 1200, colors: ['#7f1d1d', '#dc2626', '#1f2937'], size: 5, distance: 40, fall: true },
+      loot: { count: 8, duration: 700, colors: ['#fbbf24', '#fde047'], size: 4, distance: 25, rise: true },
+    }
+    const config = EFFECTS[type]
+    if (!config) return
+    const baseId = Date.now() + Math.random()
+    const newParticles = []
+    for (let i = 0; i < config.count; i++) {
+      const angle = (i / config.count) * Math.PI * 2 + Math.random() * 0.5
+      const dist = config.distance * (0.7 + Math.random() * 0.6)
+      newParticles.push({
+        id: `${baseId}-${i}`,
+        x, y,
+        dx: Math.cos(angle) * dist,
+        dy: Math.sin(angle) * dist,
+        color: config.colors[i % config.colors.length],
+        size: config.size,
+        duration: config.duration,
+        rise: config.rise,
+        fall: config.fall,
+        delay: Math.random() * 100,
+      })
+    }
+    setParticles(prev => [...prev, ...newParticles])
+    // Cleanup
+    setTimeout(() => {
+      setParticles(prev => prev.filter(p => !newParticles.includes(p)))
+    }, config.duration + 200)
+  }, [])
+
+  const triggerScreenEffect = useCallback((type) => {
+    setScreenEffect({ type, id: Date.now() })
+    setTimeout(() => setScreenEffect(null), type === 'levelup' ? 1000 : 600)
+  }, [])
 
   // ---- Connect to server ----
   useEffect(() => {
@@ -227,6 +273,18 @@ export function useGame() {
       const id = Date.now() + Math.random()
       setFloatingTexts(prev => [...prev, { ...fx, id, startTime: Date.now() }])
       setTimeout(() => setFloatingTexts(prev => prev.filter(f => f.id !== id)), 1200)
+      // Spawn particles based on effect kind
+      if (fx.kind === 'damage') {
+        spawnParticles(fx.x, fx.y, fx.text.includes('!') ? 'crit' : 'hit')
+      } else if (fx.kind === 'heal') {
+        spawnParticles(fx.x, fx.y, 'heal')
+        triggerScreenEffect('heal')
+      } else if (fx.kind === 'xp') {
+        spawnParticles(fx.x, fx.y, 'xp')
+      } else if (fx.kind === 'levelup') {
+        spawnParticles(fx.x, fx.y, 'levelup')
+        triggerScreenEffect('levelup')
+      }
     })
     sock.on(SERVER_EVENTS.COMBAT_LOG, (entry) => {
       setCombatLog(prev => [...prev.slice(-30), { ...entry, id: Date.now() + Math.random() }])
@@ -235,6 +293,10 @@ export function useGame() {
     sock.on(SERVER_EVENTS.DEATH, ({ goldLost }) => {
       setIsDead(true)
       notify(`You died! Lost ${goldLost} gold.`)
+      if (player) {
+        spawnParticles(player.x, player.y, 'death')
+      }
+      triggerScreenEffect('damage')
     })
     sock.on(SERVER_EVENTS.RESPAWN, (updatedPlayer) => {
       setIsDead(false)
@@ -242,6 +304,7 @@ export function useGame() {
     })
     sock.on(SERVER_EVENTS.LEVEL_UP, ({ level }) => {
       notify(`Level Up! Now level ${level}!`, 5000)
+      triggerScreenEffect('levelup')
     })
 
     sock.on(SERVER_EVENTS.NEARBY_NPC, ({ npc }) => setNearbyNpc(npc))
@@ -483,6 +546,8 @@ export function useGame() {
     setNearbyNpc, setInspectData,
     // settings + mobile
     settings, updateSettings, isMobile, pathTarget,
+    // particles + screen effects
+    particles, screenEffect, spawnParticles, triggerScreenEffect,
     // actions
     register, login, logout,
     createCharacter, selectCharacter, deleteCharacter,

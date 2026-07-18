@@ -2587,3 +2587,348 @@
   vertical-align: middle;
   margin-right: 6px;
 }
+
+/* ============================================================
+   PARTICLE EFFECTS
+   ============================================================ */
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: var(--size, 4px);
+  height: var(--size, 4px);
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: translate(-50%, -50%);
+}
+
+/* Shapes */
+.particle-dot {
+  background: var(--color);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--color), 0 0 12px var(--color);
+}
+.particle-star {
+  background: var(--color);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 0 4px var(--color));
+}
+.particle-cross {
+  background: var(--color);
+  clip-path: polygon(20% 0%, 80% 0%, 80% 20%, 100% 20%, 100% 80%, 80% 80%, 80% 100%, 20% 100%, 20% 80%, 0% 80%, 0% 20%, 20% 20%);
+  filter: drop-shadow(0 0 4px var(--color));
+}
+
+/* Default burst (radial outward) */
+.particle:not(.rise):not(.fall) {
+  animation: particleBurst var(--duration, 600ms) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes particleBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(calc(-50% + var(--dx) * 0.3), calc(-50% + var(--dy) * 0.3)) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Rising particles (heal, XP, loot) */
+.particle.rise {
+  animation: particleRise var(--duration, 1000ms) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes particleRise {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(calc(-50% + var(--dx) * 0.3), calc(-50% - 10px)) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% - 60px)) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Falling particles (death) */
+.particle.fall {
+  animation: particleFall var(--duration, 1200ms) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes particleFall {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(calc(-50% + var(--dx) * 0.3), calc(-50% + 5px)) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + 50px)) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   SCREEN-SPACE EFFECTS (vignette, damage flash, heal pulse)
+   ============================================================ */
+.screen-effects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+  z-index: 24;
+}
+
+.damage-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(239, 68, 68, 0.3) 100%);
+  pointer-events: none;
+  z-index: 26;
+  animation: damageFlash 0.4s ease-out forwards;
+}
+@keyframes damageFlash {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.heal-pulse {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(52, 211, 153, 0.2) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 26;
+  animation: healPulse 0.6s ease-out forwards;
+}
+@keyframes healPulse {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.levelup-burst {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(253, 224, 71, 0.3) 0%, rgba(251, 191, 36, 0.15) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 27;
+  animation: levelupBurst 1s ease-out forwards;
+}
+@keyframes levelupBurst {
+  0% { opacity: 0; transform: scale(0.8); }
+  30% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+
+/* Screen shake on big hits */
+.screen-shake {
+  animation: screenShake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes screenShake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+/* ============================================================
+   ENTITY UPGRADES — gradient portraits, glow auras, bobbing
+   ============================================================ */
+.entity-icon {
+  position: relative;
+  overflow: visible;
+}
+.entity-icon::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.entity-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(8px);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+/* Player + NPC gentle bobbing */
+.entity.player .entity-icon,
+.entity.npc .entity-icon {
+  animation: entityBob 2.5s ease-in-out infinite;
+}
+@keyframes entityBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Monster idle sway */
+.entity.monster .entity-icon {
+  animation: monsterSway 3s ease-in-out infinite;
+}
+@keyframes monsterSway {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-1px) rotate(1deg); }
+}
+
+/* Boss menacing pulse + larger aura */
+.entity.boss .entity-icon::after {
+  opacity: 0.6;
+  filter: blur(12px);
+  animation: bossAuraPulse 2s ease-in-out infinite;
+}
+@keyframes bossAuraPulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* Aggroed monster — red aura */
+.entity.monster .entity-icon.aggro::after {
+  background: #dc2626;
+  opacity: 0.5;
+  filter: blur(10px);
+}
+
+/* ============================================================
+   TILE AMBIANCE — animated water, glowing crystals, lava
+   ============================================================ */
+.tile[data-tile="0"], .tile[data-tile="1"] {
+  /* Water shimmer */
+  position: relative;
+}
+.tile[data-tile="0"]::after,
+.tile[data-tile="1"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  animation: waterShimmer 4s ease-in-out infinite;
+}
+@keyframes waterShimmer {
+  0%, 100% { transform: translateX(-100%); opacity: 0; }
+  50% { transform: translateX(100%); opacity: 1; }
+}
+
+.tile[data-tile="10"] {
+  /* Lava glow */
+  position: relative;
+}
+.tile[data-tile="10"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.3) 0%, transparent 70%);
+  animation: lavaGlow 2s ease-in-out infinite;
+}
+@keyframes lavaGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.tile[data-tile="22"], .tile[data-tile="23"] {
+  /* Crystal + void glow */
+  position: relative;
+}
+.tile[data-tile="22"]::after,
+.tile[data-tile="23"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(167, 139, 250, 0.2) 0%, transparent 60%);
+  animation: crystalGlow 3s ease-in-out infinite;
+}
+@keyframes crystalGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+/* ============================================================
+   HUD UPGRADES — portrait ring, animated bars
+   ============================================================ */
+.hud-portrait {
+  position: relative;
+}
+.hud-portrait::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--r-md);
+  background: conic-gradient(from 0deg, var(--neon-gold-bright), var(--neon-cyan), var(--neon-violet), var(--neon-gold-bright));
+  z-index: -1;
+  animation: portraitSpin 8s linear infinite;
+  opacity: 0.6;
+}
+@keyframes portraitSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* HP/MP/XP bar — inner glow when full */
+.hud-bar-fill {
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Skill slot ready — intensified glow */
+.skill-slot.ready {
+  position: relative;
+}
+.skill-slot.ready::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--neon-cyan), transparent, var(--neon-violet));
+  z-index: -1;
+  opacity: 0.4;
+  animation: skillSlotGlow 3s ease-in-out infinite;
+}
+@keyframes skillSlotGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* ============================================================
+   FLOATING TEXT UPGRADES
+   ============================================================ */
+.floating-text {
+  text-shadow: 0 0 8px currentColor, 0 2px 4px #000, 0 0 16px currentColor;
+}
+.floating-text.crit {
+  font-size: 22px;
+  text-shadow: 0 0 12px #fbbf24, 0 0 24px #fbbf24, 0 2px 4px #000;
+}
+.floating-text.heal {
+  text-shadow: 0 0 8px #4ade80, 0 0 16px #4ade80, 0 2px 4px #000;
+}
+.floating-text.xp {
+  text-shadow: 0 0 8px #22d3ee, 0 0 16px #22d3ee, 0 2px 4px #000;
+}
+.floating-text.levelup {
+  text-shadow: 0 0 16px #fde047, 0 0 32px #fbbf24, 0 0 48px #fbbf24, 0 4px 8px #000;
+}

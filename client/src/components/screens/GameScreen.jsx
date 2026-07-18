@@ -152,7 +152,7 @@ export default function GameScreen({ game }) {
   }
 
   return (
-    <div className={`game-screen ${isMobile ? 'mobile' : ''}`} style={{ background: currentIsland?.backgroundColor || '#000' }}>
+    <div className={`game-screen ${isMobile ? 'mobile' : ''} ${game.screenEffect ? `screen-effect-${game.screenEffect.type}` : ''}`} style={{ background: currentIsland?.backgroundColor || '#000' }}>
       <TileMap
         currentIsland={currentIsland}
         map={map}
@@ -162,8 +162,23 @@ export default function GameScreen({ game }) {
         otherPlayers={otherPlayers}
         floatingTexts={settings.showDamageNumbers ? floatingTexts : []}
         pathTarget={game.pathTarget}
+        particles={game.particles}
         onTileClick={handleTileClick}
       />
+
+      {/* Screen-space effects */}
+      <div className="screen-effects">
+        <div className="vignette" />
+        {game.screenEffect?.type === 'damage' && (
+          <div className="damage-flash" key={game.screenEffect.id} />
+        )}
+        {game.screenEffect?.type === 'heal' && (
+          <div className="heal-pulse" key={game.screenEffect.id} />
+        )}
+        {game.screenEffect?.type === 'levelup' && (
+          <div className="levelup-burst" key={game.screenEffect.id} />
+        )}
+      </div>
 
       <HUD
         player={player}
