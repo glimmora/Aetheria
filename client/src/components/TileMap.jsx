@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Tile Map Renderer
+// Mythral Client - Tile Map Renderer
 // Uses transform: translate3d() for GPU-accelerated movement.
 // ============================================================
 

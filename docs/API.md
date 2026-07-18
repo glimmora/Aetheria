@@ -1,6 +1,6 @@
 # HTTP API Reference
 
-Aetheria exposes a small REST API for authentication and character management. All real-time game traffic flows over Socket.io (see [Protocol Reference](./PROTOCOL.md)).
+Mythral exposes a small REST API for authentication and character management. All real-time game traffic flows over Socket.io (see [Protocol Reference](./PROTOCOL.md)).
 
 **Base URL:** `http://localhost:4000` (or your production server URL)
 
@@ -102,7 +102,7 @@ const res = await fetch('/api/register', {
 })
 const data = await res.json()
 if (data.ok) {
-  localStorage.setItem('aetheria_token', data.token)
+  localStorage.setItem('mythral_token', data.token)
 }
 ```
 

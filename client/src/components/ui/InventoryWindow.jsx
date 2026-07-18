@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Inventory Window
+// Mythral - Inventory Window
 // ============================================================
 
 import React, { useState } from 'react'
@@ -16,15 +16,15 @@ export default function InventoryWindow({
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="inventory-window aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 760, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="inventory-window mythral-window" onClick={e => e.stopPropagation()} style={{ width: 760, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>🎒 Inventory</span>
           <div className="flex items-center gap-2">
             <span className="text-gold">🪙 {player.gold}</span>
-            <button className="aetheria-window-close" onClick={onClose}>×</button>
+            <button className="mythral-window-close" onClick={onClose}>×</button>
           </div>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="inventory-layout">
             {/* Equipment panel */}
             <div className="equipment-panel">
@@ -103,17 +103,17 @@ export default function InventoryWindow({
                   <div className="inv-detail-value text-xs text-dim">Value: 🪙 {selected.item.value}</div>
                   <div className="inv-detail-actions">
                     {isEquipment(selected.item) && (
-                      <button className="aetheria-btn aetheria-btn-primary text-sm" onClick={() => { onEquip(selected.id); setSelected(null) }}>
+                      <button className="mythral-btn mythral-btn-primary text-sm" onClick={() => { onEquip(selected.id); setSelected(null) }}>
                         Equip
                       </button>
                     )}
                     {selected.item.type === 'consumable' && (
-                      <button className="aetheria-btn aetheria-btn-success text-sm" onClick={() => onUse(selected.id)}>
+                      <button className="mythral-btn mythral-btn-success text-sm" onClick={() => onUse(selected.id)}>
                         Use
                       </button>
                     )}
                     {selected.item.value > 0 && selected.item.type !== 'quest' && selected.item.type !== 'key' && (
-                      <button className="aetheria-btn text-sm" onClick={() => onSell(selected.id, 1)}>
+                      <button className="mythral-btn text-sm" onClick={() => onSell(selected.id, 1)}>
                         Sell (🪙 {Math.floor(selected.item.value * 0.5)})
                       </button>
                     )}

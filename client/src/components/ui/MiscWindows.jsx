@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Character Sheet & World Map windows
+// Mythral - Character Sheet & World Map windows
 // ============================================================
 
 import React from 'react'
@@ -15,12 +15,12 @@ export function CharacterWindow({ active, player, onClose }) {
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 560, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 560, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>👤 Character</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="char-portrait-section">
             <div className="char-portrait" style={{ background: player.classDef?.color }}>
               <span style={{ fontSize: 48 }}>{player.classDef?.icon}</span>
@@ -86,12 +86,12 @@ export function WorldMapWindow({ active, currentIsland, visitedIslands, player, 
   const islands = Object.values(ISLAND_DEFS)
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 720, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 720, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>🗺 World Map</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <p className="text-dim text-sm mb-2">Click on a visited island to see its details. Travel via sailor NPCs at the docks.</p>
           <div className="worldmap-grid">
             {islands.map((isl, i) => {
@@ -135,12 +135,12 @@ export function HelpWindow({ active, onClose }) {
   if (!active) return null
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 560, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 560, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>? Help</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="help-section">
             <div className="text-gold font-bold mb-1">MOVEMENT</div>
             <div className="text-sm">WASD or Arrow keys to move. You can also click on a tile to step toward it.</div>

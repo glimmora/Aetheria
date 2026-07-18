@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Combat system
+// Mythral - Combat system
 // Handles player vs monster combat, damage calc, XP, drops
 // ============================================================
 

@@ -19,7 +19,7 @@ async function fetchJSON(url, options) {
   return r.json()
 }
 
-console.log('\n=== Aetheria Multiplayer E2E Test (extended) ===\n')
+console.log('\n=== Mythral Multiplayer E2E Test (extended) ===\n')
 
 try {
   // 1. Register

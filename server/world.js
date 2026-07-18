@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Server - World
+// Mythral Server - World
 // Manages all island instances, players, and monsters
 // ============================================================
 

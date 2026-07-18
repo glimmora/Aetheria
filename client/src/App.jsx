@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Root App component
+// Mythral Client - Root App component
 // Switches between Auth, Character Select, and Game screens
 // with smooth fade-slide transitions.
 // ============================================================
@@ -25,7 +25,7 @@ export default function App() {
   if (game.connectionState === 'connecting' && game.screen === 'connecting') {
     return (
       <div className="connecting-screen">
-        <div className="connecting-text">Connecting to Aetheria</div>
+        <div className="connecting-text">Connecting to Mythral</div>
         <div className="connecting-spinner" />
         {game.kickReason && (
           <div className="connecting-kick">

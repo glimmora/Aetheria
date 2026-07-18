@@ -1,6 +1,6 @@
 # Configuration Reference
 
-All environment variables, configuration constants, and tuning knobs for Aetheria: Nine Isles.
+All environment variables, configuration constants, and tuning knobs for Mythral.
 
 ---
 
@@ -30,7 +30,7 @@ Set these in `server/.env`, the project-root `.env`, or as shell environment var
 |---|---|---|
 | `PORT` | `4000` | HTTP and WebSocket port |
 | `CLIENT_ORIGIN` | `http://localhost:5173` | Allowed CORS origin (your client URL) |
-| `JWT_SECRET` | `aetheria-dev-secret-change-me` | Secret for signing JWTs — **change in production** |
+| `JWT_SECRET` | `mythral-dev-secret-change-me` | Secret for signing JWTs — **change in production** |
 | `NODE_ENV` | `development` | `production` enables stricter behavior |
 
 #### `PORT`
@@ -179,7 +179,7 @@ server: {
 **Knobs:**
 1. **Reduce island sizes** in `shared/islands.js` (`width`, `height`)
 2. **Reduce monster counts** — each monster is ~200 bytes in memory
-3. **Restart the server daily** via PM2 cron: `pm2 start aetheria --cron-restart="0 3 * * *"`
+3. **Restart the server daily** via PM2 cron: `pm2 start mythral --cron-restart="0 3 * * *"`
 
 **Symptom:** Slow disk writes (autosave blocking the event loop).
 

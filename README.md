@@ -1,4 +1,4 @@
-# ⚔️ Aetheria: Nine Isles
+# ⚔️ Mythral
 
 A multiplayer browser MMORPG, built with **React + Vite** (client) and **Node.js + Express + Socket.io** (server) in a **single shared world**.
 
@@ -28,8 +28,8 @@ A multiplayer browser MMORPG, built with **React + Vite** (client) and **Node.js
 
 ```bash
 # 1. Clone
-git clone https://github.com/glimmora/Aetheria.git
-cd Aetheria
+git clone https://github.com/glimmora/Mythral.git
+cd Mythral
 
 # 2. Install (hoists all deps for client + server)
 npm install
@@ -49,7 +49,7 @@ Open the client in your browser, register an account, create a character, and st
 ## 🏗 Architecture at a glance
 
 ```
-Aetheria/
+Mythral/
 ├── client/      # React + Vite frontend (renders server state)
 ├── server/      # Node + Express + Socket.io (authoritative game state)
 ├── shared/      # Pure data + logic, imported by BOTH client and server

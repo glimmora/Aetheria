@@ -1,4 +1,4 @@
-# Aetheria: Nine Isles - Project Worklog
+# Mythral - Project Worklog
 
 ---
 Task ID: 1
@@ -42,7 +42,7 @@ Work Log:
 
 Stage Summary:
 - Project type: Type 3 (Interactive Web Development) using React + Vite (per user's explicit request)
-- Game name: "Aetheria: Nine Isles" — original branding, standalone project
+- Game name: "Mythral" — original branding, standalone project
 - Total content: 9 islands, 113 NPCs, 89 quests, 35+ monsters, 60+ items, 4 classes, 14 skills
 - Architecture: data → systems → hooks → components (clean separation of concerns)
 - Dev server: http://localhost:3000
@@ -52,7 +52,7 @@ Stage Summary:
 ---
 Task ID: 2
 Agent: Main (Super Z)
-Task: Implement Skenario B - convert Aetheria from single-player client-only to full multiplayer client-server architecture
+Task: Implement Skenario B - convert Mythral from single-player client-only to full multiplayer client-server architecture
 
 Work Log:
 - Restructured project into 3 folders:
@@ -96,5 +96,5 @@ Stage Summary:
 - Real-time features: see other players on same island, island-local chat, synchronized monster AI
 - Auth: register/login with bcrypt + JWT (7-day tokens), character persistence across sessions
 - Tests: 50 smoke + 19 E2E = 69 automated checks, all passing
-- Pushed to: https://github.com/glimmora/Aetheria (commit 36b7eb2)
+- Pushed to: https://github.com/glimmora/Mythral (commit 36b7eb2)
 - Running: server on :4000, client on :5173

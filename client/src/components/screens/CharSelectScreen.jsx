@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Character Select Screen
+// Mythral Client - Character Select Screen
 // ============================================================
 
 import React, { useState } from 'react'
@@ -34,10 +34,10 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
       <div className="char-select-content">
         <div className="char-select-header">
           <div>
-            <h1 className="aetheria-title" style={{ fontSize: 28 }}>Your Heroes</h1>
+            <h1 className="mythral-title" style={{ fontSize: 28 }}>Your Heroes</h1>
             <div className="text-dim text-sm">Welcome back, <span className="text-gold">{username}</span> · {characters.length}/{max} characters</div>
           </div>
-          <button className="aetheria-btn" onClick={onLogout}>Logout</button>
+          <button className="mythral-btn" onClick={onLogout}>Logout</button>
         </div>
 
         {!showCreate && (
@@ -46,7 +46,7 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
               {characters.length === 0 && (
                 <div className="char-select-empty">
                   <div className="text-dim mb-2">You have no characters yet.</div>
-                  <button className="aetheria-btn aetheria-btn-primary" onClick={() => setShowCreate(true)}>
+                  <button className="mythral-btn mythral-btn-primary" onClick={() => setShowCreate(true)}>
                     Create Your First Hero
                   </button>
                 </div>
@@ -69,10 +69,10 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
                       </div>
                     </div>
                     <div className="char-card-actions">
-                      <button className="aetheria-btn aetheria-btn-success" onClick={() => onSelect(c.id)}>
+                      <button className="mythral-btn mythral-btn-success" onClick={() => onSelect(c.id)}>
                         Enter World
                       </button>
-                      <button className="aetheria-btn aetheria-btn-danger text-sm" onClick={() => {
+                      <button className="mythral-btn mythral-btn-danger text-sm" onClick={() => {
                         if (confirm(`Delete ${c.name}? This cannot be undone.`)) onDelete(c.id)
                       }}>Delete</button>
                     </div>
@@ -90,8 +90,8 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
         )}
 
         {showCreate && (
-          <div className="char-create-form aetheria-panel">
-            <h2 className="aetheria-title mb-2" style={{ fontSize: 22 }}>Forge a New Hero</h2>
+          <div className="char-create-form mythral-panel">
+            <h2 className="mythral-title mb-2" style={{ fontSize: 22 }}>Forge a New Hero</h2>
             <label className="auth-label">HERO NAME</label>
             <input
               type="text"
@@ -129,8 +129,8 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
             </div>
             {error && <div className="auth-error mt-2">{error}</div>}
             <div className="char-create-buttons mt-4">
-              <button className="aetheria-btn" onClick={() => { setShowCreate(false); setError(null) }}>Cancel</button>
-              <button className="aetheria-btn aetheria-btn-success" onClick={handleCreate}>Create Hero</button>
+              <button className="mythral-btn" onClick={() => { setShowCreate(false); setError(null) }}>Cancel</button>
+              <button className="mythral-btn mythral-btn-success" onClick={handleCreate}>Create Hero</button>
             </div>
           </div>
         )}

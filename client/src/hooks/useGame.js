@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Networking hook
+// Mythral Client - Networking hook
 // Manages socket.io connection, auth, and game state received
 // from the server. The server is authoritative; the client only
 // sends inputs and renders the state it receives.
@@ -18,7 +18,7 @@ export function useGame() {
   const [username, setUsername] = useState(null)
   const [characters, setCharacters] = useState([])
   const [maxCharacters, setMaxCharacters] = useState(CONFIG.MAX_CHARACTERS_PER_ACCOUNT)
-  const [token, setToken] = useState(() => localStorage.getItem('aetheria_token'))
+  const [token, setToken] = useState(() => localStorage.getItem('mythral_token'))
   const [player, setPlayer] = useState(null)
   const [currentIsland, setCurrentIsland] = useState(null)
   const [map, setMap] = useState(null)
@@ -54,7 +54,7 @@ export function useGame() {
   // Settings (persisted to localStorage)
   const [settings, setSettings] = useState(() => {
     try {
-      const saved = localStorage.getItem('aetheria_settings')
+      const saved = localStorage.getItem('mythral_settings')
       return saved ? JSON.parse(saved) : {
         showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true,
         movementMode: 'both', // 'wasd' | 'tap' | 'both'
@@ -89,7 +89,7 @@ export function useGame() {
   const updateSettings = useCallback((newSettings) => {
     const merged = { ...settings, ...newSettings }
     setSettings(merged)
-    localStorage.setItem('aetheria_settings', JSON.stringify(merged))
+    localStorage.setItem('mythral_settings', JSON.stringify(merged))
   }, [settings])
 
   // ---- Connect to server ----
@@ -116,7 +116,7 @@ export function useGame() {
     })
     sock.on('connect_error', (err) => {
       if (err.message === 'Invalid token' || err.message === 'No token provided') {
-        localStorage.removeItem('aetheria_token')
+        localStorage.removeItem('mythral_token')
         setToken(null)
         setScreen('auth')
         setConnectionState('disconnected')
@@ -152,7 +152,7 @@ export function useGame() {
     // ---- Auth events ----
     sock.on(SERVER_EVENTS.WELCOME, ({ username: u }) => setUsername(u))
     sock.on(SERVER_EVENTS.AUTH_OK, ({ token: t, username: u }) => {
-      localStorage.setItem('aetheria_token', t)
+      localStorage.setItem('mythral_token', t)
       setToken(t)
       setUsername(u)
       setScreen('char_select')
@@ -289,7 +289,7 @@ export function useGame() {
       clearTimeout(timeout)
       const data = await r.json()
       if (data.ok) {
-        localStorage.setItem('aetheria_token', data.token)
+        localStorage.setItem('mythral_token', data.token)
         setToken(data.token)
         setUsername(data.username)
         setScreen('char_select')
@@ -317,7 +317,7 @@ export function useGame() {
       clearTimeout(timeout)
       const data = await r.json()
       if (data.ok) {
-        localStorage.setItem('aetheria_token', data.token)
+        localStorage.setItem('mythral_token', data.token)
         setToken(data.token)
         setUsername(data.username)
         setScreen('char_select')
@@ -332,7 +332,7 @@ export function useGame() {
   }, [])
 
   const logout = useCallback(() => {
-    localStorage.removeItem('aetheria_token')
+    localStorage.removeItem('mythral_token')
     setToken(null)
     setUsername(null)
     setCharacters([])

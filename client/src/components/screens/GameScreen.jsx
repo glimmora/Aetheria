@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Game Screen
+// Mythral Client - Game Screen
 // Hosts the tile map, HUD, and all overlay windows.
 // Receives state from server via useGame() and sends inputs.
 // ============================================================

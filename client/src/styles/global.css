@@ -1,5 +1,5 @@
 /* ============================================
-   Aetheria: Nine Isles — Modern Gaming UI
+   Mythral — Modern Gaming UI
    Design system: dark glassmorphism + neon accents
    ============================================ */
 
@@ -118,7 +118,7 @@ input {
    Modern buttons
    ============================================ */
 
-.aetheria-btn {
+.mythral-btn {
   font-family: var(--font-ui);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -135,7 +135,7 @@ input {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-.aetheria-btn::before {
+.mythral-btn::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -143,56 +143,56 @@ input {
   opacity: 0;
   transition: opacity 0.3s;
 }
-.aetheria-btn:hover:not(:disabled) {
+.mythral-btn:hover:not(:disabled) {
   border-color: var(--neon-cyan);
   color: var(--neon-cyan);
   transform: translateY(-1px);
   box-shadow: var(--glow-cyan), 0 8px 20px rgba(0, 0, 0, 0.5);
 }
-.aetheria-btn:hover:not(:disabled)::before {
+.mythral-btn:hover:not(:disabled)::before {
   opacity: 1;
 }
-.aetheria-btn:active:not(:disabled) {
+.mythral-btn:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: 0 0 12px var(--neon-cyan-soft);
 }
-.aetheria-btn:disabled {
+.mythral-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.aetheria-btn-primary {
+.mythral-btn-primary {
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(59, 130, 246, 0.25) 100%);
   border-color: var(--neon-cyan);
   color: var(--neon-cyan);
   text-shadow: 0 0 8px var(--neon-cyan-soft);
 }
-.aetheria-btn-primary:hover:not(:disabled) {
+.mythral-btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.35) 0%, rgba(59, 130, 246, 0.4) 100%);
   color: #fff;
   box-shadow: var(--glow-cyan), 0 8px 24px rgba(34, 211, 238, 0.3);
 }
 
-.aetheria-btn-danger {
+.mythral-btn-danger {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(127, 29, 29, 0.25) 100%);
   border-color: var(--hp);
   color: var(--neon-rose);
   text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
-.aetheria-btn-danger:hover:not(:disabled) {
+.mythral-btn-danger:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.35) 0%, rgba(127, 29, 29, 0.4) 100%);
   color: #fff;
   box-shadow: 0 0 24px rgba(239, 68, 68, 0.5), 0 8px 20px rgba(0,0,0,0.5);
   border-color: var(--neon-rose);
 }
 
-.aetheria-btn-success {
+.mythral-btn-success {
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.2) 0%, rgba(6, 78, 59, 0.25) 100%);
   border-color: var(--neon-emerald);
   color: var(--neon-emerald);
   text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
 }
-.aetheria-btn-success:hover:not(:disabled) {
+.mythral-btn-success:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.35) 0%, rgba(6, 78, 59, 0.4) 100%);
   color: #fff;
   box-shadow: 0 0 24px rgba(52, 211, 153, 0.5), 0 8px 20px rgba(0,0,0,0.5);
@@ -202,7 +202,7 @@ input {
    Glass panels & windows
    ============================================ */
 
-.aetheria-panel {
+.mythral-panel {
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
   border-radius: var(--r-lg);
@@ -211,7 +211,7 @@ input {
   box-shadow: var(--shadow-panel);
   position: relative;
 }
-.aetheria-panel::before {
+.mythral-panel::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -224,7 +224,7 @@ input {
   pointer-events: none;
 }
 
-.aetheria-title {
+.mythral-title {
   font-family: var(--font-display);
   font-weight: 900;
   letter-spacing: 0.15em;
@@ -235,7 +235,7 @@ input {
   text-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
 }
 
-.aetheria-window {
+.mythral-window {
   position: absolute;
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
@@ -253,7 +253,7 @@ input {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-.aetheria-window-header {
+.mythral-window-header {
   background: linear-gradient(90deg, rgba(34, 211, 238, 0.12) 0%, rgba(167, 139, 250, 0.08) 100%);
   padding: 12px 18px;
   font-family: var(--font-ui);
@@ -269,12 +269,12 @@ input {
   text-transform: uppercase;
   text-shadow: 0 0 8px var(--neon-cyan-soft);
 }
-.aetheria-window-body {
+.mythral-window-body {
   padding: 16px;
   overflow: auto;
   flex: 1;
 }
-.aetheria-window-close {
+.mythral-window-close {
   width: 24px;
   height: 24px;
   background: rgba(239, 68, 68, 0.15);
@@ -288,7 +288,7 @@ input {
   justify-content: center;
   transition: all 0.15s;
 }
-.aetheria-window-close:hover {
+.mythral-window-close:hover {
   background: rgba(239, 68, 68, 0.35);
   color: #fff;
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
@@ -369,7 +369,7 @@ input {
 }
 
 /* ---- Window exit animation (via .window-leaving class) ---- */
-.aetheria-window.window-leaving {
+.mythral-window.window-leaving {
   animation: windowExit 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 @keyframes windowExit {
@@ -439,13 +439,13 @@ input {
 }
 
 /* ---- Press feedback ---- */
-.aetheria-btn:active:not(:disabled) {
+.mythral-btn:active:not(:disabled) {
   transform: translateY(1px) scale(0.98);
   transition: transform 0.08s ease;
 }
 
 /* ---- Smooth focus rings ---- */
-.aetheria-btn:focus-visible,
+.mythral-btn:focus-visible,
 .hud-btn:focus-visible,
 .auth-tab:focus-visible,
 .shop-tab:focus-visible,
@@ -547,7 +547,7 @@ input {
 .tile,
 .inv-slot,
 .hud-btn,
-.aetheria-btn,
+.mythral-btn,
 .shop-item,
 .questlog-entry,
 .leaderboard-row,

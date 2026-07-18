@@ -17,7 +17,7 @@ async function fetchJSON(url, options) {
   return r.json()
 }
 
-console.log('\n=== Aetheria Anti-Cheat Test Suite ===\n')
+console.log('\n=== Mythral Anti-Cheat Test Suite ===\n')
 
 try {
   // Setup: register + create character

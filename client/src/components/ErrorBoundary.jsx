@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Error Boundary
+// Mythral Client - Error Boundary
 // Catches React render errors and shows a recovery screen
 // instead of a blank white page.
 // ============================================================
@@ -27,8 +27,8 @@ export default class ErrorBoundary extends React.Component {
 
   handleClearCache = () => {
     try {
-      localStorage.removeItem('aetheria_token')
-      localStorage.removeItem('aetheria_settings')
+      localStorage.removeItem('mythral_token')
+      localStorage.removeItem('mythral_settings')
     } catch {}
     window.location.reload()
   }
@@ -53,10 +53,10 @@ export default class ErrorBoundary extends React.Component {
               </details>
             )}
             <div className="error-boundary-actions">
-              <button className="aetheria-btn aetheria-btn-primary" onClick={this.handleReload}>
+              <button className="mythral-btn mythral-btn-primary" onClick={this.handleReload}>
                 Reload Game
               </button>
-              <button className="aetheria-btn aetheria-btn-danger" onClick={this.handleClearCache}>
+              <button className="mythral-btn mythral-btn-danger" onClick={this.handleClearCache}>
                 Clear Cache & Reload
               </button>
             </div>

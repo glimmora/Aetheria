@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Shop Window
+// Mythral - Shop Window
 // ============================================================
 
 import React, { useState } from 'react'
@@ -15,15 +15,15 @@ export default function ShopWindow({ activeShop, player, inventory, onClose, onB
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="shop-window aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 720, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="shop-window mythral-window" onClick={e => e.stopPropagation()} style={{ width: 720, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>🛒 {shop.name}</span>
           <div className="flex items-center gap-2">
             <span className="text-gold">🪙 {player.gold}</span>
-            <button className="aetheria-window-close" onClick={onClose}>×</button>
+            <button className="mythral-window-close" onClick={onClose}>×</button>
           </div>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="shop-tabs">
             <button className={`shop-tab ${mode === 'buy' ? 'active' : ''}`} onClick={() => { setMode('buy'); setSelected(null) }}>Buy</button>
             <button className={`shop-tab ${mode === 'sell' ? 'active' : ''}`} onClick={() => { setMode('sell'); setSelected(null) }}>Sell</button>
@@ -97,7 +97,7 @@ export default function ShopWindow({ activeShop, player, inventory, onClose, onB
                 <span className="text-dim text-sm">x{qty} = 🪙 {selected.price * qty}</span>
               </div>
               <div className="shop-buy-controls">
-                <button className="aetheria-btn text-sm" onClick={() => setQty(Math.max(1, qty - 1))}>-</button>
+                <button className="mythral-btn text-sm" onClick={() => setQty(Math.max(1, qty - 1))}>-</button>
                 <input
                   type="number"
                   value={qty}
@@ -106,9 +106,9 @@ export default function ShopWindow({ activeShop, player, inventory, onClose, onB
                   onChange={e => setQty(Math.max(1, Math.min(selected.maxQty || 99, parseInt(e.target.value) || 1)))}
                   className="shop-qty-input"
                 />
-                <button className="aetheria-btn text-sm" onClick={() => setQty(Math.min(selected.maxQty || 99, qty + 1))}>+</button>
+                <button className="mythral-btn text-sm" onClick={() => setQty(Math.min(selected.maxQty || 99, qty + 1))}>+</button>
                 <button
-                  className="aetheria-btn aetheria-btn-success"
+                  className="mythral-btn mythral-btn-success"
                   onClick={() => {
                     if (mode === 'buy') onBuy(selected.id, selected.price, qty)
                     else onSell(selected.id, qty)

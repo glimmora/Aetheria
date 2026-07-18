@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Server - Persistence layer
+// Mythral Server - Persistence layer
 // Simple JSON file storage for users and characters.
 // Swap for Postgres/MongoDB by replacing this file only.
 // ============================================================

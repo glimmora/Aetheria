@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Travel Window
+// Mythral - Travel Window
 // ============================================================
 
 import React from 'react'
@@ -12,12 +12,12 @@ export default function TravelWindow({ activeTravel, player, visitedIslands, onT
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="travel-window aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '90vw' }}>
-        <div className="aetheria-window-header">
+      <div className="travel-window mythral-window" onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '90vw' }}>
+        <div className="mythral-window-header">
           <span>⚓ {npc.name}</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <p className="text-dim text-sm mb-2">"Where would you sail to, traveler?"</p>
           <div className="travel-options">
             {options.map((opt, i) => {
@@ -40,7 +40,7 @@ export default function TravelWindow({ activeTravel, player, visitedIslands, onT
                     {!canTravel && <span className="text-red text-xs">Requires level {opt.reqLevel}</span>}
                   </div>
                   <button
-                    className="aetheria-btn aetheria-btn-primary text-sm mt-1"
+                    className="mythral-btn mythral-btn-primary text-sm mt-1"
                     disabled={!canTravel}
                     onClick={() => onTravel(opt.to)}
                   >

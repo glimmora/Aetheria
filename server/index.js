@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Server - HTTP + WebSocket entry point
+// Mythral Server - HTTP + WebSocket entry point
 // Hardened with rate limiting, input validation, single-session
 // enforcement, leaderboard, online-players list, player inspect.
 // ============================================================
@@ -443,7 +443,7 @@ setInterval(() => {
 // ---- Init ----
 await db.loadAll()
 httpServer.listen(PORT, HOST, () => {
-  console.log(`\n  ⚔️  Aetheria Server running on http://${HOST}:${PORT}`)
+  console.log(`\n  ⚔️  Mythral Server running on http://${HOST}:${PORT}`)
   console.log(`  🌐  CORS origin: ${typeof corsOrigin === 'string' ? corsOrigin : (corsOrigin ? 'any (dev)' : 'disabled')}`)
   console.log(`  ⏱   Tick rate: ${TICK_RATE_HZ} Hz`)
   console.log(`  💾  Autosave: every ${CONFIG.AUTOSAVE_INTERVAL_MS / 1000}s`)

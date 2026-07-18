@@ -1,11 +1,11 @@
 // ============================================================
-// Aetheria Server - Auth helpers (bcrypt + JWT)
+// Mythral Server - Auth helpers (bcrypt + JWT)
 // ============================================================
 
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'aetheria-dev-secret-change-me-in-production'
+const JWT_SECRET = process.env.JWT_SECRET || 'mythral-dev-secret-change-me-in-production'
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'
 const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS) || 10
 

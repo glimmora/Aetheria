@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - NPC Dialog Window
+// Mythral - NPC Dialog Window
 // ============================================================
 
 import React from 'react'
@@ -14,12 +14,12 @@ export default function DialogWindow({ activeDialog, questProgress, onClose, onO
   const quests = questIds.map(qid => QUESTS[qid]).filter(Boolean)
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="dialog-window aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 520, maxWidth: '90vw' }}>
-        <div className="aetheria-window-header">
+      <div className="dialog-window mythral-window" onClick={e => e.stopPropagation()} style={{ width: 520, maxWidth: '90vw' }}>
+        <div className="mythral-window-header">
           <span>{npc.name}</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="dialog-npc-info">
             <div className="dialog-npc-portrait" style={{ background: npc.color }}>
               {npc.name[0]}
@@ -34,7 +34,7 @@ export default function DialogWindow({ activeDialog, questProgress, onClose, onO
 
           <div className="dialog-actions">
             {npc.shop && (
-              <button className="aetheria-btn" onClick={() => onOpenShop(npc)}>
+              <button className="mythral-btn" onClick={() => onOpenShop(npc)}>
                 🛒 Trade
               </button>
             )}
@@ -42,37 +42,37 @@ export default function DialogWindow({ activeDialog, questProgress, onClose, onO
               const state = questProgress[q.id] || QUEST_STATUS.AVAILABLE
               if (state === QUEST_STATUS.AVAILABLE) {
                 return (
-                  <button key={q.id} className="aetheria-btn aetheria-btn-primary" onClick={() => onOpenQuest({ ...npc, quest: q.id })}>
+                  <button key={q.id} className="mythral-btn mythral-btn-primary" onClick={() => onOpenQuest({ ...npc, quest: q.id })}>
                     ❗ Quest: {q.title}
                   </button>
                 )
               }
               if (state === QUEST_STATUS.ACTIVE) {
                 return (
-                  <button key={q.id} className="aetheria-btn" disabled>
+                  <button key={q.id} className="mythral-btn" disabled>
                     ⏳ {q.title} (In Progress)
                   </button>
                 )
               }
               if (state === QUEST_STATUS.COMPLETE) {
                 return (
-                  <button key={q.id} className="aetheria-btn aetheria-btn-success" onClick={() => onOpenQuest({ ...npc, quest: q.id })}>
+                  <button key={q.id} className="mythral-btn mythral-btn-success" onClick={() => onOpenQuest({ ...npc, quest: q.id })}>
                     ✅ Turn In: {q.title}
                   </button>
                 )
               }
               return (
-                <button key={q.id} className="aetheria-btn" disabled>
+                <button key={q.id} className="mythral-btn" disabled>
                   ✓ {q.title} (Done)
                 </button>
               )
             })}
             {npc.travel && (
-              <button className="aetheria-btn aetheria-btn-primary" onClick={() => onOpenTravel(npc)}>
+              <button className="mythral-btn mythral-btn-primary" onClick={() => onOpenTravel(npc)}>
                 ⚓ Travel
               </button>
             )}
-            <button className="aetheria-btn" onClick={onClose}>Farewell</button>
+            <button className="mythral-btn" onClick={onClose}>Farewell</button>
           </div>
         </div>
       </div>

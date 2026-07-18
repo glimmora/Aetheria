@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Shared protocol
+// Mythral - Shared protocol
 // Event names and message shapes used by both client and server
 // ============================================================
 

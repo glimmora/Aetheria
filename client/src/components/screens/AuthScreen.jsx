@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Auth Screen (login / register)
+// Mythral Client - Auth Screen (login / register)
 // ============================================================
 
 import React, { useState } from 'react'
@@ -25,12 +25,12 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
     <div className="auth-bg">
       <div className="auth-content">
         <div className="auth-logo">
-          <div className="auth-logo-glow">AETHERIA</div>
-          <h1 className="auth-logo-title">AETHERIA</h1>
+          <div className="auth-logo-glow">MYTHRAL</div>
+          <h1 className="auth-logo-title">MYTHRAL</h1>
           <div className="auth-logo-sub">Nine Isles</div>
         </div>
 
-        <div className="auth-card aetheria-panel">
+        <div className="auth-card mythral-panel">
           <div className="auth-tabs">
             <button
               className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
@@ -66,14 +66,14 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
             {(localError || authError) && (
               <div className="auth-error">{localError || authError}</div>
             )}
-            <button type="submit" className="aetheria-btn aetheria-btn-success w-full mt-2">
-              {mode === 'login' ? 'Enter Aetheria' : 'Create Account'}
+            <button type="submit" className="mythral-btn mythral-btn-success w-full mt-2">
+              {mode === 'login' ? 'Enter Mythral' : 'Create Account'}
             </button>
           </form>
 
           <div className="auth-hint">
             {mode === 'login' ? (
-              <>New to Aetheria? <a onClick={() => setMode('register')}>Create an account</a></>
+              <>New to Mythral? <a onClick={() => setMode('register')}>Create an account</a></>
             ) : (
               <>Already have an account? <a onClick={() => setMode('login')}>Login</a></>
             )}
@@ -81,7 +81,7 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
         </div>
 
         <div className="auth-footer">
-          Aetheria: Nine Isles · Multiplayer Edition
+          Mythral · Multiplayer Edition
         </div>
       </div>
     </div>

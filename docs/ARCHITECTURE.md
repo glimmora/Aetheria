@@ -1,6 +1,6 @@
 # Architecture
 
-Aetheria: Nine Isles uses a **single-world, server-authoritative** architecture over WebSocket. This document explains the design, the data flow, and the rationale behind each major decision.
+Mythral uses a **single-world, server-authoritative** architecture over WebSocket. This document explains the design, the data flow, and the rationale behind each major decision.
 
 ---
 
@@ -69,7 +69,7 @@ Aetheria: Nine Isles uses a **single-world, server-authoritative** architecture 
 
 ## 2. The single-world principle
 
-Aetheria runs **one `World` instance per server process**. There are no "shards", "realms", or "channels" — every player who connects to your server plays in the same world.
+Mythral runs **one `World` instance per server process**. There are no "shards", "realms", or "channels" — every player who connects to your server plays in the same world.
 
 Concretely, in `server/index.js`:
 
@@ -103,7 +103,7 @@ For 95% of small/medium deployments, one world is plenty.
 ## 3. Folder structure and the `shared/` contract
 
 ```
-Aetheria/
+Mythral/
 ├── client/      # Browser code only
 ├── server/      # Server-only code
 └── shared/      # Imported by BOTH client and server
@@ -403,7 +403,7 @@ Re-implement these 9 functions against your database of choice and the rest of t
    - Signs JWT with { username } payload, 7-day expiry
    - Returns { ok, token, username }
    ↓
-4. Client stores token in localStorage as 'aetheria_token'
+4. Client stores token in localStorage as 'mythral_token'
    ↓
 5. Client connects Socket.io with auth: { token }
    ↓
@@ -478,7 +478,7 @@ A single hook keeps the socket connection lifecycle simple (one connection per a
 
 ## 12. State synchronization strategy
 
-Aetheria uses a hybrid sync model:
+Mythral uses a hybrid sync model:
 
 ### On join (full state)
 

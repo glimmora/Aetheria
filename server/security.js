@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Server - Security & Validation helpers
+// Mythral Server - Security & Validation helpers
 // Anti-cheat: action locks, proximity checks, sanitization,
 // audit logging. Every player action must pass through these.
 // ============================================================

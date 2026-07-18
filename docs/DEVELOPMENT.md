@@ -1,6 +1,6 @@
 # Development Guide
 
-How to extend Aetheria: Nine Isles. Covers adding content (islands, NPCs, quests, items, monsters, classes) and modifying systems (combat, AI, persistence).
+How to extend Mythral. Covers adding content (islands, NPCs, quests, items, monsters, classes) and modifying systems (combat, AI, persistence).
 
 > **Prerequisite:** Read the [Architecture overview](./ARCHITECTURE.md) first to understand the single-world server-authoritative design before making changes.
 
@@ -29,7 +29,7 @@ How to extend Aetheria: Nine Isles. Covers adding content (islands, NPCs, quests
 ## 1. Project layout
 
 ```
-Aetheria/
+Mythral/
 ├── client/      # React + Vite (renders server state)
 ├── server/      # Node.js + Express + Socket.io (authoritative)
 ├── shared/      # Pure data + logic, imported by both

@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Quest Dialog (accept/turn-in)
+// Mythral - Quest Dialog (accept/turn-in)
 // ============================================================
 
 import React from 'react'
@@ -15,12 +15,12 @@ export default function QuestDialog({ activeQuestDialog, player, inventory, kill
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="quest-window aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 540, maxWidth: '90vw' }}>
-        <div className="aetheria-window-header">
+      <div className="quest-window mythral-window" onClick={e => e.stopPropagation()} style={{ width: 540, maxWidth: '90vw' }}>
+        <div className="mythral-window-header">
           <span>❗ {quest.title}</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="quest-meta">
             <span className="quest-meta-item">📍 {quest.island.replace(/_/g, ' ')}</span>
             <span className="quest-meta-item">⭐ Req Lv {quest.minLevel}</span>
@@ -60,22 +60,22 @@ export default function QuestDialog({ activeQuestDialog, player, inventory, kill
             {state === QUEST_STATUS.AVAILABLE && (
               <>
                 {!canAccept && <span className="text-red text-sm">Requires level {quest.minLevel}.</span>}
-                <button className="aetheria-btn aetheria-btn-success" disabled={!canAccept} onClick={() => onAccept(quest.id)}>
+                <button className="mythral-btn mythral-btn-success" disabled={!canAccept} onClick={() => onAccept(quest.id)}>
                   Accept Quest
                 </button>
-                <button className="aetheria-btn" onClick={onClose}>Decline</button>
+                <button className="mythral-btn" onClick={onClose}>Decline</button>
               </>
             )}
             {state === QUEST_STATUS.ACTIVE && (
-              <button className="aetheria-btn" onClick={onClose}>In Progress...</button>
+              <button className="mythral-btn" onClick={onClose}>In Progress...</button>
             )}
             {state === QUEST_STATUS.COMPLETE && (
               <>
                 <div className="text-green text-sm font-bold">✅ Quest Complete! Turn in for your reward.</div>
-                <button className="aetheria-btn aetheria-btn-success" onClick={() => onTurnIn(quest.id)}>
+                <button className="mythral-btn mythral-btn-success" onClick={() => onTurnIn(quest.id)}>
                   Turn In
                 </button>
-                <button className="aetheria-btn" onClick={onClose}>Later</button>
+                <button className="mythral-btn" onClick={onClose}>Later</button>
               </>
             )}
           </div>

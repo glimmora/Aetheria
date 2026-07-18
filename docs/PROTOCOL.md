@@ -1,6 +1,6 @@
 # Protocol Reference
 
-The complete contract for Socket.io events and message shapes between the Aetheria client and server.
+The complete contract for Socket.io events and message shapes between the Mythral client and server.
 
 All event names and config constants are defined in [`shared/protocol.js`](../shared/protocol.js). Both the client and server import from this file to ensure they stay in sync.
 
@@ -32,7 +32,7 @@ See [HTTP API reference](./API.md) for details.
 
 ### 2. Socket.io connection with JWT
 
-The client stores the JWT in `localStorage` as `aetheria_token` and passes it as `auth` when connecting:
+The client stores the JWT in `localStorage` as `mythral_token` and passes it as `auth` when connecting:
 
 ```js
 const socket = io(SERVER_URL, {

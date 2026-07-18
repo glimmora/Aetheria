@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Chat Box (island-local chat)
+// Mythral Client - Chat Box (island-local chat)
 // ============================================================
 
 import React, { useState, useRef, useEffect } from 'react'

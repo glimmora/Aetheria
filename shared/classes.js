@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Classes
+// Mythral - Classes
 // Four playable classes with distinct playstyles
 // ============================================================
 

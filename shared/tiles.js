@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Tile types
+// Mythral - Tile types
 // Single source of truth for tile definitions
 // ============================================================
 

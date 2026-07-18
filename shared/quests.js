@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Quests
+// Mythral - Quests
 // 60+ quests organized by island
 // Quest types: kill, collect, talk, travel, boss
 // ============================================================
@@ -178,7 +178,7 @@ export const QUESTS = {
     target: { monster: 'emberlord_pyros', count: 1 },
     reward: { xp: 1500, gold: 500, items: [{ id: 'flamebrand', qty: 1 }] },
     description: 'Emberlord Pyros must be slain in the caldera. He is level 18 - prepare well, hero.',
-    completion: 'Priestess Ember kneels. "The Emberlord falls. Aetheria owes you a debt. Take his blade - Flamebrand."',
+    completion: 'Priestess Ember kneels. "The Emberlord falls. Mythral owes you a debt. Take his blade - Flamebrand."',
   },
   ember_essence_trade: {
     id: 'ember_essence_trade',
@@ -241,7 +241,7 @@ export const QUESTS = {
     type: 'boss',
     target: { monster: 'frost_dragon', count: 1 },
     reward: { xp: 2000, gold: 700, items: [{ id: 'crown_of_flames', qty: 1 }] },
-    description: 'The Frost Dragon stirs beneath the highest peak. Slay it before its dreams freeze Aetheria.',
+    description: 'The Frost Dragon stirs beneath the highest peak. Slay it before its dreams freeze Mythral.',
     completion: 'Runa\'s eyes shine. "The vision is fulfilled. Take this crown - it shall burn away any frost."',
   },
   frost_yetis: {
@@ -478,7 +478,7 @@ export const QUESTS = {
     target: { monster: 'sun_titan', count: 1 },
     reward: { xp: 2500, gold: 900, items: [{ id: 'dawnbringer', qty: 1 }] },
     description: 'The Sun Titan burns the land. Slay him in the great pyramid.',
-    completion: 'Vizier Khalid kneels. "The oases flow again. Aetheria thanks you. Take the Dawnbringer."',
+    completion: 'Vizier Khalid kneels. "The oases flow again. Mythral thanks you. Take the Dawnbringer."',
   },
   sun_scorpions: {
     id: 'sun_scorpions',
@@ -526,7 +526,7 @@ export const QUESTS = {
     target: { item: 'iron_ore', count: 10 },
     reward: { xp: 400, gold: 150, items: [{ id: 'steel_longsword', qty: 1 }] },
     description: 'Ahmed will forge you a steel longsword for 10 iron ores.',
-    completion: 'Ahmed quenches the blade in oil. "Sunscorched steel - finest in Aetheria."',
+    completion: 'Ahmed quenches the blade in oil. "Sunscorched steel - finest in Mythral."',
   },
   sun_mummies: {
     id: 'sun_mummies',
@@ -886,7 +886,7 @@ export const QUESTS = {
     target: { monster: 'thunder_drake', count: 1 },
     reward: { xp: 4000, gold: 1400, items: [{ id: 'staff_of_storms', qty: 1 }] },
     description: 'The Thunder Drake must be slain atop Skyreach before it lays its eggs.',
-    completion: 'Solara beams. "Aetheria is spared a storm of wyrms. Take this staff."',
+    completion: 'Solara beams. "Mythral is spared a storm of wyrms. Take this staff."',
   },
   sky_harpies: {
     id: 'sky_harpies',
@@ -985,8 +985,8 @@ export const QUESTS = {
     type: 'boss',
     target: { monster: 'voidlord_acheron', count: 1 },
     reward: { xp: 8000, gold: 3000, items: [{ id: 'dragonscale', qty: 1 }, { id: 'crown_of_flames', qty: 1 }] },
-    description: 'The final battle. Voidlord Acheron must be slain to save Aetheria.',
-    completion: 'Watcher Aza kneels. "Aetheria is saved. Your name shall be sung forever. Take these - the spoils of salvation."',
+    description: 'The final battle. Voidlord Acheron must be slain to save Mythral.',
+    completion: 'Watcher Aza kneels. "Mythral is saved. Your name shall be sung forever. Take these - the spoils of salvation."',
   },
   void_spawns: {
     id: 'void_spawns',

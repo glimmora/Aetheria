@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Items
+// Mythral - Items
 // ============================================================
 
 export const ITEMS = {
@@ -36,7 +36,7 @@ export const ITEMS = {
 
   acolyte_vestments: { id: 'acolyte_vestments', name: 'Acolyte Vestments', type: 'armor', slot: 'armor', defense: 3, magic: 4, value: 12, desc: 'Humble robes of a temple servant.', icon: '🧥' },
   priest_vestments: { id: 'priest_vestments', name: 'Priest Vestments', type: 'armor', slot: 'armor', defense: 6, magic: 9, value: 100, desc: 'Embroidered with sun motifs.', icon: '🧥', reqLevel: 5 },
-  hierophant_robe: { id: 'hierophant_robe', name: 'Hierophant Robe', type: 'armor', slot: 'armor', defense: 11, magic: 20, value: 320, desc: 'Worn by the high priests of Aetheria.', icon: '🧥', reqLevel: 14 },
+  hierophant_robe: { id: 'hierophant_robe', name: 'Hierophant Robe', type: 'armor', slot: 'armor', defense: 11, magic: 20, value: 320, desc: 'Worn by the high priests of Mythral.', icon: '🧥', reqLevel: 14 },
 
   // ---- Helmets ----
   leather_cap: { id: 'leather_cap', name: 'Leather Cap', type: 'armor', slot: 'helmet', defense: 1, value: 5, desc: 'A simple cap.', icon: '⛑' },
@@ -79,7 +79,7 @@ export const ITEMS = {
   pearl: { id: 'pearl', name: 'Pearl', type: 'material', value: 50, desc: 'A lustrous ocean pearl.', icon: '⚪' },
   sunstone: { id: 'sunstone', name: 'Sunstone', type: 'material', value: 75, desc: 'Warm to the touch, glows at night.', icon: '🔆' },
   mist_petal: { id: 'mist_petal', name: 'Mist Petal', type: 'material', value: 18, desc: 'A petal from a Mistwood bloom.', icon: '🌸' },
-  gold_coin: { id: 'gold_coin', name: 'Gold Coin', type: 'currency', value: 1, desc: 'The currency of Aetheria.', icon: '🪙' },
+  gold_coin: { id: 'gold_coin', name: 'Gold Coin', type: 'currency', value: 1, desc: 'The currency of Mythral.', icon: '🪙' },
 
   // ---- Keys / Quest Items ----
   rusty_key: { id: 'rusty_key', name: 'Rusty Key', type: 'key', value: 0, desc: 'Opens something forgotten.', icon: '🗝' },

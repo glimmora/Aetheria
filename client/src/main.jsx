@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Entry point
+// Mythral Client - Entry point
 // Wraps App in ErrorBoundary for crash recovery.
 // ============================================================
 

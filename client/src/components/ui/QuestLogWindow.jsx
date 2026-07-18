@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Quest Log Window
+// Mythral - Quest Log Window
 // ============================================================
 
 import React, { useState } from 'react'
@@ -29,12 +29,12 @@ export default function QuestLogWindow({ active, player, inventory, killCounts, 
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="questlog-window aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 720, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="questlog-window mythral-window" onClick={e => e.stopPropagation()} style={{ width: 720, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>❗ Quest Log</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="questlog-tabs">
             <button className={`questlog-tab ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>
               Active ({activeQuests.length})

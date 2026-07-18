@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - HUD (top bar + skill bar + log)
+// Mythral - HUD (top bar + skill bar + log)
 // ============================================================
 
 import React from 'react'

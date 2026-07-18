@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - Online Players, Leaderboard, MiniMap,
+// Mythral Client - Online Players, Leaderboard, MiniMap,
 // Settings, PlayerInspect windows
 // ============================================================
 
@@ -17,12 +17,12 @@ export function OnlinePlayersWindow({ active, onlinePlayers, currentIsland, onCl
 
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>👥 Online Players ({onlinePlayers.length})</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="online-section">
             <div className="text-gold text-sm font-bold mb-1">ON YOUR ISLAND ({onMyIsland.length})</div>
             {onMyIsland.length === 0 && <div className="text-dim text-sm">No one else here.</div>}
@@ -33,7 +33,7 @@ export function OnlinePlayersWindow({ active, onlinePlayers, currentIsland, onCl
                   <div className="online-name" style={{ color: p.classDef?.color }}>{p.name}</div>
                   <div className="text-xs text-dim">Lv {p.level} {p.classDef?.name}</div>
                 </div>
-                <button className="aetheria-btn text-sm" onClick={() => onInspect(p.id)}>Inspect</button>
+                <button className="mythral-btn text-sm" onClick={() => onInspect(p.id)}>Inspect</button>
               </div>
             ))}
           </div>
@@ -66,12 +66,12 @@ export function PlayerInspectWindow({ inspectData, onClose }) {
   const isl = ISLAND_DEFS[inspectData.currentIsland]
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 420, maxWidth: '95vw' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 420, maxWidth: '95vw' }}>
+        <div className="mythral-window-header">
           <span>👤 {inspectData.name}</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="char-portrait-section">
             <div className="char-portrait" style={{ background: inspectData.classDef?.color }}>
               <span style={{ fontSize: 40 }}>{inspectData.classDef?.icon}</span>
@@ -130,12 +130,12 @@ export function LeaderboardWindow({ active, leaderboard, onClose }) {
   if (!active) return null
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 560, maxWidth: '95vw', maxHeight: '85vh' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 560, maxWidth: '95vw', maxHeight: '85vh' }}>
+        <div className="mythral-window-header">
           <span>🏆 Leaderboard</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           {leaderboard.length === 0 ? (
             <div className="text-dim text-center p-4">No characters yet. Be the first!</div>
           ) : (
@@ -171,12 +171,12 @@ export function SettingsWindow({ active, settings, onUpdate, onClose, onLogout }
   const toggle = (key) => () => onUpdate({ [key]: !settings[key] })
   return (
     <div className="dialog-overlay" onClick={onClose}>
-      <div className="aetheria-window" onClick={e => e.stopPropagation()} style={{ width: 400, maxWidth: '95vw' }}>
-        <div className="aetheria-window-header">
+      <div className="mythral-window" onClick={e => e.stopPropagation()} style={{ width: 400, maxWidth: '95vw' }}>
+        <div className="mythral-window-header">
           <span>⚙ Settings</span>
-          <button className="aetheria-window-close" onClick={onClose}>×</button>
+          <button className="mythral-window-close" onClick={onClose}>×</button>
         </div>
-        <div className="aetheria-window-body">
+        <div className="mythral-window-body">
           <div className="settings-row">
             <div>
               <div className="font-bold">Damage Numbers</div>
@@ -235,7 +235,7 @@ export function SettingsWindow({ active, settings, onUpdate, onClose, onLogout }
           </div>
           <div className="settings-divider" />
           <div className="text-xs text-dim mb-2">Settings are saved to your browser localStorage.</div>
-          <button className="aetheria-btn aetheria-btn-danger w-full" onClick={onLogout}>
+          <button className="mythral-btn mythral-btn-danger w-full" onClick={onLogout}>
             Logout
           </button>
         </div>

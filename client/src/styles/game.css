@@ -1,5 +1,5 @@
 /* ============================================================
-   Aetheria: Nine Isles — Modern Gaming UI
+   Mythral — Modern Gaming UI
    In-game styles: HUD, tile map, entities, windows
    ============================================================ */
 
@@ -480,7 +480,7 @@
   justify-content: space-between;
   gap: 12px;
 }
-.char-create-buttons .aetheria-btn {
+.char-create-buttons .mythral-btn {
   flex: 1;
   font-size: 15px;
   padding: 14px;
@@ -2086,7 +2086,7 @@
     height: 40px;
     font-size: 16px;
   }
-  .aetheria-btn {
+  .mythral-btn {
     padding: 14px 28px;
     font-size: 14px;
   }
@@ -2183,7 +2183,7 @@
     top: 110px;
   }
   /* Full-screen windows on tablet */
-  .aetheria-window {
+  .mythral-window {
     width: 95vw !important;
     max-width: 95vw !important;
     max-height: 90vh !important;
@@ -2323,17 +2323,17 @@
     padding: 4px 12px;
   }
   /* Windows: truly full-screen on phone */
-  .aetheria-window {
+  .mythral-window {
     width: 96vw !important;
     max-width: 96vw !important;
     max-height: 92vh !important;
     border-radius: var(--r-md);
   }
-  .aetheria-window-header {
+  .mythral-window-header {
     padding: 10px 14px;
     font-size: 12px;
   }
-  .aetheria-window-body { padding: 12px; }
+  .mythral-window-body { padding: 12px; }
   /* Inventory grid: 4 columns on phone */
   .inventory-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -2376,7 +2376,7 @@
   .char-card-name { font-size: 17px; }
   .char-card-class { font-size: 13px; }
   .char-card-actions { gap: 4px; }
-  .char-card-actions .aetheria-btn { padding: 8px 14px; font-size: 12px; }
+  .char-card-actions .mythral-btn { padding: 8px 14px; font-size: 12px; }
   .death-panel { padding: 32px; }
   .death-title { font-size: 36px; }
   .death-actions { flex-direction: column; }

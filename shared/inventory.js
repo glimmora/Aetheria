@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Inventory system
+// Mythral - Inventory system
 // ============================================================
 
 import { getItem, isEquipment } from './items.js'

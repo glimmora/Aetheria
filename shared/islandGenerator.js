@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Island map generator
+// Mythral - Island map generator
 // Deterministic pseudo-random map generator that produces
 // organic-looking islands with biomes, paths, buildings,
 // decoration clusters, and monster spawn points.

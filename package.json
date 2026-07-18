@@ -1,9 +1,9 @@
 {
-  "name": "aetheria-nine-isles",
+  "name": "mythral",
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Aetheria: Nine Isles - A multiplayer browser MMORPG (client + server)",
+  "description": "Mythral - A multiplayer browser MMORPG (client + server)",
   "workspaces": [
     "client",
     "server"

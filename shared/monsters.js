@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria: Nine Isles - Monsters
+// Mythral - Monsters
 // Each monster defines combat stats, level range, drops
 // ============================================================
 

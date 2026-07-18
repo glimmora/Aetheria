@@ -1,6 +1,6 @@
 # Tutorial
 
-A hands-on walkthrough for **players** (how to play the game) and **developers** (how to extend it). If you have not installed Aetheria yet, start with the [Installation Guide](./INSTALL.md) first.
+A hands-on walkthrough for **players** (how to play the game) and **developers** (how to extend it). If you have not installed Mythral yet, start with the [Installation Guide](./INSTALL.md) first.
 
 ---
 
@@ -245,7 +245,7 @@ You can also sail backward at any time (e.g., Skyreach back to Shadowfen) at the
 
 ## 11. Multiplayer: chat and seeing other players
 
-Aetheria is a real **multiplayer** game. Other players on the same island appear as colored circles with their name above. Their class icon and color show in the circle.
+Mythral is a real **multiplayer** game. Other players on the same island appear as colored circles with their name above. Their class icon and color show in the circle.
 
 **Island chat** is at the bottom-left corner. Click the header to expand it, type a message, press **Enter** to send. The message is broadcast to every player on your current island.
 
@@ -260,7 +260,7 @@ If you walk near another player, you can attack the same monsters they are attac
 ## 12. Project layout recap
 
 ```
-Aetheria/
+Mythral/
 ├── client/      # React + Vite frontend (renders state from server)
 ├── server/      # Node.js + Express + Socket.io (authoritative game state)
 ├── shared/      # Pure data + logic, imported by both client and server

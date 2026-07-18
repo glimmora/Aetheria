@@ -1,6 +1,6 @@
 # Deployment Guide
 
-How to put Aetheria: Nine Isles on the public internet. Covers single-VPS deployment, Docker, reverse proxy with nginx, SSL, and database migration.
+How to put Mythral on the public internet. Covers single-VPS deployment, Docker, reverse proxy with nginx, SSL, and database migration.
 
 ---
 
@@ -43,7 +43,7 @@ For most use cases, **Option A** is the right starting point. Migrate to B or C 
 
 - 1 vCPU
 - 1 GB RAM (2 GB recommended)
-- 20 GB disk (mostly for OS; Aetheria data is tiny)
+- 20 GB disk (mostly for OS; Mythral data is tiny)
 - Ubuntu 22.04 LTS or Debian 12
 
 ---
@@ -68,17 +68,17 @@ node --version    # v20.x
 ### Step 3 — Create a non-root user
 
 ```bash
-adduser aetheria
-usermod -aG sudo aetheria
-su - aetheria
+adduser mythral
+usermod -aG sudo mythral
+su - mythral
 ```
 
 ### Step 4 — Clone the repo and install
 
 ```bash
-cd /home/aetheria
-git clone https://github.com/glimmora/Aetheria.git
-cd Aetheria
+cd /home/mythral
+git clone https://github.com/glimmora/Mythral.git
+cd Mythral
 npm install
 ```
 
@@ -91,7 +91,7 @@ npm run build
 
 ### Step 6 — Configure environment
 
-Create `/home/aetheria/Aetheria/.env`:
+Create `/home/mythral/Mythral/.env`:
 ```bash
 PORT=4000
 CLIENT_ORIGIN=https://your-domain.com
@@ -127,8 +127,8 @@ app.get('*', (req, res) => {
 
 ```bash
 sudo npm install -g pm2
-cd /home/aetheria/Aetheria
-pm2 start server/index.js --name aetheria
+cd /home/mythral/Mythral
+pm2 start server/index.js --name mythral
 pm2 save
 pm2 startup    # follow the instructions to make PM2 start on boot
 ```
@@ -202,7 +202,7 @@ scripts
 version: '3.8'
 
 services:
-  aetheria:
+  mythral:
     build: .
     ports:
       - "4000:4000"
@@ -231,7 +231,7 @@ export JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(48).toStr
 docker compose up -d --build
 
 # Check logs
-docker compose logs -f aetheria
+docker compose logs -f mythral
 
 # Stop
 docker compose down
@@ -292,7 +292,7 @@ Nginx sits in front of Node.js and handles:
 - WebSocket upgrade headers for Socket.io
 - Rate limiting (optional)
 
-### /etc/nginx/sites-available/aetheria
+### /etc/nginx/sites-available/mythral
 
 ```nginx
 server {
@@ -336,7 +336,7 @@ server {
 ### Enable and reload
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/aetheria /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/mythral /etc/nginx/sites-enabled/
 sudo nginx -t          # test config
 sudo systemctl reload nginx
 ```
@@ -378,12 +378,12 @@ PM2 keeps your Node.js process alive across crashes and reboots.
 ### Common commands
 
 ```bash
-pm2 start server/index.js --name aetheria     # start
+pm2 start server/index.js --name mythral     # start
 pm2 status                                    # list processes
-pm2 logs aetheria                             # tail logs
-pm2 restart aetheria                          # restart
-pm2 stop aetheria                             # stop
-pm2 delete aetheria                           # remove from PM2
+pm2 logs mythral                             # tail logs
+pm2 restart mythral                          # restart
+pm2 stop mythral                             # stop
+pm2 delete mythral                           # remove from PM2
 pm2 monit                                     # real-time CPU/memory
 ```
 
@@ -398,7 +398,7 @@ pm2 save                                      # save current process list
 ### Cluster mode (for multiple CPU cores)
 
 ```bash
-pm2 start server/index.js --name aetheria -i max
+pm2 start server/index.js --name mythral -i max
 ```
 
 > **Warning:** Cluster mode with Socket.io requires a Redis adapter for cross-worker broadcasting. Without it, players on different workers cannot see each other. See [Architecture → Scaling](./ARCHITECTURE.md#14-scaling-considerations).
@@ -410,7 +410,7 @@ Create `ecosystem.config.cjs`:
 ```js
 module.exports = {
   apps: [{
-    name: 'aetheria',
+    name: 'mythral',
     script: 'server/index.js',
     instances: 1,            // use 1 unless you set up Redis adapter
     autorestart: true,
@@ -471,16 +471,16 @@ sudo -u postgres psql
 ```
 
 ```sql
-CREATE USER aetheria WITH PASSWORD 'strong-password';
-CREATE DATABASE aetheria OWNER aetheria;
+CREATE USER mythral WITH PASSWORD 'strong-password';
+CREATE DATABASE mythral OWNER mythral;
 \q
 ```
 
 ### Step 2 — Create the schema
 
 ```sql
--- Run this as the aetheria user
-\c aetheria
+-- Run this as the mythral user
+\c mythral
 
 CREATE TABLE users (
   username TEXT PRIMARY KEY,
@@ -553,7 +553,7 @@ Before going live, verify each item:
 - [ ] Firewall allows only ports 22, 80, 443 (block direct access to port 4000)
 - [ ] `data/` folder is backed up regularly (see [§12](#12-backup-strategy))
 - [ ] PM2 is configured to restart on crash and on boot
-- [ ] Server is not running as root (use the `aetheria` user)
+- [ ] Server is not running as root (use the `mythral` user)
 - [ ] Rate limiting is enabled on `/api/login` and `/api/register` (see [API.md](./API.md#rate-limiting))
 - [ ] `sudo` requires a password
 - [ ] SSH login uses a key, not a password (`PasswordAuthentication no` in `/etc/ssh/sshd_config`)
@@ -578,11 +578,11 @@ sudo ufw enable
 ### PM2 logs
 
 ```bash
-pm2 logs aetheria --lines 100    # last 100 lines
-pm2 logs aetheria --err          # errors only
+pm2 logs mythral --lines 100    # last 100 lines
+pm2 logs mythral --err          # errors only
 ```
 
-Log files are at `/home/aetheria/.pm2/logs/`.
+Log files are at `/home/mythral/.pm2/logs/`.
 
 ### Log rotation
 
@@ -623,39 +623,39 @@ That's it. Everything else is in git.
 
 ### Automated daily backup
 
-Create `/home/aetheria/backup.sh`:
+Create `/home/mythral/backup.sh`:
 
 ```bash
 #!/bin/bash
 set -e
 
-BACKUP_DIR=/home/aetheria/backups
+BACKUP_DIR=/home/mythral/backups
 DATE=$(date +%Y%m%d_%H%M%S)
 mkdir -p $BACKUP_DIR
 
 # Stop writes briefly by signaling PM2 to pause autosave
 # (or just copy — JSON files are usually consistent enough)
 
-cp /home/aetheria/Aetheria/data/users.json $BACKUP_DIR/users_$DATE.json
-cp /home/aetheria/Aetheria/data/characters.json $BACKUP_DIR/characters_$DATE.json
+cp /home/mythral/Mythral/data/users.json $BACKUP_DIR/users_$DATE.json
+cp /home/mythral/Mythral/data/characters.json $BACKUP_DIR/characters_$DATE.json
 
 # Compress
 cd $BACKUP_DIR
-tar czf aetheria_backup_$DATE.tar.gz users_$DATE.json characters_$DATE.json
+tar czf mythral_backup_$DATE.tar.gz users_$DATE.json characters_$DATE.json
 rm users_$DATE.json characters_$DATE.json
 
 # Keep only the last 30 days
-find $BACKUP_DIR -name "aetheria_backup_*.tar.gz" -mtime +30 -delete
+find $BACKUP_DIR -name "mythral_backup_*.tar.gz" -mtime +30 -delete
 
-echo "Backup complete: aetheria_backup_$DATE.tar.gz"
+echo "Backup complete: mythral_backup_$DATE.tar.gz"
 ```
 
 Make it executable and schedule it:
 ```bash
-chmod +x /home/aetheria/backup.sh
+chmod +x /home/mythral/backup.sh
 crontab -e
 # Add this line:
-0 3 * * * /home/aetheria/backup.sh >> /home/aetheria/backup.log 2>&1
+0 3 * * * /home/mythral/backup.sh >> /home/mythral/backup.log 2>&1
 ```
 
 This runs daily at 3 AM.
@@ -665,19 +665,19 @@ This runs daily at 3 AM.
 For extra safety, sync backups to S3 or another server:
 ```bash
 # In backup.sh, after the tar:
-aws s3 cp aetheria_backup_$DATE.tar.gz s3://your-bucket/aetheria/
+aws s3 cp mythral_backup_$DATE.tar.gz s3://your-bucket/mythral/
 ```
 
 ### Restore procedure
 
 ```bash
-cd /home/aetheria/Aetheria
-pm2 stop aetheria
+cd /home/mythral/Mythral
+pm2 stop mythral
 # Extract the backup
-tar xzf /home/aetheria/backups/aetheria_backup_YYYYMMDD_HHMMSS.tar.gz
+tar xzf /home/mythral/backups/mythral_backup_YYYYMMDD_HHMMSS.tar.gz
 cp users_*.json data/users.json
 cp characters_*.json data/characters.json
-pm2 start aetheria
+pm2 start mythral
 ```
 
 **Test this procedure before you need it.**

@@ -13,7 +13,7 @@ function assert(cond, msg) {
   else { fail++; console.error(`  ✗ ${msg}`) }
 }
 
-console.log('\n=== Aetheria Smoke Test (shared/ data) ===\n')
+console.log('\n=== Mythral Smoke Test (shared/ data) ===\n')
 
 console.log('Classes:')
 assert(Object.keys(CLASSES).length === 4, '4 playable classes defined')

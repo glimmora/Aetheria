@@ -1,8 +1,8 @@
 {
-  "name": "aetheria-server",
+  "name": "mythral-server",
   "version": "2.0.0",
   "type": "module",
-  "description": "Aetheria multiplayer game server (authoritative game state over WebSocket)",
+  "description": "Mythral multiplayer game server (authoritative game state over WebSocket)",
   "main": "index.js",
   "scripts": {
     "dev": "node --watch index.js",

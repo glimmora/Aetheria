@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide walks you through installing and running **Aetheria: Nine Isles** from a clean slate. Pick the path that matches your OS, then follow the steps in order.
+This guide walks you through installing and running **Mythral** from a clean slate. Pick the path that matches your OS, then follow the steps in order.
 
 ---
 
@@ -29,7 +29,7 @@ This guide walks you through installing and running **Aetheria: Nine Isles** fro
 | **Disk** | 200 MB (without `node_modules`) | 500 MB |
 | **Browser** | Chrome 90+, Firefox 88+, Safari 14+, Edge 90+ | Latest Chrome/Firefox |
 
-You do **not** need PostgreSQL, MongoDB, Redis, Docker, or any external database — Aetheria ships with a built-in JSON-file persistence layer that is fine for small/medium deployments. See [Deployment Guide](./DEPLOYMENT.md) if you want to swap it for a real database.
+You do **not** need PostgreSQL, MongoDB, Redis, Docker, or any external database — Mythral ships with a built-in JSON-file persistence layer that is fine for small/medium deployments. See [Deployment Guide](./DEPLOYMENT.md) if you want to swap it for a real database.
 
 ---
 
@@ -38,13 +38,13 @@ You do **not** need PostgreSQL, MongoDB, Redis, Docker, or any external database
 ### Option A — Clone from GitHub (recommended)
 
 ```bash
-git clone https://github.com/glimmora/Aetheria.git
-cd Aetheria
+git clone https://github.com/glimmora/Mythral.git
+cd Mythral
 ```
 
 ### Option B — Download a ZIP
 
-1. Visit https://github.com/glimmora/Aetheria
+1. Visit https://github.com/glimmora/Mythral
 2. Click **Code → Download ZIP**
 3. Extract the archive
 4. Open a terminal in the extracted folder
@@ -53,9 +53,9 @@ cd Aetheria
 
 ```bash
 # Fork via the GitHub UI, then:
-git clone https://github.com/YOUR_USERNAME/Aetheria.git
-cd Aetheria
-git remote add upstream https://github.com/glimmora/Aetheria.git
+git clone https://github.com/YOUR_USERNAME/Mythral.git
+cd Mythral
+git remote add upstream https://github.com/glimmora/Mythral.git
 ```
 
 ---
@@ -136,7 +136,7 @@ All four should print without errors.
 
 ## 5. Configure environment variables
 
-Aetheria works out of the box with sensible development defaults, but you **should** set a few environment variables before going to production.
+Mythral works out of the box with sensible development defaults, but you **should** set a few environment variables before going to production.
 
 ### Development defaults (no action needed)
 
@@ -146,7 +146,7 @@ For local dev, you can skip this section entirely. The defaults are:
 |---|---|---|
 | `PORT` | `4000` | server |
 | `CLIENT_ORIGIN` | `http://localhost:5173` | server (CORS) |
-| `JWT_SECRET` | `aetheria-dev-secret-change-me` | server |
+| `JWT_SECRET` | `mythral-dev-secret-change-me` | server |
 | `VITE_SERVER_URL` | `http://localhost:4000` | client |
 
 ### Production setup
@@ -193,7 +193,7 @@ You should see output like:
 ```
 [server] [db] Loaded 0 users, 0 characters
 [server]
-[server]   ⚔️  Aetheria Server running on http://localhost:4000
+[server]   ⚔️  Mythral Server running on http://localhost:4000
 [server]   🌐  CORS origin: http://localhost:5173
 [server]   ⏱   Tick rate: 10 Hz
 [server]   💾  Autosave: every 30s
@@ -285,7 +285,7 @@ npm run smoke
 
 Expected output:
 ```
-=== Aetheria Smoke Test (shared/ data) ===
+=== Mythral Smoke Test (shared/ data) ===
 ...
 === Results: 50 passed, 0 failed ===
 ```
@@ -304,7 +304,7 @@ node scripts/e2e-test.js
 
 Expected output:
 ```
-=== Aetheria Multiplayer E2E Test ===
+=== Mythral Multiplayer E2E Test ===
 ...
 === Results: 19 passed, 0 failed ===
 ```
@@ -373,7 +373,7 @@ CLIENT_ORIGIN=http://localhost:3000 npm run dev:server
 
 ### "Invalid token" on socket connection
 
-Your JWT in localStorage is stale or signed with an old secret. Open browser DevTools → Application → Local Storage → clear `aetheria_token`, then refresh.
+Your JWT in localStorage is stale or signed with an old secret. Open browser DevTools → Application → Local Storage → clear `mythral_token`, then refresh.
 
 ### Changes to `shared/` don't appear in the browser
 

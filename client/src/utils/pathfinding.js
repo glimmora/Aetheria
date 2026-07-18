@@ -1,5 +1,5 @@
 // ============================================================
-// Aetheria Client - BFS Pathfinding
+// Mythral Client - BFS Pathfinding
 // Finds the shortest walkable path between two tiles.
 // Used for tap-to-move navigation.
 // ============================================================
