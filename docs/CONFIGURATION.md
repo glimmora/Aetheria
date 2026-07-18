@@ -107,29 +107,33 @@ The leveling curve is designed for a **~10-year progression** to level 100 at 4 
 |---|---|---|
 | `MAX_LEVEL` | `100` | Maximum level a character can reach |
 | `XP_CURVE_BASE` | `128` | Base multiplier for the XP curve |
-| `XP_CURVE_GROWTH` | `1.15` | Exponential growth factor per level |
+| `XP_CURVE_GROWTH` | `1.16` | Exponential growth factor per level |
 
 **Formula:** `xpForLevel(n) = XP_CURVE_BASE * XP_CURVE_GROWTH^n`
 
-**Progression table (default settings):**
+**Progression table (default settings, base=128, growth=1.16):**
 
 | Level | XP for next | Total XP | Est. time at 4hr/day |
 |---|---|---|---|
-| 1→2 | 147 | 147 | ~1 minute |
-| 10→11 | 518 | 2,820 | ~5 minutes |
-| 20→21 | 2,099 | 13,510 | ~30 minutes |
-| 30→31 | 8,473 | 54,740 | ~2 hours |
-| 50→51 | 138,666 | 894,000 | ~1 week |
-| 70→71 | 2,270,000 | 14,600,000 | ~2 months |
-| 90→91 | 37,155,000 | 239,000,000 | ~1 year |
-| 99→100 | 131,584,000 | 875,000,000 | ~3 years (this level alone) |
+| 1→2 | 148 | 148 | ~1 minute |
+| 10→11 | 565 | 3,200 | ~5 minutes |
+| 20→21 | 2,491 | 15,400 | ~30 minutes |
+| 30→31 | 10,989 | 62,500 | ~2 hours |
+| 50→51 | 213,850 | 1,020,000 | ~3 days |
+| 70→71 | 4,158,720 | 19,800,000 | ~2 months |
+| 90→91 | 80,921,600 | 385,000,000 | ~8 months |
+| 99→100 | 308,000,132 | 2,233,000,000 | ~8 months (this level alone) |
 
-**Total XP to reach level 100: ~875,000,000**
-At ~1000 XP/min average high-level play = 875,000 minutes = **~10 years at 4hr/day**
+**Total XP to reach level 100: ~2.23 billion**
+
+Time estimates based on average XP rates:
+- At 2000 XP/min (realistic mid+late game): **~12.7 years** at 4hr/day
+- At 3000 XP/min (optimistic endgame grinding): **~8.5 years** at 4hr/day
+- **Average: ~10 years**
 
 **To adjust the curve:**
-- **Faster leveling:** increase `XP_CURVE_GROWTH` (e.g., `1.10` = ~5 years, `1.05` = ~2 years)
-- **Slower leveling:** decrease `XP_CURVE_GROWTH` (e.g., `1.20` = ~20 years, `1.25` = ~40 years)
+- **Faster leveling:** increase `XP_CURVE_GROWTH` (e.g., `1.15` = ~5 years, `1.14` = ~3 years)
+- **Slower leveling:** decrease `XP_CURVE_GROWTH` (e.g., `1.17` = ~20 years, `1.18` = ~33 years)
 - **Shift entire curve:** adjust `XP_CURVE_BASE` (higher = more XP needed at all levels)
 - **Lower cap:** set `MAX_LEVEL=50` for a shorter progression
 
@@ -137,12 +141,17 @@ At ~1000 XP/min average high-level play = 875,000 minutes = **~10 years at 4hr/d
 # Example: 5-year curve to level 100
 MAX_LEVEL=100
 XP_CURVE_BASE=128
-XP_CURVE_GROWTH=1.10
+XP_CURVE_GROWTH=1.15
+
+# Example: 20-year curve (brutal)
+MAX_LEVEL=100
+XP_CURVE_BASE=128
+XP_CURVE_GROWTH=1.17
 
 # Example: hardcap at level 50 with default pacing
 MAX_LEVEL=50
 XP_CURVE_BASE=128
-XP_CURVE_GROWTH=1.15
+XP_CURVE_GROWTH=1.16
 ```
 
 Query the full curve at any time via `GET /api/xp-curve`.

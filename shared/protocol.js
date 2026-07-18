@@ -70,19 +70,24 @@ export const TICK_INTERVAL_MS = 1000 / TICK_RATE_HZ
 // ---- Leveling system ----
 // Designed for a ~10-year progression to level 100 at 4 hours/day active play.
 // Curve: xpForLevel(n) = XP_CURVE_BASE * XP_CURVE_GROWTH^n
-//   - Level 1→2:   ~147 XP       (1-2 kills, minutes)
-//   - Level 10→11: ~518 XP       (5 kills, minutes)
-//   - Level 20→21: ~2,099 XP     (20 kills, ~30 min)
-//   - Level 30→31: ~8,473 XP     (85 kills, ~2 hours)
-//   - Level 50→51: ~138,666 XP   (1,400 kills, ~1 week)
-//   - Level 70→71: ~2,270,000 XP (22,000 kills, ~2 months)
-//   - Level 90→91: ~37,155,000 XP (370,000 kills, ~1 year)
-//   - Level 99→100: ~131,584,000 XP (1.3M kills, ~3 years at this level alone)
-// Total XP to reach 100: ~875,000,000
-// At 1000 XP/min average high-level play = 875,000 min = ~10 years at 4hr/day
+//
+// Default (base=128, growth=1.16):
+//   - Level 1→2:    148 XP         (minutes)
+//   - Level 10→11:  565 XP         (minutes)
+//   - Level 20→21:  2,491 XP       (~30 min)
+//   - Level 30→31:  10,989 XP      (~2 hours)
+//   - Level 50→51:  213,850 XP     (~3 days)
+//   - Level 70→71:  4,158,720 XP   (~2 months)
+//   - Level 90→91:  80,921,600 XP  (~8 months)
+//   - Level 99→100: 308,000,132 XP (~8 months at this level alone)
+//   - Total XP to 100: ~2.23 billion
+//
+// At 2000 XP/min avg (realistic mid+late game): ~12.7 years at 4hr/day
+// At 3000 XP/min avg (optimistic endgame):     ~8.5 years at 4hr/day
+// → Average: ~10 years
 export const MAX_LEVEL = parseInt(process.env.MAX_LEVEL) || 100
 export const XP_CURVE_BASE = parseFloat(process.env.XP_CURVE_BASE) || 128
-export const XP_CURVE_GROWTH = parseFloat(process.env.XP_CURVE_GROWTH) || 1.15
+export const XP_CURVE_GROWTH = parseFloat(process.env.XP_CURVE_GROWTH) || 1.16
 
 // XP required to advance FROM `level` TO `level + 1`
 export function xpForLevel(level) {
