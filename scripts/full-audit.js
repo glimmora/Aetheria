@@ -1,7 +1,7 @@
 // Comprehensive functional audit: test every gameplay system end-to-end
 import { io } from 'socket.io-client'
 
-const SERVER_URL = 'http://localhost:12000'
+const SERVER_URL = 'http://localhost:12400'
 const TEST_USER = `audit${Date.now().toString().slice(-7)}`
 const TEST_PASS = 'auditpass123'
 const TEST_CHAR = `Audit${Date.now().toString().slice(-6)}`

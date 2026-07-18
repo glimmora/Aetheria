@@ -28,9 +28,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // running via npm workspaces)
 dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
-const PORT = parseInt(process.env.PORT) || 12000
+const PORT = parseInt(process.env.PORT) || 12400
 const HOST = process.env.HOST || '0.0.0.0'
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:12000'
 const CLIENT_ORIGIN_PRODUCTION = process.env.CLIENT_ORIGIN // explicit, no fallback in prod
 const BODY_LIMIT = process.env.BODY_LIMIT || '64kb'
 const PING_INTERVAL = parseInt(process.env.SOCKET_PING_INTERVAL) || 10000

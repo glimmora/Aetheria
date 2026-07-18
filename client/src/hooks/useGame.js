@@ -10,7 +10,7 @@ import { io } from 'socket.io-client'
 import { SERVER_EVENTS, CLIENT_EVENTS, CONFIG } from '../../../shared/protocol.js'
 import { findPath } from '../utils/pathfinding.js'
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:12000' : '')
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:12400' : '')
 
 export function useGame() {
   const [screen, setScreen] = useState('connecting') // connecting | auth | char_select | game

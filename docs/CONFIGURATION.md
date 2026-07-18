@@ -29,7 +29,7 @@ Set these in `server/.env`, the project-root `.env`, or as shell environment var
 | Variable | Default | Description |
 |---|---|---|
 | `PORT` | `12000` | HTTP and WebSocket port |
-| `CLIENT_ORIGIN` | `http://localhost:5173` | Allowed CORS origin (your client URL) |
+| `CLIENT_ORIGIN` | `http://localhost:12000` | Allowed CORS origin (your client URL) |
 | `JWT_SECRET` | `mythral-dev-secret-change-me` | Secret for signing JWTs — **change in production** |
 | `NODE_ENV` | `development` | `production` enables stricter behavior |
 
@@ -53,7 +53,7 @@ CLIENT_ORIGIN=https://your-domain.com
 CLIENT_ORIGIN=https://your-game.vercel.com
 ```
 
-For development with the default Vite proxy, leave this as the default (`http://localhost:5173`).
+For development with the default Vite proxy, leave this as the default (`http://localhost:12000`).
 
 #### `JWT_SECRET`
 
@@ -76,7 +76,7 @@ Set these in `client/.env`. Vite exposes them to the browser via `import.meta.en
 
 | Variable | Default | Description |
 |---|---|---|
-| `VITE_SERVER_URL` | `http://localhost:12000` (dev) or empty (prod) | Server URL for socket.io and fetch |
+| `VITE_SERVER_URL` | `http://localhost:12400` (dev) or empty (prod) | Server URL for socket.io and fetch |
 
 #### `VITE_SERVER_URL`
 
@@ -208,22 +208,18 @@ Only affects new characters created after the change.
 
 | Service | Port | Purpose |
 |---|---|---|
-| Server (dev & prod) | `12000` | HTTP API + WebSocket |
-| Client (Vite dev server) | `5173` | Vite default |
-| Client (Vite preview) | `4173` | For `npm run preview` |
+| Frontend (Vite dev server) | `12000` | The web app players open in their browser |
+| Frontend (Vite preview) | `12100` | For `npm run preview` (production build test) |
+| Backend (dev & prod) | `12400` | HTTP API + WebSocket server |
 | Client (production build) | any | Served by nginx/CDN/Express |
 
-To change the server port:
+To change ports, edit `.env`:
 ```bash
-PORT=8080 npm run dev:server
-```
+# Frontend port (what players open in browser)
+VITE_DEV_PORT=12000
 
-To change the client dev port, edit `client/vite.config.js`:
-```js
-server: {
-  host: '0.0.0.0',
-  port: 3000,    // change from 5173
-}
+# Backend port (API + WebSocket)
+PORT=12400
 ```
 
 ---

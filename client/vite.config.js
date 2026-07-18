@@ -6,9 +6,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '../', '')
 
   const serverHost = env.SERVER_HOST || 'localhost'
-  const serverPort = env.SERVER_PORT || env.PORT || '12000'
+  const serverPort = env.SERVER_PORT || env.PORT || '12400'
   const devHost = env.VITE_DEV_HOST || '0.0.0.0'
-  const devPort = parseInt(env.VITE_DEV_PORT) || 5173
+  const devPort = parseInt(env.VITE_DEV_PORT) || 12000
 
   return {
     plugins: [react()],
@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
     },
     preview: {
       host: devHost,
-      port: parseInt(env.VITE_PREVIEW_PORT) || 4173,
+      port: parseInt(env.VITE_PREVIEW_PORT) || 12100,
     },
     resolve: {
       alias: {

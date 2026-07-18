@@ -3,7 +3,7 @@
 // character limit, and validation.
 import { io } from 'socket.io-client'
 
-const SERVER_URL = 'http://localhost:12000'
+const SERVER_URL = 'http://localhost:12400'
 const TEST_USER = `t${Date.now().toString().slice(-8)}`
 const TEST_PASS = 'testpass123'
 const TEST_CHAR_NAME = `H${Date.now().toString().slice(-6)}`

@@ -144,10 +144,11 @@ For local dev, you can skip this section entirely. The defaults are:
 
 | Variable | Default | Used by |
 |---|---|---|
-| `PORT` | `12000` | server |
-| `CLIENT_ORIGIN` | `http://localhost:5173` | server (CORS) |
+| `VITE_DEV_PORT` | `12000` | client (frontend port players open) |
+| `PORT` | `12400` | server (backend API + WebSocket) |
+| `CLIENT_ORIGIN` | `http://localhost:12000` | server (CORS — allows frontend) |
+| `VITE_SERVER_URL` | `http://localhost:12400` | client (where to find backend) |
 | `JWT_SECRET` | `mythral-dev-secret-change-me` | server |
-| `VITE_SERVER_URL` | `http://localhost:12000` | client |
 
 ### Production setup
 
@@ -186,25 +187,25 @@ npm run dev
 ```
 
 This uses `concurrently` to start:
-- **Server** on http://localhost:12000 (with `--watch` for auto-reload on file changes)
-- **Client** on http://localhost:5173 (Vite dev server with HMR)
+- **Server** on http://localhost:12400 (with `--watch` for auto-reload on file changes)
+- **Client** on http://localhost:12000 (Vite dev server with HMR)
 
 You should see output like:
 ```
 [server] [db] Loaded 0 users, 0 characters
 [server]
-[server]   ⚔️  Mythral Server running on http://localhost:12000
-[server]   🌐  CORS origin: http://localhost:5173
+[server]   ⚔️  Mythral Server running on http://localhost:12400
+[server]   🌐  CORS origin: http://localhost:12000
 [server]   ⏱   Tick rate: 10 Hz
 [server]   💾  Autosave: every 30s
 [server]
 [client]
 [client]   VITE v5.4.21  ready in 265 ms
 [client]
-[client]   ➜  Local:   http://localhost:5173/
+[client]   ➜  Local:   http://localhost:12000/
 ```
 
-Open **http://localhost:5173** in your browser to play.
+Open **http://localhost:12000** in your browser to play.
 
 ### Run client and server separately (useful for debugging)
 
@@ -222,8 +223,8 @@ npm run dev:client
 
 The client's `vite.config.js` proxies these paths to the server during development, so the client and server can share the same origin in your browser:
 
-- `/api/*` → `http://localhost:12000`
-- `/socket.io/*` (with WebSocket upgrade) → `http://localhost:12000`
+- `/api/*` → `http://localhost:12400`
+- `/socket.io/*` (with WebSocket upgrade) → `http://localhost:12400`
 
 This means your client code can call `/api/login` without specifying a host, and Socket.io will auto-connect to the same origin.
 
@@ -311,7 +312,7 @@ Expected output:
 
 ### Manual browser test
 
-1. Open http://localhost:5173
+1. Open http://localhost:12000
 2. Click **Register** and create an account
 3. Create a character (e.g., "Bob", Warrior class)
 4. You should spawn on Lumina Isle surrounded by 8 NPCs and ~26 monsters
@@ -323,7 +324,7 @@ Expected output:
 ### Health check
 
 ```bash
-curl http://localhost:12000/health
+curl http://localhost:12400/health
 # {"ok":true,"players":2,"uptime":123.45}
 ```
 
@@ -366,7 +367,7 @@ PORT=5000 npm run dev:server
 Cross-Origin Request Blocked
 ```
 
-The server's CORS is set to allow `CLIENT_ORIGIN` (defaults to `http://localhost:5173`). If your client is served from a different origin, set the env var:
+The server's CORS is set to allow `CLIENT_ORIGIN` (defaults to `http://localhost:12000`). If your client is served from a different origin, set the env var:
 ```bash
 CLIENT_ORIGIN=http://localhost:3000 npm run dev:server
 ```

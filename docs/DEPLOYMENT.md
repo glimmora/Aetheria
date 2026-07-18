@@ -136,10 +136,10 @@ pm2 startup    # follow the instructions to make PM2 start on boot
 ### Step 9 — Verify
 
 ```bash
-curl http://localhost:12000/health
+curl http://localhost:12400/health
 # {"ok":true,"players":0,"uptime":5.2}
 
-curl http://localhost:12000/
+curl http://localhost:12400/
 # Should return the built index.html
 ```
 
@@ -215,7 +215,7 @@ services:
       - ./data:/app/data    # persist user/character data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:12000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:12400/health"]
       interval: 30s
       timeout: 5s
       retries: 3

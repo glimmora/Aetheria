@@ -35,7 +35,7 @@ A hands-on walkthrough for **players** (how to play the game) and **developers**
 
 ## 1. Create your account and first character
 
-1. Open the game in your browser (default: http://localhost:5173)
+1. Open the game in your browser (default: http://localhost:12000)
 2. You will land on the **Auth Screen**. Click the **Register** tab.
 3. Enter a username (3–20 chars: letters, numbers, `_`, `-`) and password (6+ chars).
 4. Click **Create Account**. You are logged in automatically.
@@ -516,7 +516,7 @@ app.get('/debug/world', (req, res) => {
 })
 ```
 
-Then `curl http://localhost:12000/debug/world` to see the world state.
+Then `curl http://localhost:12400/debug/world` to see the world state.
 
 ### Resetting the world
 
