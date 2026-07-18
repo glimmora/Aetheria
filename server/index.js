@@ -4,7 +4,7 @@
 // enforcement, leaderboard, online-players list, player inspect.
 // ============================================================
 
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import http from 'http'
@@ -24,7 +24,11 @@ import { ISLAND_DEFS } from '../shared/islands.js'
 import { getSuspiciousLog } from './security.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const PORT = parseInt(process.env.PORT) || 4000
+// Load .env from project root (not server/ subdir, which is the CWD when
+// running via npm workspaces)
+dotenv.config({ path: path.join(__dirname, '..', '.env') })
+
+const PORT = parseInt(process.env.PORT) || 12000
 const HOST = process.env.HOST || '0.0.0.0'
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
 const CLIENT_ORIGIN_PRODUCTION = process.env.CLIENT_ORIGIN // explicit, no fallback in prod
