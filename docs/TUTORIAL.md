@@ -516,7 +516,7 @@ app.get('/debug/world', (req, res) => {
 })
 ```
 
-Then `curl http://localhost:4000/debug/world` to see the world state.
+Then `curl http://localhost:12000/debug/world` to see the world state.
 
 ### Resetting the world
 

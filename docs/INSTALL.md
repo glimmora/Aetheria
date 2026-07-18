@@ -144,10 +144,10 @@ For local dev, you can skip this section entirely. The defaults are:
 
 | Variable | Default | Used by |
 |---|---|---|
-| `PORT` | `4000` | server |
+| `PORT` | `12000` | server |
 | `CLIENT_ORIGIN` | `http://localhost:5173` | server (CORS) |
 | `JWT_SECRET` | `mythral-dev-secret-change-me` | server |
-| `VITE_SERVER_URL` | `http://localhost:4000` | client |
+| `VITE_SERVER_URL` | `http://localhost:12000` | client |
 
 ### Production setup
 
@@ -155,7 +155,7 @@ Create a `.env` file in the project root (this file is gitignored — never comm
 
 ```bash
 # .env
-PORT=4000
+PORT=12000
 CLIENT_ORIGIN=https://your-domain.com
 JWT_SECRET=replace-with-a-long-random-string-at-least-32-chars
 NODE_ENV=production
@@ -186,14 +186,14 @@ npm run dev
 ```
 
 This uses `concurrently` to start:
-- **Server** on http://localhost:4000 (with `--watch` for auto-reload on file changes)
+- **Server** on http://localhost:12000 (with `--watch` for auto-reload on file changes)
 - **Client** on http://localhost:5173 (Vite dev server with HMR)
 
 You should see output like:
 ```
 [server] [db] Loaded 0 users, 0 characters
 [server]
-[server]   ⚔️  Mythral Server running on http://localhost:4000
+[server]   ⚔️  Mythral Server running on http://localhost:12000
 [server]   🌐  CORS origin: http://localhost:5173
 [server]   ⏱   Tick rate: 10 Hz
 [server]   💾  Autosave: every 30s
@@ -222,8 +222,8 @@ npm run dev:client
 
 The client's `vite.config.js` proxies these paths to the server during development, so the client and server can share the same origin in your browser:
 
-- `/api/*` → `http://localhost:4000`
-- `/socket.io/*` (with WebSocket upgrade) → `http://localhost:4000`
+- `/api/*` → `http://localhost:12000`
+- `/socket.io/*` (with WebSocket upgrade) → `http://localhost:12000`
 
 This means your client code can call `/api/login` without specifying a host, and Socket.io will auto-connect to the same origin.
 
@@ -323,7 +323,7 @@ Expected output:
 ### Health check
 
 ```bash
-curl http://localhost:4000/health
+curl http://localhost:12000/health
 # {"ok":true,"players":2,"uptime":123.45}
 ```
 
@@ -341,17 +341,17 @@ npm install
 ### Port already in use
 
 ```
-Error: listen EADDRINUSE: address already in use 0.0.0.0:4000
+Error: listen EADDRINUSE: address already in use 0.0.0.0:12000
 ```
 
 Find and kill the process holding the port:
 ```bash
 # macOS / Linux
-lsof -i :4000
+lsof -i :12000
 kill -9 <PID>
 
 # Windows
-netstat -ano | findstr :4000
+netstat -ano | findstr :12000
 taskkill /PID <PID> /F
 ```
 

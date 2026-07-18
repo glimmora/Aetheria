@@ -28,7 +28,7 @@ Set these in `server/.env`, the project-root `.env`, or as shell environment var
 
 | Variable | Default | Description |
 |---|---|---|
-| `PORT` | `4000` | HTTP and WebSocket port |
+| `PORT` | `12000` | HTTP and WebSocket port |
 | `CLIENT_ORIGIN` | `http://localhost:5173` | Allowed CORS origin (your client URL) |
 | `JWT_SECRET` | `mythral-dev-secret-change-me` | Secret for signing JWTs — **change in production** |
 | `NODE_ENV` | `development` | `production` enables stricter behavior |
@@ -76,7 +76,7 @@ Set these in `client/.env`. Vite exposes them to the browser via `import.meta.en
 
 | Variable | Default | Description |
 |---|---|---|
-| `VITE_SERVER_URL` | `http://localhost:4000` (dev) or empty (prod) | Server URL for socket.io and fetch |
+| `VITE_SERVER_URL` | `http://localhost:12000` (dev) or empty (prod) | Server URL for socket.io and fetch |
 
 #### `VITE_SERVER_URL`
 
@@ -97,41 +97,98 @@ If `VITE_SERVER_URL` is empty, the client uses same-origin relative URLs (works 
 
 ## Configuration constants (`shared/protocol.js`)
 
-These are not environment variables — they are constants in `shared/protocol.js` that affect both client and server. Change them in code, then restart the server and rebuild the client.
+These are **environment variables** read by `shared/protocol.js` at startup. Set them in `.env`, then restart the server and rebuild the client.
 
-| Constant | Default | Description |
+### Leveling System
+
+The leveling curve is designed for a **~10-year progression** to level 100 at 4 hours/day active play.
+
+| Variable | Default | Description |
+|---|---|---|
+| `MAX_LEVEL` | `100` | Maximum level a character can reach |
+| `XP_CURVE_BASE` | `128` | Base multiplier for the XP curve |
+| `XP_CURVE_GROWTH` | `1.15` | Exponential growth factor per level |
+
+**Formula:** `xpForLevel(n) = XP_CURVE_BASE * XP_CURVE_GROWTH^n`
+
+**Progression table (default settings):**
+
+| Level | XP for next | Total XP | Est. time at 4hr/day |
+|---|---|---|---|
+| 1→2 | 147 | 147 | ~1 minute |
+| 10→11 | 518 | 2,820 | ~5 minutes |
+| 20→21 | 2,099 | 13,510 | ~30 minutes |
+| 30→31 | 8,473 | 54,740 | ~2 hours |
+| 50→51 | 138,666 | 894,000 | ~1 week |
+| 70→71 | 2,270,000 | 14,600,000 | ~2 months |
+| 90→91 | 37,155,000 | 239,000,000 | ~1 year |
+| 99→100 | 131,584,000 | 875,000,000 | ~3 years (this level alone) |
+
+**Total XP to reach level 100: ~875,000,000**
+At ~1000 XP/min average high-level play = 875,000 minutes = **~10 years at 4hr/day**
+
+**To adjust the curve:**
+- **Faster leveling:** increase `XP_CURVE_GROWTH` (e.g., `1.10` = ~5 years, `1.05` = ~2 years)
+- **Slower leveling:** decrease `XP_CURVE_GROWTH` (e.g., `1.20` = ~20 years, `1.25` = ~40 years)
+- **Shift entire curve:** adjust `XP_CURVE_BASE` (higher = more XP needed at all levels)
+- **Lower cap:** set `MAX_LEVEL=50` for a shorter progression
+
+```bash
+# Example: 5-year curve to level 100
+MAX_LEVEL=100
+XP_CURVE_BASE=128
+XP_CURVE_GROWTH=1.10
+
+# Example: hardcap at level 50 with default pacing
+MAX_LEVEL=50
+XP_CURVE_BASE=128
+XP_CURVE_GROWTH=1.15
+```
+
+Query the full curve at any time via `GET /api/xp-curve`.
+
+### Gameplay & Server Constants
+
+| Variable | Default | Description |
 |---|---|---|
 | `TICK_RATE_HZ` | `10` | Server tick rate (monster AI updates per second) |
-| `TICK_INTERVAL_MS` | `100` | Derived: `1000 / TICK_RATE_HZ` |
 | `MOVE_COOLDOWN_MS` | `140` | Minimum ms between player moves |
 | `ATTACK_COOLDOWN_MS` | `700` | Minimum ms between basic attacks |
 | `RESPAWN_HP_PENALTY_GOLD_PCT` | `10` | % of gold lost on death |
 | `AUTOSAVE_INTERVAL_MS` | `30000` | How often to save all characters |
-| `MAX_INVENTORY_SLOTS` | `60` | Max inventory slots (not yet enforced) |
+| `MAX_INVENTORY_SLOTS` | `60` | Max inventory slots per character |
 | `STARTING_GOLD` | `50` | Gold given to new characters |
 | `CHAT_MAX_LENGTH` | `200` | Max chat message length |
 | `CHAT_COOLDOWN_MS` | `1000` | Min ms between chat messages per player |
+| `MAX_CHARACTERS_PER_ACCOUNT` | `5` | Max characters per user account |
+| `AUTH_RATE_LIMIT_PER_15MIN` | `20` | Auth attempts per IP per 15 min |
+| `GENERAL_RATE_LIMIT_PER_MIN` | `120` | General socket events per IP per min |
+| `LEADERBOARD_SIZE` | `50` | Number of entries in leaderboard |
+| `MONSTER_RESPAWN_MIN_MS` | `60000` | Min monster respawn time |
+| `MONSTER_RESPAWN_MAX_MS` | `120000` | Max monster respawn time |
+| `BOSS_RESPAWN_MS` | `120000` | Boss respawn time |
+| `ONLINE_BROADCAST_INTERVAL_MS` | `5000` | How often to broadcast online players |
+| `STALE_SESSION_CLEANUP_INTERVAL_MS` | `60000` | How often to clean up stale sessions |
+| `SOCKET_PING_INTERVAL` | `10000` | Socket.io heartbeat interval |
+| `SOCKET_PING_TIMEOUT` | `5000` | Socket.io heartbeat timeout |
+| `BODY_LIMIT` | `64kb` | Express body size limit |
+| `BCRYPT_ROUNDS` | `10` | Bcrypt rounds for password hashing |
+| `JWT_EXPIRES_IN` | `7d` | JWT token expiry |
 
 ### Example: faster tick rate
 
-Edit `shared/protocol.js`:
-```js
-export const TICK_RATE_HZ = 20    // was 10
-export const TICK_INTERVAL_MS = 1000 / TICK_RATE_HZ   // = 50
+```bash
+# .env
+TICK_RATE_HZ=20
 ```
 
 Restart the server. Monster AI is now twice as responsive, but CPU usage roughly doubles.
 
 ### Example: more forgiving death
 
-```js
-export const RESPAWN_HP_PENALTY_GOLD_PCT = 0   // no gold loss on death
-```
-
-### Example: higher starting gold
-
-```js
-export const STARTING_GOLD = 500   // was 50
+```bash
+# .env
+RESPAWN_HP_PENALTY_GOLD_PCT=0
 ```
 
 Only affects new characters created after the change.
@@ -142,7 +199,7 @@ Only affects new characters created after the change.
 
 | Service | Port | Purpose |
 |---|---|---|
-| Server (dev & prod) | `4000` | HTTP API + WebSocket |
+| Server (dev & prod) | `12000` | HTTP API + WebSocket |
 | Client (Vite dev server) | `5173` | Vite default |
 | Client (Vite preview) | `4173` | For `npm run preview` |
 | Client (production build) | any | Served by nginx/CDN/Express |
@@ -251,7 +308,7 @@ Before deploying to production, verify:
 - [ ] `CLIENT_ORIGIN` is set to your actual client domain
 - [ ] `NODE_ENV=production`
 - [ ] HTTPS is enforced (nginx redirects HTTP → HTTPS)
-- [ ] Firewall blocks direct access to port 4000 (only 80/443 open)
+- [ ] Firewall blocks direct access to port 12000 (only 80/443 open)
 - [ ] The server is not running as root
 - [ ] Rate limiting is enabled on `/api/login` and `/api/register` (see [API.md](./API.md#rate-limiting))
 - [ ] `data/` folder is backed up regularly

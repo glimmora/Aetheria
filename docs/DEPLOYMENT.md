@@ -93,7 +93,7 @@ npm run build
 
 Create `/home/mythral/Mythral/.env`:
 ```bash
-PORT=4000
+PORT=12000
 CLIENT_ORIGIN=https://your-domain.com
 JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(48).toString('hex'))")
 NODE_ENV=production
@@ -136,10 +136,10 @@ pm2 startup    # follow the instructions to make PM2 start on boot
 ### Step 9 — Verify
 
 ```bash
-curl http://localhost:4000/health
+curl http://localhost:12000/health
 # {"ok":true,"players":0,"uptime":5.2}
 
-curl http://localhost:4000/
+curl http://localhost:12000/
 # Should return the built index.html
 ```
 
@@ -177,7 +177,7 @@ EXPOSE 4000
 
 # Set production env
 ENV NODE_ENV=production
-ENV PORT=4000
+ENV PORT=12000
 
 CMD ["node", "server/index.js"]
 ```
@@ -205,17 +205,17 @@ services:
   mythral:
     build: .
     ports:
-      - "4000:4000"
+      - "4000:12000"
     environment:
       - NODE_ENV=production
-      - PORT=4000
+      - PORT=12000
       - CLIENT_ORIGIN=https://your-domain.com
       - JWT_SECRET=${JWT_SECRET}
     volumes:
       - ./data:/app/data    # persist user/character data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:12000/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -311,7 +311,7 @@ server {
 
     # WebSocket upgrade for Socket.io
     location /socket.io/ {
-        proxy_pass http://127.0.0.1:4000;
+        proxy_pass http://127.0.0.1:12000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -323,7 +323,7 @@ server {
 
     # API and the rest
     location / {
-        proxy_pass http://127.0.0.1:4000;
+        proxy_pass http://127.0.0.1:12000;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -441,7 +441,7 @@ JWT_SECRET=replace-with-64+ char random hex string
 CLIENT_ORIGIN=https://your-domain.com
 
 # Optional (with defaults)
-PORT=4000
+PORT=12000
 NODE_ENV=production
 ```
 
@@ -550,7 +550,7 @@ Before going live, verify each item:
 - [ ] **CLIENT_ORIGIN** is set to your actual domain (not localhost)
 - [ ] **NODE_ENV=production**
 - [ ] HTTPS is enforced (nginx redirects 80 → 443)
-- [ ] Firewall allows only ports 22, 80, 443 (block direct access to port 4000)
+- [ ] Firewall allows only ports 22, 80, 443 (block direct access to port 12000)
 - [ ] `data/` folder is backed up regularly (see [§12](#12-backup-strategy))
 - [ ] PM2 is configured to restart on crash and on boot
 - [ ] Server is not running as root (use the `mythral` user)

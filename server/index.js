@@ -12,7 +12,7 @@ import { Server as SocketIOServer } from 'socket.io'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
-import { SERVER_EVENTS, CLIENT_EVENTS, TICK_RATE_HZ, TICK_INTERVAL_MS, CONFIG } from '../shared/protocol.js'
+import { SERVER_EVENTS, CLIENT_EVENTS, TICK_RATE_HZ, TICK_INTERVAL_MS, CONFIG, MAX_LEVEL, xpForLevel, totalXpForLevel } from '../shared/protocol.js'
 import { World } from './world.js'
 import * as db from './db.js'
 import {
@@ -114,6 +114,23 @@ app.get('/api/leaderboard', (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || CONFIG.LEADERBOARD_SIZE, CONFIG.LEADERBOARD_SIZE)
   const leaderboard = world.getLeaderboard(limit)
   res.json({ ok: true, leaderboard })
+})
+
+// XP curve info — lets players see the full progression table
+app.get('/api/xp-curve', (req, res) => {
+  const levels = []
+  for (let lvl = 1; lvl <= MAX_LEVEL; lvl++) {
+    levels.push({
+      level: lvl,
+      xpForNext: lvl < MAX_LEVEL ? xpForLevel(lvl) : 0,
+      totalXp: totalXpForLevel(lvl),
+    })
+  }
+  res.json({
+    ok: true,
+    maxLevel: MAX_LEVEL,
+    levels,
+  })
 })
 
 app.post('/api/register', async (req, res) => {

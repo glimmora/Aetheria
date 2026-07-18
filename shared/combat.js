@@ -6,6 +6,7 @@
 import { getItem } from './items.js'
 import { getMonster } from './monsters.js'
 import { SKILLS } from './classes.js'
+import { xpForLevel, MAX_LEVEL } from './protocol.js'
 
 const ELEMENTAL_MULTIPLIERS = {
   fire: { ice: 1.5, water: 0.7, fire: 0.5, plant: 1.3 },
@@ -120,17 +121,21 @@ export function rollDrops(monster, rng = Math.random) {
   return drops
 }
 
-// XP needed to reach next level
-export function xpForLevel(level) {
-  return Math.floor(80 * Math.pow(level, 1.5))
-}
+// xpForLevel is now imported from protocol.js (env-configurable curve)
+// Re-export for backwards compat with code that imports from combat.js
+export { xpForLevel }
 
-// Apply XP gain and check for level up
+// Apply XP gain and check for level up (capped at MAX_LEVEL)
 export function applyXp(player, xp) {
   let leveledUp = false
   let levelsGained = 0
+  if (player.level >= MAX_LEVEL) {
+    // At cap — XP still accumulates but no more levels
+    player.xp += xp
+    return { leveledUp: false, levelsGained: 0 }
+  }
   player.xp += xp
-  while (player.xp >= xpForLevel(player.level)) {
+  while (player.level < MAX_LEVEL && player.xp >= xpForLevel(player.level)) {
     player.xp -= xpForLevel(player.level)
     player.level += 1
     leveledUp = true
@@ -148,6 +153,10 @@ export function applyXp(player, xp) {
     }
     player.hp = player.maxHp
     player.mp = player.maxMp
+  }
+  // If at max level, clear XP (no point accumulating)
+  if (player.level >= MAX_LEVEL) {
+    player.xp = 0
   }
   return { leveledUp, levelsGained }
 }

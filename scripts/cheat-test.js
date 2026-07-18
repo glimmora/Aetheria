@@ -1,7 +1,7 @@
 // Cheat test suite: verify every exploit vector is blocked
 import { io } from 'socket.io-client'
 
-const SERVER_URL = 'http://localhost:4000'
+const SERVER_URL = 'http://localhost:12000'
 const TEST_USER = `cheater${Date.now().toString().slice(-7)}`
 const TEST_PASS = 'cheatpass123'
 const TEST_CHAR = `C${Date.now().toString().slice(-6)}`

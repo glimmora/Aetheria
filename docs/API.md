@@ -2,7 +2,7 @@
 
 Mythral exposes a small REST API for authentication and character management. All real-time game traffic flows over Socket.io (see [Protocol Reference](./PROTOCOL.md)).
 
-**Base URL:** `http://localhost:4000` (or your production server URL)
+**Base URL:** `http://localhost:12000` (or your production server URL)
 
 ---
 
@@ -88,7 +88,7 @@ Create a new user account.
 
 **Example (curl):**
 ```bash
-curl -X POST http://localhost:4000/api/register \
+curl -X POST http://localhost:12000/api/register \
   -H "Content-Type: application/json" \
   -d '{"username":"bob","password":"secret123"}'
 ```
@@ -190,7 +190,7 @@ Authorization: Bearer <token>
 **Example (curl):**
 ```bash
 TOKEN="eyJhbGciOiJIUzI1NiIs..."
-curl http://localhost:4000/api/characters \
+curl http://localhost:12000/api/characters \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -221,7 +221,7 @@ Public health-check endpoint. Does not require authentication.
 
 **Example (curl):**
 ```bash
-curl http://localhost:4000/health
+curl http://localhost:12000/health
 ```
 
 ---

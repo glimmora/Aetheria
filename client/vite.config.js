@@ -8,9 +8,9 @@ export default defineConfig({
     port: parseInt(process.env.VITE_DEV_PORT) || 5173,
     strictPort: false,
     proxy: {
-      '/api': `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 4000}`,
+      '/api': `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 12000}`,
       '/socket.io': {
-        target: `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 4000}`,
+        target: `http://${process.env.SERVER_HOST || 'localhost'}:${process.env.SERVER_PORT || 12000}`,
         ws: true,
       },
     },
