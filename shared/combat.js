@@ -4,7 +4,6 @@
 // ============================================================
 
 import { getItem } from './items.js'
-import { getMonster } from './monsters.js'
 import { SKILLS } from './classes.js'
 import { xpForLevel, MAX_LEVEL } from './protocol.js'
 
@@ -24,14 +23,14 @@ export function getElementalMultiplier(attackerElement, defenderElement) {
 
 // Calculate player's effective stats (including equipment)
 export function computePlayerStats(player) {
-  const cls = player.class
+  const baseStats = player.baseStats || {}
   const base = {
-    hp: player.maxHp,
-    mp: player.maxMp,
-    attack: player.baseStats.attack,
-    defense: player.baseStats.defense,
-    magic: player.baseStats.magic,
-    speed: player.baseStats.speed,
+    hp: player.maxHp || 1,
+    mp: player.maxMp || 0,
+    attack: baseStats.attack || 0,
+    defense: baseStats.defense || 0,
+    magic: baseStats.magic || 0,
+    speed: baseStats.speed || 0,
   }
   if (player.equipment) {
     for (const slot of ['weapon', 'armor', 'helmet', 'shield', 'boots', 'trinket']) {
@@ -146,10 +145,10 @@ export function applyXp(player, xp) {
       const g = cls.growth
       player.maxHp += Math.floor(g.hp)
       player.maxMp += Math.floor(g.mp)
-      player.baseStats.attack += g.attack
-      player.baseStats.defense += g.defense
-      player.baseStats.magic += g.magic
-      player.baseStats.speed += g.speed
+      player.baseStats.attack += Math.floor(g.attack)
+      player.baseStats.defense += Math.floor(g.defense)
+      player.baseStats.magic += Math.floor(g.magic)
+      player.baseStats.speed += Math.floor(g.speed)
     }
     player.hp = player.maxHp
     player.mp = player.maxMp

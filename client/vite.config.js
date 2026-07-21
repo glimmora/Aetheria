@@ -1,5 +1,9 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig(({ mode }) => {
   // Load .env from project root (not client/ subdir)
@@ -11,13 +15,14 @@ export default defineConfig(({ mode }) => {
   const devPort = parseInt(env.VITE_DEV_PORT) || 12000
 
   return {
+    root: path.resolve(__dirname),
     plugins: [react()],
     // Tell Vite to load .env from project root
     envDir: '../',
     server: {
       host: devHost,
       port: devPort,
-      strictPort: false,
+      strictPort: true,
       proxy: {
         '/api': `http://${serverHost}:${serverPort}`,
         '/health': `http://${serverHost}:${serverPort}`,
@@ -33,7 +38,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        shared: '/home/z/my-project/shared',
+        shared: path.resolve(__dirname, '../shared'),
       },
     },
   }

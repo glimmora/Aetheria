@@ -3,10 +3,10 @@
 // Manages all island instances, players, and monsters
 // ============================================================
 
-import { ISLAND_DEFS, getIslandMap, getIslandSpawnPoints, getIslandStart, placeNpcs } from '../shared/islands.js'
+import { ISLAND_DEFS, getIslandMap, getIslandSpawnPoints, getIslandStart, placeNpcs, getIslandBuildings } from '../shared/islands.js'
 import { getMonster } from '../shared/monsters.js'
 import { getItem } from '../shared/items.js'
-import { isWalkable } from '../shared/tiles.js'
+import { isWalkable, TILE_INFO } from '../shared/tiles.js'
 import { CLASSES, SKILLS, getSkillsForClass } from '../shared/classes.js'
 import {
   calculateBasicAttackDamage, calculateMonsterAttackDamage,
@@ -21,7 +21,7 @@ import {
   turnInQuest, getQuestProgressText,
 } from '../shared/quests.js'
 import { QUESTS } from '../shared/quests.js'
-import { CONFIG } from '../shared/protocol.js'
+import { CONFIG, SERVER_EVENTS } from '../shared/protocol.js'
 import { saveCharacter, getCharacterByName, countCharactersByOwner, getAllCharacters } from './db.js'
 import { validateCharName } from './auth.js'
 import {
@@ -32,8 +32,9 @@ import {
 } from './security.js'
 
 class IslandInstance {
-  constructor(islandId) {
+  constructor(islandId, world) {
     this.islandId = islandId
+    this.world = world
     this.def = ISLAND_DEFS[islandId]
     this.map = getIslandMap(islandId)
     this.spawnPoints = getIslandSpawnPoints(islandId)
@@ -81,6 +82,8 @@ class IslandInstance {
       boss: def.boss,
       finalBoss: def.finalBoss,
       x: pos.x,
+      homeX: pos.x,
+      homeY: pos.y,
       y: pos.y,
       lastMove: 0,
       lastAttack: 0,
@@ -185,11 +188,10 @@ class IslandInstance {
   // Game tick: monster AI
   tick(now) {
     const updates = [] // {id, x, y, hp, aggro}
-    const monsterDespawns = []
-    const damageEvents = [] // {targetSocketId, damage, monsterName, crit}
 
     for (const m of this.monsters.values()) {
       if (m.hp <= 0) continue
+
       // Find nearest player on this island
       let nearestPlayer = null
       let nearestDist = Infinity
@@ -198,6 +200,8 @@ class IslandInstance {
         const d = Math.abs(p.character.x - m.x) + Math.abs(p.character.y - m.y)
         if (d < nearestDist) { nearestDist = d; nearestPlayer = p }
       }
+
+      // No players nearby — deaggro
       if (!nearestPlayer) {
         if (m.aggro) {
           m.aggro = false
@@ -206,7 +210,21 @@ class IslandInstance {
         }
         continue
       }
-      // aggro check
+
+      // Max chase distance from home — deaggro if too far
+      if (m.homeX !== undefined && m.homeY !== undefined) {
+        const homeDist = Math.abs(m.x - m.homeX) + Math.abs(m.y - m.homeY)
+        if (homeDist > 8) {
+          if (m.aggro) {
+            m.aggro = false
+            m.targetSocketId = null
+            updates.push({ id: m.id, x: m.x, y: m.y, hp: m.hp, aggro: false })
+          }
+          continue
+        }
+      }
+
+      // Aggro check
       if (!m.aggro && nearestDist <= m.aggroRange) {
         m.aggro = true
         m.targetSocketId = nearestPlayer.socketId
@@ -234,7 +252,7 @@ class IslandInstance {
           this.sendTo(nearestPlayer.socketId, 'log:combat', {
             msg: `${m.name} hit you for ${result.damage}.`, type: 'damage'
           })
-          // broadcast HP update + position to others on island (so they see the HP bar change)
+          // broadcast HP update + position to others
           this.broadcast('player:hp', {
             id: nearestPlayer.socketId,
             hp: nearestPlayer.character.hp,
@@ -244,11 +262,15 @@ class IslandInstance {
             facing: nearestPlayer.character.facing,
           }, nearestPlayer.socketId)
           if (nearestPlayer.character.hp <= 0) {
-            this.handlePlayerDeath(nearestPlayer)
+            this.world.handlePlayerDeath(nearestPlayer)
+          } else {
+            // auto counter-attack: player basic-attacks the monster that hit them
+            this.world.playerAttackMonster(nearestPlayer, m, this)
           }
         }
         continue
       }
+
       // Move toward player
       if (now - (m.lastMove || 0) > (m.moveCooldown || 600)) {
         const dx = Math.sign(nearestPlayer.character.x - m.x)
@@ -256,8 +278,20 @@ class IslandInstance {
         const candidates = []
         if (dx !== 0) candidates.push([m.x + dx, m.y])
         if (dy !== 0) candidates.push([m.x, m.y + dy])
+        // diagonal step (only if both orthogonal neighbors are open — no corner cutting)
+        if (dx !== 0 && dy !== 0) {
+          const openX = !this.isPositionBlocked(m.x + dx, m.y, null, m.id)
+          const openY = !this.isPositionBlocked(m.x, m.y + dy, null, m.id)
+          if (openX && openY) candidates.push([m.x + dx, m.y + dy])
+        }
         for (const [nx, ny] of candidates) {
           if (this.isPositionBlocked(nx, ny, null, m.id)) continue
+          // Monsters cannot enter town/safe zones
+          const tile = this.map?.[ny]?.[nx]
+          if (tile !== undefined) {
+            const info = TILE_INFO[tile]
+            if (info && info.monsterSafe === false) continue
+          }
           m.x = nx; m.y = ny
           m.lastMove = now
           updates.push({ id: m.id, x: m.x, y: m.y, hp: m.hp, aggro: true })
@@ -269,6 +303,7 @@ class IslandInstance {
       this.broadcast('monster:update', updates)
     }
   }
+
 
   serializePlayerSelf(session) {
     const c = session.character
@@ -305,7 +340,7 @@ export class World {
 
   getIsland(islandId) {
     if (!this.islands.has(islandId)) {
-      this.islands.set(islandId, new IslandInstance(islandId))
+      this.islands.set(islandId, new IslandInstance(islandId, this))
     }
     return this.islands.get(islandId)
   }
@@ -361,6 +396,7 @@ export class World {
       },
       map: island.map,
       npcs: island.npcs,
+      buildings: getIslandBuildings(islandId),
       monsters: islandState.monsters,
       otherPlayers: islandState.others,
       player: island.serializePlayerSelf(session),
@@ -386,6 +422,7 @@ export class World {
       const speedMs = Math.max(80, 200 - stats.speed * 8)
       if (now - session.lastMove < speedMs) return 'speed-cooldown'
       let facing = c.facing
+      // dominant-axis facing (4-dir; sprite art has down/up/side only)
       if (dx < 0) facing = 'left'
       else if (dx > 0) facing = 'right'
       else if (dy < 0) facing = 'up'
@@ -408,6 +445,8 @@ export class World {
       }
       c.x = nx; c.y = ny; c.facing = facing
       session.lastMove = now
+      // send updated position to the moving player
+      this.safeEmit(session.socket, 'player:update', island.serializePlayerSelf(session))
       // broadcast movement to others on island
       island.broadcast('player:moved', island.serializePlayer(session), session.socketId)
       // check NPC interaction (auto-trigger dialog if walked into NPC)
@@ -1004,7 +1043,7 @@ export class World {
   }
 
   // ===== Character creation =====
-  createCharacter(ownerUsername, name, classId) {
+  createCharacter(ownerUsername, name, classId, gender = 'male') {
     const cls = CLASSES[classId]
     if (!cls) return { error: 'Invalid class' }
     const nameErr = validateCharName(name)
@@ -1021,6 +1060,7 @@ export class World {
       name: name.trim(),
       class: classId,
       classDef: cls,
+      gender,
       level: 1,
       xp: 0,
       gold: CONFIG.STARTING_GOLD,
@@ -1089,7 +1129,7 @@ export class World {
   inspectPlayer(session, targetSocketId) {
     const target = this.sessions.get(targetSocketId)
     if (!target || !target.character) {
-      this.safeEmit(session.socket, SERVER_EVENTS_ERROR_MSG, { message: 'Player not found.' })
+      this.safeEmit(session.socket, SERVER_EVENTS.ERROR, { message: 'Player not found.' })
       return
     }
     const c = target.character
@@ -1174,5 +1214,3 @@ export class World {
     }
   }
 }
-
-const SERVER_EVENTS_ERROR_MSG = 'error'

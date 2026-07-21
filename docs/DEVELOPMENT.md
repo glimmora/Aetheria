@@ -935,3 +935,33 @@ chore: upgrade socket.io to 4.8
 - **[Architecture](./ARCHITECTURE.md)** — Understand the design before changing it
 - **[Protocol](./PROTOCOL.md)** — Socket event reference
 - **[Configuration](./CONFIGURATION.md)** — Environment variables and tuning
+
+---
+
+## Adding Art (Pixel-Art Asset Pipeline)
+
+Mythral's visuals are **generated procedurally in code** — there are no hand-painted
+or external image files, and nothing is derived from existing games.
+
+**Pipeline:**
+1. `client/src/art/` — palette (`palette.js`), PRNG/noise (`prng.js`), pixel buffer
+   (`pixelbuf.js`), pure-JS PNG encoder (`png.js`), and generators
+   (`gen-tiles.js`, `gen-decor.js`, `gen-characters.js`, `gen-monsters.js`,
+   `gen-ui.js`, `gen-fx.js`).
+2. `client/src/art/atlas.js` runs the generators and packs every frame into a few
+   atlases (`tiles.png`, `props.png`, `chars.png`, `villagers.png`, `monsters.png`,
+   `ui.png`, `fx.png`) plus `client/public/assets/manifest.json` (frame rects).
+3. Run `npm run gen:assets` to (re)generate. Build-time: add as a prebuild step.
+4. `client/src/art/registry.js` loads the atlases at runtime and exposes `getFrame(key)`.
+5. `tileRenderer.js` + `entitySprite.js` blit sprites (autotiled tiles, animated
+   entities) onto the canvases in `components/TileMap.jsx`.
+
+**To add a tile type:** add it to `shared/tiles.js` `TILE`/`TILE_INFO` (with a
+`sprite` key), add a painter in `gen-tiles.js`, regenerate.
+**To add a monster/character sprite:** add a design in `gen-monsters.js` /
+`gen-characters.js` and a mapping in `entitySprite.js`, then regenerate.
+**To add UI chrome:** generate a frame in `gen-ui.js`, reference it from CSS/JS.
+
+All assets are original and generated from `palette.js` — keep that file as the
+single source of truth for colors. The string-keyed `manifest.json` means new
+regions/biomes need **zero renderer code changes**.

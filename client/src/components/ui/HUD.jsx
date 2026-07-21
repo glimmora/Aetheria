@@ -13,12 +13,14 @@ export default function HUD({
   onToggleOnline, onToggleLeaderboard, onToggleSettings,
   onUseSkill, targetMonster, gameTime,
   serverStats, onlineCount,
+  activeSkillId, onSetActiveSkill,
 }) {
   if (!player) return null
   const stats = computePlayerStats(player)
-  const hpPct = (player.hp / stats.hp) * 100
-  const mpPct = (player.mp / stats.mp) * 100
-  const xpPct = (player.xp / xpForLevel(player.level)) * 100
+  const hpPct = stats.hp > 0 ? (player.hp / stats.hp) * 100 : 0
+  const mpPct = stats.mp > 0 ? (player.mp / stats.mp) * 100 : 0
+  const xpForNext = xpForLevel(player.level)
+  const xpPct = xpForNext > 0 && xpForNext !== Infinity ? (player.xp / xpForNext) * 100 : 0
   const skills = getSkillsForClass(player.class, player.level)
   const islandName = currentIsland?.name || (typeof currentIsland === 'string' ? currentIsland.replace(/_/g, ' ') : '')
 
@@ -61,17 +63,19 @@ export default function HUD({
         </div>
 
         <div className="hud-resource">
-          <div className="hud-online-count">👥 {onlineCount || 0} online</div>
-          <div className="hud-gold">🪙 {player.gold}</div>
+          <div className="hud-resource-top">
+            <div className="hud-online-count">👥 {onlineCount || 0}</div>
+            <div className="hud-gold">🪙 {player.gold}</div>
+          </div>
           <div className="hud-buttons">
-            <button className="hud-btn" onClick={onToggleCharacter} title="Character (C)">C</button>
-            <button className="hud-btn" onClick={onToggleInventory} title="Inventory (I)">I</button>
-            <button className="hud-btn" onClick={onToggleQuestLog} title="Quest Log (Q)">Q</button>
-            <button className="hud-btn" onClick={onToggleMap} title="World Map (M)">M</button>
-            <button className="hud-btn" onClick={onToggleOnline} title="Online Players (P)">P</button>
-            <button className="hud-btn" onClick={onToggleLeaderboard} title="Leaderboard (L)">L</button>
-            <button className="hud-btn" onClick={onToggleHelp} title="Help (?)">?</button>
-            <button className="hud-btn" onClick={onToggleSettings} title="Settings">⚙</button>
+            <button className="hud-btn" onClick={onToggleCharacter} title="Character (C)" aria-label="Character">👤</button>
+            <button className="hud-btn" onClick={onToggleInventory} title="Inventory (I)" aria-label="Inventory">🎒</button>
+            <button className="hud-btn" onClick={onToggleQuestLog} title="Quest Log (Q)" aria-label="Quests">📜</button>
+            <button className="hud-btn" onClick={onToggleMap} title="World Map (M)" aria-label="Map">🗺</button>
+            <button className="hud-btn" onClick={onToggleOnline} title="Online Players (P)" aria-label="Players">👥</button>
+            <button className="hud-btn" onClick={onToggleLeaderboard} title="Leaderboard (L)" aria-label="Leaderboard">🏆</button>
+            <button className="hud-btn" onClick={onToggleHelp} title="Help (?)" aria-label="Help">❓</button>
+            <button className="hud-btn" onClick={onToggleSettings} title="Settings" aria-label="Settings">⚙</button>
           </div>
         </div>
       </div>
@@ -86,8 +90,8 @@ export default function HUD({
           return (
             <button
               key={skill.id}
-              className={`skill-slot ${canUse ? 'ready' : 'cooldown'}`}
-              onClick={() => onUseSkill(skill.id, targetMonster)}
+              className={`skill-slot ${canUse ? 'ready' : 'cooldown'} ${skill.id === activeSkillId ? 'active' : ''}`}
+              onClick={() => { onSetActiveSkill?.(skill.id); onUseSkill(skill.id, targetMonster) }}
               title={`${skill.name}\n${skill.description}\nMP: ${skill.manaCost}\nCooldown: ${skill.cooldown / 1000}s`}
             >
               <span className="skill-key">{i + 1}</span>

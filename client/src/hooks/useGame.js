@@ -10,7 +10,8 @@ import { io } from 'socket.io-client'
 import { SERVER_EVENTS, CLIENT_EVENTS, CONFIG } from '../../../shared/protocol.js'
 import { findPath } from '../utils/pathfinding.js'
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:12400' : '')
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || `http://${location.hostname}:12400`
+  || (typeof window !== 'undefined' ? window.location.origin : '')
 
 export function useGame() {
   const [screen, setScreen] = useState('connecting') // connecting | auth | char_select | game
@@ -22,6 +23,7 @@ export function useGame() {
   const [player, setPlayer] = useState(null)
   const [currentIsland, setCurrentIsland] = useState(null)
   const [map, setMap] = useState(null)
+  const [buildings, setBuildings] = useState([])
   const [npcs, setNpcs] = useState([])
   const [monsters, setMonsters] = useState([])
   const [otherPlayers, setOtherPlayers] = useState([])
@@ -58,9 +60,10 @@ export function useGame() {
       return saved ? JSON.parse(saved) : {
         showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true,
         movementMode: 'both', // 'wasd' | 'tap' | 'both'
+        compactHud: false, leftHanded: false, joystickSize: 'medium', // mobile comfort
       }
     } catch {
-      return { showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true, movementMode: 'both' }
+      return { showDamageNumbers: true, showChat: true, showMinimap: true, autoLoot: true, movementMode: 'both', compactHud: false, leftHanded: false, joystickSize: 'medium' }
     }
   })
   const [isMobile] = useState(() => {
@@ -75,25 +78,28 @@ export function useGame() {
 
   const socketRef = useRef(null)
   const characterIdRef = useRef(null)
+  const playerRef = useRef(null)
   const reconnectTimerRef = useRef(null)
   const pathQueueRef = useRef([])        // queued {dx, dy} steps for tap-to-move
   const pathTimerRef = useRef(null)      // interval that drains the path queue
   const currentPathTargetRef = useRef(null) // {x, y} of the current path target
 
   const notify = useCallback((msg, duration = 3500) => {
-    setNotification({ msg, id: Date.now() + Math.random(), leaving: false })
+    const id = Date.now() + Math.random()
+    setNotification({ msg, id, leaving: false })
     if (duration > 0) {
-      // Start fade-out 300ms before removal
-      setTimeout(() => setNotification(prev => prev ? { ...prev, leaving: true } : null), duration - 300)
-      setTimeout(() => setNotification(null), duration)
+      setTimeout(() => setNotification(prev => prev && prev.id === id ? { ...prev, leaving: true } : null), duration - 300)
+      setTimeout(() => setNotification(prev => prev && prev.id === id ? null : prev), duration)
     }
   }, [])
 
   const updateSettings = useCallback((newSettings) => {
-    const merged = { ...settings, ...newSettings }
-    setSettings(merged)
-    localStorage.setItem('mythral_settings', JSON.stringify(merged))
-  }, [settings])
+    setSettings(prev => {
+      const merged = { ...prev, ...newSettings }
+      localStorage.setItem('mythral_settings', JSON.stringify(merged))
+      return merged
+    })
+  }, [])
 
   // ---- Particle effects ----
   const spawnParticles = useCallback((x, y, type) => {
@@ -161,12 +167,26 @@ export function useGame() {
       }
     })
     sock.on('connect_error', (err) => {
-      if (err.message === 'Invalid token' || err.message === 'No token provided') {
+      const msg = err?.message || 'Connection failed'
+      if (msg === 'Invalid token' || msg === 'No token provided') {
         localStorage.removeItem('mythral_token')
         setToken(null)
         setScreen('auth')
         setConnectionState('disconnected')
+        // Stop the reconnect loop — reconnecting without a valid token is pointless
+        sock.disconnect()
+        return
       }
+      notify(`Connection error: ${msg}`)
+      setConnectionState('disconnected')
+      setScreen('auth')
+    })
+    sock.on('reconnect_error', (err) => {
+      notify(`Reconnect failed: ${err?.message || 'unknown error'}`)
+    })
+    sock.on('reconnect_failed', () => {
+      notify('Cannot reach server. Check your connection.')
+      setConnectionState('disconnected')
     })
     sock.on('disconnect', (reason) => {
       setConnectionState('disconnected')
@@ -223,6 +243,7 @@ export function useGame() {
     sock.on(SERVER_EVENTS.STATE_SYNC, (data) => {
       setMap(data.map)
       setNpcs(data.npcs || [])
+      setBuildings(data.buildings || [])
       setMonsters(data.monsters || [])
       setOtherPlayers((data.otherPlayers || []).map(p => ({ ...p, isSelf: false })))
       setCurrentIsland(data.islandDef)
@@ -293,8 +314,8 @@ export function useGame() {
     sock.on(SERVER_EVENTS.DEATH, ({ goldLost }) => {
       setIsDead(true)
       notify(`You died! Lost ${goldLost} gold.`)
-      if (player) {
-        spawnParticles(player.x, player.y, 'death')
+      if (playerRef.current) {
+        spawnParticles(playerRef.current.x, playerRef.current.y, 'death')
       }
       triggerScreenEffect('damage')
     })
@@ -336,6 +357,9 @@ export function useGame() {
       socketRef.current = null
     }
   }, [token, notify])
+
+  // Keep refs in sync directly (no useEffect needed — runs every render)
+  playerRef.current = player
 
   // ---- Auth actions ----
   const register = useCallback(async (uname, password) => {
@@ -406,8 +430,8 @@ export function useGame() {
   }, [])
 
   // ---- Character actions ----
-  const createCharacter = useCallback((name, classId) => {
-    socketRef.current?.emit(CLIENT_EVENTS.CHARACTER_CREATE, { name, classId })
+  const createCharacter = useCallback((name, classId, gender = 'male') => {
+    socketRef.current?.emit(CLIENT_EVENTS.CHARACTER_CREATE, { name, classId, gender })
   }, [])
 
   const selectCharacter = useCallback((characterId) => {
@@ -422,22 +446,32 @@ export function useGame() {
   // ---- In-game actions ----
   const sendMove = useCallback((dx, dy) => {
     // Cancel any active path when manual movement is used
-    if (pathQueueRef.current.length > 0) {
+    if (pathQueueRef.current.length > 0 || pathTimerRef.current) {
+      if (pathTimerRef.current) {
+        clearInterval(pathTimerRef.current)
+        pathTimerRef.current = null
+      }
       pathQueueRef.current = []
       currentPathTargetRef.current = null
+      setPathTarget(null)
     }
     socketRef.current?.emit(CLIENT_EVENTS.MOVE, { dx, dy })
   }, [])
 
   // Tap-to-move: compute path and queue steps
+  // Use refs for map/player so the callback is stable and always reads fresh data
+  const mapRef = useRef(null)
+  mapRef.current = map
   const sendMoveTo = useCallback((targetX, targetY) => {
-    if (!map || !player) return
+    const curMap = mapRef.current
+    const curPlayer = playerRef.current
+    if (!curMap || !curPlayer) return
     // Cancel any existing path
     if (pathTimerRef.current) {
       clearInterval(pathTimerRef.current)
       pathTimerRef.current = null
     }
-    const path = findPath(map, player.x, player.y, targetX, targetY)
+    const path = findPath(curMap, curPlayer.x, curPlayer.y, targetX, targetY)
     if (!path || path.length === 0) {
       notify('Cannot reach that location.')
       setPathTarget(null)
@@ -446,10 +480,8 @@ export function useGame() {
     pathQueueRef.current = path
     currentPathTargetRef.current = { x: targetX, y: targetY }
     setPathTarget({ x: targetX, y: targetY })
-    // Drain the queue at a steady pace (slightly faster than server cooldown
-    // — the server will ignore moves that come too fast, but the visual
-    // transition smooths it out)
-    const stepDelay = 130
+    // Drain the queue at a steady pace
+    const stepDelay = 160
     pathTimerRef.current = setInterval(() => {
       const sock = socketRef.current
       if (!sock || !sock.connected) {
@@ -469,7 +501,7 @@ export function useGame() {
       }
       sock.emit(CLIENT_EVENTS.MOVE, step)
     }, stepDelay)
-  }, [map, player, notify])
+  }, [notify])
 
   const stopMoveTo = useCallback(() => {
     if (pathTimerRef.current) {
@@ -488,7 +520,10 @@ export function useGame() {
     stopMoveTo()
     socketRef.current?.emit(CLIENT_EVENTS.ATTACK, { monsterId })
   }, [stopMoveTo])
-  const sendSkill = useCallback((skillId, targetMonsterId) => socketRef.current?.emit(CLIENT_EVENTS.SKILL, { skillId, targetMonsterId }), [])
+  const sendSkill = useCallback((skillId, targetMonsterId) => {
+    stopMoveTo()
+    socketRef.current?.emit(CLIENT_EVENTS.SKILL, { skillId, targetMonsterId })
+  }, [stopMoveTo])
   const sendUseItem = useCallback((itemId) => socketRef.current?.emit(CLIENT_EVENTS.USE_ITEM, { itemId }), [])
   const sendEquipItem = useCallback((itemId) => socketRef.current?.emit(CLIENT_EVENTS.EQUIP_ITEM, { itemId }), [])
   const sendUnequipItem = useCallback((slot) => socketRef.current?.emit(CLIENT_EVENTS.UNEQUIP_ITEM, { slot }), [])
@@ -533,7 +568,7 @@ export function useGame() {
     // auth
     screen, authError, username, characters, maxCharacters, token,
     // game state
-    player, currentIsland, map, npcs, monsters, otherPlayers,
+    player, currentIsland, map, npcs, monsters, otherPlayers, buildings,
     combatLog, floatingTexts, notification, isDead, chatMessages, nearbyNpc,
     onlinePlayers, leaderboard, inspectData, serverStats,
     // UI toggles

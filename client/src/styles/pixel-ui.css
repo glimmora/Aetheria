@@ -1,0 +1,390 @@
+/* ============================================================
+   Mythral — Fantasy Pixel-Art UI overlay
+   Re-skins the existing class names with a cohesive warm
+   fantasy palette + pixel-panel framing. Additive; the
+   base structure in game.css is preserved.
+   ============================================================ */
+
+/* Window chrome: warm parchment/wood framed panels */
+.mythral-window,
+.dialog-overlay .mythral-window,
+.character-window,
+.inventory-window,
+.shop-window,
+.quest-log-window,
+.worldmap-window,
+.leaderboard-window,
+.settings-window,
+.online-window,
+.minimap-panel {
+  background:
+    linear-gradient(180deg, rgba(58,45,68,0.97), rgba(34,24,40,0.97)) !important;
+  border: 2px solid var(--border-gold) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow:
+    0 0 0 2px #1a1018,
+    var(--shadow-panel),
+    inset 0 0 24px rgba(0,0,0,0.4) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Header bars: gold trim */
+.mythral-window-header,
+.window-header {
+  background: linear-gradient(180deg, #4a3a1e, #2e2310) !important;
+  border-bottom: 2px solid var(--neon-gold) !important;
+  color: var(--neon-gold-bright) !important;
+  text-shadow: 0 1px 0 #1a1018, 0 0 8px rgba(243,201,105,0.4) !important;
+  letter-spacing: 0.06em;
+  font-family: var(--font-display) !important;
+}
+
+/* Gold close button */
+.mythral-window-close {
+  background: #3a2d44 !important;
+  border: 1px solid var(--neon-gold) !important;
+  color: var(--neon-gold-bright) !important;
+  border-radius: 4px !important;
+}
+.mythral-window-close:hover { background: #5a4660 !important; }
+
+/* Buttons: classic fantasy */
+.mythral-btn {
+  background: linear-gradient(180deg, #5a4660, #2e2336) !important;
+  border: 2px solid var(--border-gold) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--r-sm) !important;
+  text-shadow: 0 1px 0 #1a1018 !important;
+  transition: transform 0.08s ease, filter 0.12s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 0 #1a1018 !important;
+}
+.mythral-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.mythral-btn:active { transform: translateY(1px); filter: brightness(0.95); }
+.mythral-btn-primary {
+  background: linear-gradient(180deg, #5e7d3a, #324d1f) !important;
+  border-color: #9bd05a !important;
+  color: #eaffd0 !important;
+}
+.mythral-btn-danger {
+  background: linear-gradient(180deg, #a23a2e, #5e1f17) !important;
+  border-color: #f08a8a !important;
+  color: #ffe0d0 !important;
+}
+.mythral-btn-success { background: linear-gradient(180deg, #5e7d3a, #324d1f) !important; border-color: #9bd05a !important; }
+
+/* Stat / info panels */
+.mythral-panel {
+  background: rgba(20,14,24,0.85) !important;
+  border: 1px solid var(--border-gold) !important;
+  border-radius: var(--r-sm) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Titles */
+.mythral-title {
+  color: var(--neon-gold-bright) !important;
+  text-shadow: 0 2px 0 #1a1018, 0 0 16px rgba(243,201,105,0.5) !important;
+  font-family: var(--font-display) !important;
+}
+
+/* Scrollbars -> themed */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #1a1018; }
+::-webkit-scrollbar-thumb { background: #4a3a1e; border: 1px solid var(--neon-gold); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #5a4660; }
+
+/* HUD bars get a warmer pixel look */
+.hud-bar {
+  border: 2px solid #1a1018 !important;
+  border-radius: 4px !important;
+  box-shadow: inset 0 0 0 1px rgba(243,201,105,0.25), 0 1px 0 rgba(255,255,255,0.1) !important;
+  overflow: hidden;
+}
+.hud-bar-fill {
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.25), inset 0 -2px 0 rgba(0,0,0,0.25) !important;
+}
+.hp-bar .hud-bar-fill { background: linear-gradient(180deg, #f06a52 0%, #a8231a 100%) !important; }
+.mp-bar .hud-bar-fill { background: linear-gradient(180deg, #6aa6e6 0%, #1e3a6e 100%) !important; }
+.xp-bar .hud-bar-fill { background: linear-gradient(180deg, #f3d97a 0%, #a87a1e 100%) !important; }
+
+/* HUD top bar container */
+.hud-top {
+  background: linear-gradient(180deg, rgba(34,24,40,0.95), rgba(20,14,24,0.85)) !important;
+  border-bottom: 2px solid var(--border-gold) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5) !important;
+}
+
+/* Skill bar slots -> gold-rimmed */
+.skill-slot, .hotbar-slot, .equipment-slot, .inv-slot {
+  background: rgba(20,14,24,0.9) !important;
+  border: 2px solid var(--border-gold) !important;
+  border-radius: var(--r-sm) !important;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5) !important;
+}
+.skill-slot:hover, .inv-slot:hover, .equipment-slot:hover { border-color: var(--neon-gold-bright) !important; filter: brightness(1.1); }
+
+/* Chat box */
+.chat-box, .chat-panel {
+  background: rgba(20,14,24,0.9) !important;
+  border: 2px solid var(--border-gold) !important;
+  border-radius: var(--r-sm) !important;
+}
+
+/* Auth / char-select screens: warmer backdrop */
+.auth-bg, .connecting-screen, .screen-wrapper {
+  background: radial-gradient(ellipse at 50% 30%, #1c1426 0%, #0c0a14 80%) !important;
+}
+.auth-panel, .char-card {
+  background: linear-gradient(180deg, rgba(58,45,68,0.97), rgba(34,24,40,0.97)) !important;
+  border: 2px solid var(--border-gold) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+
+/* Notifications: parchment toast */
+.notification-toast {
+  background: linear-gradient(180deg, #f3e6c8, #d8c39a) !important;
+  color: #2e2310 !important;
+  border: 2px solid #a87a1e !important;
+  border-radius: var(--r-sm) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+
+/* Death screen: warmer crimson */
+.death-overlay {
+  background: radial-gradient(ellipse at center, rgba(120,20,20,0.6) 0%, rgba(20,8,8,0.95) 100%) !important;
+}
+.death-panel .death-title {
+  color: #f3a05a !important;
+  text-shadow: 0 0 24px rgba(243,80,40,0.7), 0 3px 0 #1a0808 !important;
+  font-family: var(--font-display) !important;
+}
+
+/* Minimap frame */
+.minimap-panel {
+  border: 2px solid var(--border-gold) !important;
+}
+
+/* Connection indicator dot */
+.connection-dot { box-shadow: 0 0 8px currentColor !important; }
+
+/* Pixelated rendering helper for any sprite-like element */
+.entity-icon, .item-icon, .skill-icon {
+  image-rendering: pixelated !important;
+}
+
+/* ============================================================
+   MOBILE CONTROL SURFACES (themed to fantasy pixel art)
+   These only show on mobile (driven by .mobile on .game-screen
+   or by pointer:coarse). Desktop is untouched.
+   ============================================================ */
+
+/* ---- Virtual joystick ---- */
+.joystick {
+  position: absolute;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  left: calc(18px + env(safe-area-inset-left, 0px));
+  z-index: 20;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.joystick.right { /* default: bottom-LEFT for right-handed thumbs */
+  left: calc(18px + env(safe-area-inset-left, 0px));
+  right: auto;
+}
+.joystick.left { /* leftHanded: move to bottom-RIGHT */
+  left: auto;
+  right: calc(18px + env(safe-area-inset-right, 0px));
+}
+.joystick-base {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(58,45,68,0.55), rgba(20,14,24,0.5));
+  border: 2px solid rgba(243,201,105,0.45);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.5), 0 2px 0 rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+}
+.joystick.active .joystick-base {
+  border-color: var(--neon-gold-bright);
+  box-shadow: inset 0 0 22px rgba(243,201,105,0.25), 0 0 16px rgba(243,201,105,0.35);
+}
+.joystick-knob {
+  position: relative;
+  width: 46%;
+  height: 46%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f3d97a, #a87a1e 70%, #6b4d12);
+  border: 2px solid #2e2310;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.4);
+  transition: transform 0.04s linear;
+  pointer-events: none;
+}
+.joystick-dir {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: var(--neon-gold-bright);
+  text-shadow: 0 1px 0 #1a1018;
+  pointer-events: none;
+}
+
+/* ---- Attack / Interact cluster ---- */
+.mobile-actions {
+  position: absolute;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.mobile-actions.left { right: auto; left: calc(18px + env(safe-area-inset-left, 0px)); }
+.action-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--border-gold);
+  background: linear-gradient(180deg, rgba(58,45,68,0.95), rgba(34,24,40,0.95));
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  box-shadow: 0 3px 0 #1a1018, inset 0 1px 0 rgba(255,255,255,0.12);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.08s ease, filter 0.12s ease;
+}
+.action-btn.attack {
+  width: 74px; height: 74px;
+  border-color: #f08a8a;
+  background: linear-gradient(180deg, #a23a2e, #5e1f17);
+}
+.action-btn.interact {
+  width: 66px; height: 66px;
+  border-color: #9bd05a; background: linear-gradient(180deg, #3a5a2a, #21381a);
+}
+.action-btn .action-icon { font-size: 26px; line-height: 1; }
+.action-btn.attack .action-icon { font-size: 32px; }
+.action-btn .action-label { font-size: 11px; letter-spacing: 0.04em; font-family: var(--font-ui); margin-top: 2px; }
+.action-btn.dim { opacity: 0.5; filter: grayscale(0.4); }
+.action-btn:active { transform: scale(0.92); }
+.action-btn.enabled { box-shadow: 0 3px 0 #1a1018, 0 0 14px rgba(243,201,105,0.4), inset 0 1px 0 rgba(255,255,255,0.12); }
+
+/* ---- Action drawer (slide-up menu) ---- */
+.action-drawer-scrim {
+  position: absolute; inset: 0; z-index: 40;
+  background: rgba(5,6,15,0.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+.action-drawer-scrim.open { opacity: 1; pointer-events: auto; }
+.action-drawer {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 41;
+  background: linear-gradient(180deg, rgba(46,34,54,0.98), rgba(20,14,24,0.99));
+  border-top: 2px solid var(--neon-gold);
+  border-radius: 16px 16px 0 0;
+  padding: 10px 14px calc(18px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(110%);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.action-drawer.open { transform: translateY(0); }
+.action-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-display);
+  color: var(--neon-gold-bright);
+  letter-spacing: 0.1em;
+  padding: 4px 4px 12px;
+  font-size: 14px;
+}
+.action-drawer-close {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: #3a2d44; border: 1px solid var(--neon-gold);
+  color: var(--neon-gold-bright); font-size: 16px;
+}
+.action-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.action-drawer-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 6px;
+  background: rgba(20,14,24,0.7);
+  border: 2px solid var(--border-gold);
+  border-radius: 10px;
+  color: var(--text-primary);
+  touch-action: manipulation;
+  transition: transform 0.08s ease, filter 0.12s ease;
+}
+.action-drawer-item:active { transform: scale(0.95); filter: brightness(1.15); }
+.action-drawer-item .adi-icon { font-size: 26px; }
+.action-drawer-item .adi-label { font-size: 11px; letter-spacing: 0.03em; }
+
+/* On mobile, hide the top-bar secondary buttons (they live in the drawer) */
+.game-screen.mobile .hud-buttons { display: none; }
+
+/* Keep the menu button visible and above drawer trigger */
+.game-screen.mobile .game-menu-btn { z-index: 42; }
+
+/* Compact HUD mode (optional toggle) */
+.game-screen.mobile.compact .hud-top { padding: 4px 8px; }
+.game-screen.mobile.compact .hud-location,
+.game-screen.mobile.compact .hud-combat-log { display: none; }
+
+/* ---- Price chart (Shop) ---- */
+.price-chart {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.price-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.price-chart-tf { display: flex; gap: 4px; }
+.price-tf-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  border-radius: var(--r-pill);
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.price-tf-btn.active {
+  background: linear-gradient(135deg, rgba(34,211,238,0.25), rgba(167,139,250,0.2));
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+.price-chart-svg { display: block; width: 100%; }
+.price-chart-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-family: var(--font-ui);
+}
+

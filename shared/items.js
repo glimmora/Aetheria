@@ -60,6 +60,7 @@ export const ITEMS = {
   super_health_potion: { id: 'super_health_potion', name: 'Super Health Potion', type: 'consumable', value: 200, heal: 450, desc: 'Restores 450 HP.', icon: '🧪', reqLevel: 16 },
   mana_potion: { id: 'mana_potion', name: 'Mana Potion', type: 'consumable', value: 30, mana: 60, desc: 'Restores 60 MP.', icon: '🔵' },
   greater_mana_potion: { id: 'greater_mana_potion', name: 'Greater Mana Potion', type: 'consumable', value: 80, mana: 160, desc: 'Restores 160 MP.', icon: '🔵', reqLevel: 8 },
+  super_mana_potion: { id: 'super_mana_potion', name: 'Super Mana Potion', type: 'consumable', value: 200, mana: 400, desc: 'Restores 400 MP.', icon: '🔵', reqLevel: 16 },
   bread: { id: 'bread', name: 'Bread', type: 'consumable', value: 4, heal: 15, desc: 'A simple loaf. Restores 15 HP.', icon: '🍞' },
   roasted_meat: { id: 'roasted_meat', name: 'Roasted Meat', type: 'consumable', value: 12, heal: 40, desc: 'A hearty meal. Restores 40 HP.', icon: '🍖' },
   apple: { id: 'apple', name: 'Apple', type: 'consumable', value: 2, heal: 8, desc: 'A fresh red apple. Restores 8 HP.', icon: '🍎' },

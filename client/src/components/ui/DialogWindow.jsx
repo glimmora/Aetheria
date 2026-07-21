@@ -3,7 +3,7 @@
 // ============================================================
 
 import React from 'react'
-import { QUESTS, getQuestsByGiver } from '../../../../shared/quests.js'
+import { QUESTS } from '../../../../shared/quests.js'
 import { QUEST_STATUS } from '../../../../shared/quests.js'
 
 export default function DialogWindow({ activeDialog, questProgress, onClose, onOpenShop, onOpenQuest, onOpenTravel }) {

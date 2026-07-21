@@ -5,62 +5,62 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
-:root {
-  /* ---- Core palette ---- */
-  --bg-void:        #05060f;
-  --bg-deep:        #0a0d1f;
-  --bg-panel:       #11152b;
-  --bg-panel-light: #1a1f3a;
-  --bg-glass:       rgba(17, 21, 43, 0.72);
-  --bg-glass-light: rgba(26, 31, 58, 0.55);
+ :root {
+  /* ---- Core palette (fantasy pixel-art) ---- */
+  --bg-void:        #0c0a14;
+  --bg-deep:        #141019;
+  --bg-panel:       #2a2030;
+  --bg-panel-light: #3a2d44;
+  --bg-glass:       rgba(34, 24, 40, 0.9);
+  --bg-glass-light: rgba(46, 34, 54, 0.8);
 
-  /* ---- Accent neon colors ---- */
-  --neon-cyan:      #22d3ee;
-  --neon-cyan-soft: rgba(34, 211, 238, 0.5);
-  --neon-magenta:   #e879f9;
-  --neon-violet:    #a78bfa;
-  --neon-gold:      #fbbf24;
-  --neon-gold-bright: #fde047;
-  --neon-emerald:   #34d399;
-  --neon-rose:      #fb7185;
-  --neon-amber:     #f59e0b;
+  /* ---- Accent fantasy colors ---- */
+  --neon-cyan:      #6fd6cd;
+  --neon-cyan-soft: rgba(111, 214, 205, 0.5);
+  --neon-magenta:   #d98fe0;
+  --neon-violet:    #b89cf0;
+  --neon-gold:      #f3c969;
+  --neon-gold-bright: #ffe79a;
+  --neon-emerald:   #6fcf6f;
+  --neon-rose:      #f08a8a;
+  --neon-amber:     #f0a83c;
 
   /* ---- Status colors ---- */
-  --hp:             #ef4444;
-  --hp-glow:        rgba(239, 68, 68, 0.6);
-  --mp:             #3b82f6;
-  --mp-glow:        rgba(59, 130, 246, 0.6);
-  --xp:             #fbbf24;
-  --xp-glow:        rgba(251, 191, 36, 0.6);
+  --hp:             #e2503c;
+  --hp-glow:        rgba(226, 80, 60, 0.6);
+  --mp:             #4a86d6;
+  --mp-glow:        rgba(74, 134, 214, 0.6);
+  --xp:             #f3c969;
+  --xp-glow:        rgba(243, 201, 105, 0.6);
 
   /* ---- Text ---- */
-  --text-primary:   #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted:     #64748b;
-  --text-faint:     #475569;
+  --text-primary:   #f3ead8;
+  --text-secondary: #d8c9b0;
+  --text-muted:     #a08c70;
+  --text-faint:     #6f5f48;
 
   /* ---- Borders ---- */
-  --border-glass:   rgba(148, 163, 184, 0.15);
-  --border-accent:  rgba(34, 211, 238, 0.4);
-  --border-gold:    rgba(251, 191, 36, 0.4);
+  --border-glass:   rgba(243, 201, 105, 0.25);
+  --border-accent:  rgba(111, 214, 205, 0.4);
+  --border-gold:    rgba(243, 201, 105, 0.5);
 
   /* ---- Shadows & glows ---- */
-  --glow-cyan:      0 0 24px rgba(34, 211, 238, 0.35);
-  --glow-gold:      0 0 24px rgba(251, 191, 36, 0.4);
-  --glow-magenta:   0 0 24px rgba(232, 121, 249, 0.35);
-  --shadow-panel:   0 24px 64px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04);
-  --shadow-card:    0 8px 24px rgba(0, 0, 0, 0.5);
+  --glow-cyan:      0 0 18px rgba(111, 214, 205, 0.3);
+  --glow-gold:      0 0 18px rgba(243, 201, 105, 0.35);
+  --glow-magenta:   0 0 18px rgba(217, 143, 224, 0.3);
+  --shadow-panel:   0 18px 48px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(243,201,105,0.1);
+  --shadow-card:    0 6px 18px rgba(0, 0, 0, 0.5);
 
   /* ---- Fonts ---- */
   --font-display:   'Cinzel', serif;
   --font-ui:        'Rajdhani', 'Segoe UI', sans-serif;
   --font-mono:      'JetBrains Mono', 'Consolas', monospace;
 
-  /* ---- Radii ---- */
-  --r-sm: 4px;
-  --r-md: 8px;
-  --r-lg: 12px;
-  --r-xl: 16px;
+  /* ---- Radii (kept subtle; pixel borders add the framing) ---- */
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-lg: 9px;
+  --r-xl: 12px;
   --r-pill: 999px;
 }
 
@@ -467,9 +467,12 @@ input {
 
 /* ---- Entity movement: GPU-accelerated, spring easing ---- */
 .entity {
-  transition: transform 0.14s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.18s cubic-bezier(0.33, 1, 0.68, 1);
   will-change: transform;
 }
+
+/* ---- Player facing direction ---- */
+.facing-left .entity-icon { transform: scaleX(-1); }
 
 /* ---- HP/MP fill: springy width transition ---- */
 .hud-bar-fill,

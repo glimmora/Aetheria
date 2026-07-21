@@ -27,7 +27,7 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
         <div className="auth-logo">
           <div className="auth-logo-glow">MYTHRAL</div>
           <h1 className="auth-logo-title">MYTHRAL</h1>
-          <div className="auth-logo-sub">Nine Isles</div>
+          <div className="auth-logo-sub">Realm of Legends</div>
         </div>
 
         <div className="auth-card mythral-panel">

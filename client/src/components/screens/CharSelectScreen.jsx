@@ -10,6 +10,7 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
   const [showCreate, setShowCreate] = useState(false)
   const [name, setName] = useState('')
   const [selectedClass, setSelectedClass] = useState('warrior')
+  const [selectedGender, setSelectedGender] = useState('male')
   const [error, setError] = useState(null)
   const max = maxCharacters || 5
   const atLimit = characters.length >= max
@@ -24,8 +25,9 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
       setError('Name must be at most 20 characters')
       return
     }
-    onCreate(name.trim(), selectedClass)
+    onCreate(name.trim(), selectedClass, selectedGender)
     setName('')
+    setSelectedGender('male')
     setShowCreate(false)
   }
 
@@ -117,15 +119,33 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
               ))}
             </div>
             <div className="char-create-detail-panel">
-              <div className="text-sm text-dim">{CLASSES[selectedClass].description}</div>
-              <div className="char-create-stats mt-2">
-                <div className="char-create-stat"><span className="text-red">❤ HP</span><span className="font-bold">{CLASSES[selectedClass].baseStats.hp}</span></div>
-                <div className="char-create-stat"><span className="text-blue">✦ MP</span><span className="font-bold">{CLASSES[selectedClass].baseStats.mp}</span></div>
-                <div className="char-create-stat"><span className="text-gold">⚔ ATK</span><span className="font-bold">{CLASSES[selectedClass].baseStats.attack}</span></div>
-                <div className="char-create-stat"><span className="text-green">🛡 DEF</span><span className="font-bold">{CLASSES[selectedClass].baseStats.defense}</span></div>
-                <div className="char-create-stat"><span className="text-purple">✧ MAG</span><span className="font-bold">{CLASSES[selectedClass].baseStats.magic}</span></div>
-                <div className="char-create-stat"><span className="text-dim">⚡ SPD</span><span className="font-bold">{CLASSES[selectedClass].baseStats.speed}</span></div>
-              </div>
+              {CLASSES[selectedClass] && (
+                <>
+                  <div className="text-sm text-dim">{CLASSES[selectedClass].description}</div>
+                  <div className="char-create-stats mt-2">
+                    <div className="char-create-stat"><span className="text-red">❤ HP</span><span className="font-bold">{CLASSES[selectedClass].baseStats.hp}</span></div>
+                    <div className="char-create-stat"><span className="text-blue">✦ MP</span><span className="font-bold">{CLASSES[selectedClass].baseStats.mp}</span></div>
+                    <div className="char-create-stat"><span className="text-gold">⚔ ATK</span><span className="font-bold">{CLASSES[selectedClass].baseStats.attack}</span></div>
+                    <div className="char-create-stat"><span className="text-green">🛡 DEF</span><span className="font-bold">{CLASSES[selectedClass].baseStats.defense}</span></div>
+                    <div className="char-create-stat"><span className="text-purple">✧ MAG</span><span className="font-bold">{CLASSES[selectedClass].baseStats.magic}</span></div>
+                    <div className="char-create-stat"><span className="text-dim">⚡ SPD</span><span className="font-bold">{CLASSES[selectedClass].baseStats.speed}</span></div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="text-gold text-sm font-bold mt-4 mb-1">GENDER</div>
+            <div className="char-create-classes">
+              {['male', 'female'].map(g => (
+                <div
+                  key={g}
+                  className={`char-create-class-card ${selectedGender === g ? 'selected' : ''}`}
+                  style={selectedGender === g ? { borderColor: '#e7bb52', boxShadow: '0 0 24px #e7bb5288' } : {}}
+                  onClick={() => setSelectedGender(g)}
+                >
+                  <div className="char-create-class-icon">{g === 'male' ? '♂' : '♀'}</div>
+                  <div className="char-create-class-name" style={{ color: '#e7bb52' }}>{g === 'male' ? 'Male' : 'Female'}</div>
+                </div>
+              ))}
             </div>
             {error && <div className="auth-error mt-2">{error}</div>}
             <div className="char-create-buttons mt-4">

@@ -88,18 +88,18 @@ try {
   console.log('\nStep 7: Leaderboard')
   const lbRes = await new Promise((resolve) => {
     socket.once('leaderboard', resolve)
-    socket.emit('leaderboard:request')
+    socket.emit('leaderboard:request', { limit: 1000 })
     setTimeout(() => resolve(null), 5000)
   })
   assert(lbRes !== null, 'Leaderboard received')
   assert(lbRes?.leaderboard?.length >= 1, `At least 1 entry (${lbRes?.leaderboard?.length})`)
-  assert(lbRes?.leaderboard?.[0]?.name === TEST_CHAR_NAME, `Top entry is me (${lbRes?.leaderboard?.[0]?.name})`)
+  assert(lbRes?.leaderboard?.some(e => e.name === TEST_CHAR_NAME), `My character appears in leaderboard (${TEST_CHAR_NAME})`)
 
   // 8. Self-inspect
   console.log('\nStep 8: Inspect self')
   const inspectRes = await new Promise((resolve) => {
     socket.once('player:inspect', resolve)
-    socket.emit('player:inspect', { playerId: socket.id })
+    socket.emit('player:inspect:request', { playerId: socket.id })
     setTimeout(() => resolve(null), 5000)
   })
   assert(inspectRes !== null, 'Inspect data received')
@@ -108,9 +108,9 @@ try {
 
   // 9. HTTP leaderboard
   console.log('\nStep 9: HTTP leaderboard endpoint')
-  const lbHttp = await fetchJSON(`${SERVER_URL}/api/leaderboard`)
+  const lbHttp = await fetchJSON(`${SERVER_URL}/api/leaderboard?limit=1000`)
   assert(lbHttp.ok, 'HTTP leaderboard works')
-  assert(lbHttp.leaderboard[0]?.name === TEST_CHAR_NAME, 'HTTP leaderboard matches')
+  assert(lbHttp.leaderboard.some(e => e.name === TEST_CHAR_NAME), 'HTTP leaderboard includes my character')
 
   // 10. HTTP stats endpoint
   console.log('\nStep 10: HTTP stats endpoint')

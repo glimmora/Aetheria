@@ -59,10 +59,9 @@ export function getSuspiciousLog() {
 
 // ---- Movement validation ----
 export function validateMovement(dx, dy) {
-  // Must be exactly one tile in one cardinal direction
+  // Allow cardinal AND diagonal steps (one tile each axis, max 1)
   if (!Number.isInteger(dx) || !Number.isInteger(dy)) return false
   if (Math.abs(dx) > 1 || Math.abs(dy) > 1) return false
-  if (dx !== 0 && dy !== 0) return false  // no diagonal
   if (dx === 0 && dy === 0) return false  // must move
   return true
 }

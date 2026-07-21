@@ -9,6 +9,7 @@ import { QUEST_STATUS, getQuestProgressText } from '../../../../shared/quests.js
 export default function QuestDialog({ activeQuestDialog, player, inventory, killCounts, questProgress, onClose, onAccept, onTurnIn }) {
   if (!activeQuestDialog) return null
   const { npc, quest } = activeQuestDialog
+  if (!quest) return null
   const state = questProgress[quest.id] || QUEST_STATUS.AVAILABLE
   const canAccept = player.level >= quest.minLevel
   const progressText = state === QUEST_STATUS.ACTIVE ? getQuestProgressText(quest, inventory, killCounts) : ''

@@ -97,7 +97,7 @@ export function WorldMapWindow({ active, currentIsland, visitedIslands, player, 
             {islands.map((isl, i) => {
               const visited = visitedIslands.includes(isl.id)
               const isCurrent = currentIsland === isl.id
-              const boss = isl.spawnConfig.find(c => {
+              const boss = isl.spawnConfig?.find(c => {
                 const m = c.monster
                 return m.includes('pyros') || m.includes('dragon') || m.includes('titan') || m.includes('kraken') || m.includes('mortis') || m.includes('drake') || m.includes('acheron')
               })

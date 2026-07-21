@@ -3,6 +3,15 @@
 // ============================================================
 
 import { getItem, isEquipment } from './items.js'
+import { CONFIG } from './protocol.js'
+
+// Returns true if `inventory` has room for a new (distinct) item stack.
+// Stacking onto an existing item never consumes a new slot.
+export function hasInventorySpace(inventory, itemId) {
+  const existing = inventory.find(i => i.id === itemId)
+  if (existing) return true
+  return inventory.length < CONFIG.MAX_INVENTORY_SLOTS
+}
 
 export function addItemToInventory(inventory, itemId, qty = 1) {
   const item = getItem(itemId)
@@ -11,6 +20,10 @@ export function addItemToInventory(inventory, itemId, qty = 1) {
   const existing = inventory.find(i => i.id === itemId)
   if (existing) {
     return inventory.map(i => i.id === itemId ? { ...i, qty: i.qty + qty } : i)
+  }
+  // Enforce the per-character inventory slot cap (new stack only)
+  if (inventory.length >= CONFIG.MAX_INVENTORY_SLOTS) {
+    return inventory
   }
   return [...inventory, { id: itemId, qty }]
 }
@@ -110,6 +123,8 @@ export function sellItem(inventory, itemId, qty = 1) {
 export function buyItem(inventory, gold, itemId, qty = 1, price = 0) {
   const totalCost = price * qty
   if (gold < totalCost) return { inventory, gold, success: false }
+  const item = getItem(itemId)
+  if (!item) return { inventory, gold, success: false }
   const newInv = addItemToInventory(inventory, itemId, qty)
   return { inventory: newInv, gold: gold - totalCost, success: true }
 }

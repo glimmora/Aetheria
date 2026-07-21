@@ -13,12 +13,18 @@
     "dev:server": "npm run dev -w server",
     "dev:client": "npm run dev -w client",
     "build": "npm run build -w client",
+    "gen:assets": "node client/src/art/atlas.js",
     "start": "npm run start -w server",
+    "stop": "bash scripts/stop.sh",
+    "pretest": "npm install --silent",
     "smoke": "node scripts/smoke-test.js",
     "e2e": "node scripts/e2e-test.js",
+    "cheat": "node scripts/cheat-test.js",
+    "audit": "node scripts/full-audit.js",
     "test": "npm run smoke"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "puppeteer-core": "^23.11.1"
   }
 }

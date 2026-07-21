@@ -59,12 +59,15 @@ export const CLIENT_EVENTS = {
   RESPAWN: 'respawn',
   CHAT: 'chat',                       // { message }
   REQUEST_ONLINE: 'online:request',   // Ask for online players list
-  INSPECT_PLAYER: 'player:inspect',   // { playerId } — request another player's details
+  INSPECT_PLAYER: 'player:inspect:request',   // { playerId } — request another player's details
   REQUEST_LEADERBOARD: 'leaderboard:request',
   DISCONNECT: 'disconnect',
 }
 
-export const TICK_RATE_HZ = parseInt(process.env.TICK_RATE_HZ) || 10
+// Safe cross-environment env accessor (works in Node.js and browser)
+const _env = typeof process !== 'undefined' && process.env ? process.env : {}
+
+export const TICK_RATE_HZ = parseInt(_env.TICK_RATE_HZ) || 10
 export const TICK_INTERVAL_MS = 1000 / TICK_RATE_HZ
 
 // ---- Leveling system ----
@@ -85,9 +88,9 @@ export const TICK_INTERVAL_MS = 1000 / TICK_RATE_HZ
 // At 2000 XP/min avg (realistic mid+late game): ~12.7 years at 4hr/day
 // At 3000 XP/min avg (optimistic endgame):     ~8.5 years at 4hr/day
 // → Average: ~10 years
-export const MAX_LEVEL = parseInt(process.env.MAX_LEVEL) || 100
-export const XP_CURVE_BASE = parseFloat(process.env.XP_CURVE_BASE) || 128
-export const XP_CURVE_GROWTH = parseFloat(process.env.XP_CURVE_GROWTH) || 1.16
+export const MAX_LEVEL = parseInt(_env.MAX_LEVEL) || 100
+export const XP_CURVE_BASE = parseFloat(_env.XP_CURVE_BASE) || 128
+export const XP_CURVE_GROWTH = parseFloat(_env.XP_CURVE_GROWTH) || 1.16
 
 // XP required to advance FROM `level` TO `level + 1`
 export function xpForLevel(level) {
@@ -105,7 +108,7 @@ export function totalXpForLevel(level) {
 
 // Constants shared with client — all env-configurable
 function envInt(name, def) {
-  const v = process.env[name]
+  const v = _env[name]
   if (v === undefined || v === '') return def
   const n = parseInt(v)
   return Number.isFinite(n) ? n : def

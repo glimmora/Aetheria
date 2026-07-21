@@ -10,7 +10,7 @@ import { generateIslandMap, findSpawnPoints, getVillageCenter } from './islandGe
 // ISLAND 1: LUMINA ISLE (Beginner, level 1-5)
 // ============================================================
 const luminaNpcs = [
-  { id: 'lumina elder_ravenna', name: 'Elder Ravenna', role: 'Village Elder', x: 0, y: 0, color: '#fde047', dialog: 'Welcome, traveler, to Lumina Isle, the first spark of Mythral. Our isle is gentle, but the world beyond is not. Speak with our folk, and you will find your purpose.', shop: null },
+  { id: 'lumina elder_ravenna', name: 'Elder Ravenna', role: 'Village Elder', x: 0, y: 0, color: '#fde047', dialog: 'Welcome, traveler, to Lumina Isle, the first spark of Mythral. Our isle is gentle, but the world beyond is not. Speak with our folk, and you will find your purpose.', shop: null, quest: 'lumina_goblins' },
   { id: 'lumina mira', name: 'Mira the Baker', role: 'Baker', x: 0, y: 0, color: '#fb923c', dialog: 'Fresh bread today! Just three coins a loaf. Oh, but my cellar has rats again. Would you help me, dear?', shop: { name: "Mira's Bakery", items: [{ id: 'bread', price: 3, stock: 99 }, { id: 'apple', price: 2, stock: 50 }, { id: 'roasted_meat', price: 12, stock: 20 }] }, quest: 'lumina_rats' },
   { id: 'lumina thom', name: 'Thom Blacksmith', role: 'Blacksmith', x: 0, y: 0, color: '#9ca3af', dialog: 'Need a blade? I forge the finest iron in Lumina. Bring me ore and I will reward you.', shop: { name: "Thom's Forge", items: [{ id: 'iron_sword', price: 60, stock: 5 }, { id: 'leather_armor', price: 15, stock: 8 }, { id: 'wooden_shield', price: 10, stock: 6 }, { id: 'leather_cap', price: 5, stock: 10 }] }, quest: 'lumina_ore' },
   { id: 'lumina old_pip', name: 'Old Pip', role: 'Fisherman', x: 0, y: 0, color: '#0ea5e9', dialog: 'Aye, I have fished these waters for sixty years. The sea remembers everything. Even what the land tries to forget.', shop: null, quest: 'lumina_dog' },
@@ -35,7 +35,7 @@ const emberfallNpcs = [
   { id: 'ember captain_reef', name: 'Captain Reef', role: 'Sailor', x: 0, y: 0, color: '#0284c7', dialog: 'I can ferry you to Frostpeak Isle, cold as the void itself. Or back to Lumina, if you tire of fire.', shop: null, travel: { options: [{ to: 'frostpeak', reqLevel: 8 }, { to: 'lumina', reqLevel: 1 }] } },
   { id: 'ember broker', name: 'Ember Broker', role: 'Merchant', x: 0, y: 0, color: '#facc15', dialog: 'Ember essence is in high demand across Mythral. Sell it to me, and I will pay you well.', shop: { name: "Broker's Stall", items: [{ id: 'ember_essence', price: 30, stock: 0 }, { id: 'health_potion', price: 25, stock: 10 }] }, quest: 'ember_essence_trade' },
   { id: 'ember lavana', name: 'Lavana', role: 'Innkeeper', x: 0, y: 0, color: '#fda4af', dialog: 'Welcome to the Sooty Hearth Inn. Rest, traveler. Tomorrow you may die.', shop: { name: "Sooty Hearth", items: [{ id: 'roasted_meat', price: 12, stock: 20 }, { id: 'bread', price: 3, stock: 30 }, { id: 'greater_health_potion', price: 70, stock: 5 }] } },
-  { id: ' ember historian', name: 'Volcano Historian', role: 'Historian', x: 0, y: 0, color: '#92400e', dialog: 'The Emberlord was once a man, you know. Pyros, the sorcerer-king. He sought immortality and found fire.', shop: null, quest: 'ember_history' },
+  { id: 'ember historian', name: 'Volcano Historian', role: 'Historian', x: 0, y: 0, color: '#92400e', dialog: 'The Emberlord was once a man, you know. Pyros, the sorcerer-king. He sought immortality and found fire.', shop: null, quest: 'ember_history' },
 ]
 
 // ============================================================
@@ -140,7 +140,7 @@ const skyreachNpcs = [
   { id: 'sky mistress_luna', name: 'Mistress Luna', role: 'Cloud Weaver', x: 0, y: 0, color: '#a78bfa', dialog: 'Cloud sprites are mischievous, not evil. But they have stolen my spellbook. Slay ten and you may find it.', shop: { name: "Luna's Atelier", items: [{ id: 'arcane_focus', price: 240, stock: 2 }, { id: 'archmage_robe', price: 350, stock: 1 }, { id: 'arcane_circlet', price: 120, stock: 2 }] }, quest: 'sky_sprites' },
   { id: 'sky stormrider', name: 'Stormrider Thane', role: 'Stormrider', x: 0, y: 0, color: '#facc15', dialog: 'Storm elementals guard the drake\'s nest. Slay eight and the path will be clear.', shop: null, quest: 'sky_elementals' },
   { id: 'sky brother_wind', name: 'Brother Wind', role: 'Monk', x: 0, y: 0, color: '#e0e7ff', dialog: 'The wind speaks of darkness in Voidheart. Slay fifteen harpies and the winds will whisper to you.', shop: null, quest: 'sky_whispers' },
-  { id: 'sky sky_merchant', name: 'Sky Merchant', role: 'Merchant', x: 0, y: 0, color: '#f59e0b', dialog: 'Bring me five wyrm scales and I will sell you anything in my cart.', shop: { name: "Sky Cart", items: [{ id: 'super_health_potion', price: 200, stock: 5 }, { id: 'super_health_potion', price: 200, stock: 5 }, { id: 'elixir_of_might', price: 100, stock: 5 }] }, quest: 'sky_scales' },
+  { id: 'sky sky_merchant', name: 'Sky Merchant', role: 'Merchant', x: 0, y: 0, color: '#f59e0b', dialog: 'Bring me five wyrm scales and I will sell you anything in my cart.', shop: { name: "Sky Cart", items: [{ id: 'super_health_potion', price: 200, stock: 5 }, { id: 'super_mana_potion', price: 200, stock: 5 }, { id: 'elixir_of_might', price: 100, stock: 5 }] }, quest: 'sky_scales' },
   { id: 'sky oracle', name: 'The Sky Oracle', role: 'Oracle', x: 0, y: 0, color: '#c084fc', dialog: 'I see a great void opening. The Voidlord Acheron stirs. Slay the Thunder Drake and you will be ready.', shop: { name: "Oracle's Skyhold", items: [{ id: 'archmage_robe', price: 350, stock: 1 }, { id: 'hierophant_robe', price: 320, stock: 1 }, { id: 'crown_of_flames', price: 450, stock: 1 }] } },
   { id: 'sky captain_gale', name: 'Captain Gale', role: 'Airsailor', x: 0, y: 0, color: '#0284c7', dialog: 'My airship can carry you to Voidheart Isle - the final isle. Or back to Shadowfen.', shop: null, travel: { options: [{ to: 'voidheart', reqLevel: 18 }, { to: 'shadowfen', reqLevel: 10 }] } },
   { id: 'sky watcher', name: 'Star Watcher', role: 'Astronomer', x: 0, y: 0, color: '#1e40af', dialog: 'The stars have shifted. Slay twenty storm elementals and the heavens will realign.', shop: null, quest: 'sky_stars' },
@@ -156,7 +156,7 @@ const voidheartNpcs = [
   { id: 'void watcher_aza', name: 'Watcher Aza', role: 'Void Watcher', x: 0, y: 0, color: '#7c3aed', dialog: 'You have come at last. The Voidlord Acheron tears reality itself. Slay him, and Mythral will be saved.', shop: null, quest: 'void_acheron' },
   { id: 'void hero_kael', name: 'Fallen Hero Kael', role: 'Fallen Hero', x: 0, y: 0, color: '#dc2626', dialog: 'I tried to face Acheron alone. I failed. Slay ten void spawns and my spirit may rest.', shop: null, quest: 'void_spawns' },
   { id: 'void merchant', name: 'Void Merchant', role: 'Merchant', x: 0, y: 0, color: '#fbbf24', dialog: 'I deal in the currency of despair. Bring me twenty void crystals and I will sell you the weapons of gods.', shop: { name: "Void Bazaar", items: [{ id: 'flamebrand', price: 600, stock: 1 }, { id: 'staff_of_storms', price: 720, stock: 1 }, { id: 'phoenix_bow', price: 780, stock: 1 }, { id: 'dawnbringer', price: 800, stock: 1 }, { id: 'dragonscale', price: 900, stock: 1 }] }, quest: 'void_crystals' },
-  { id: 'void priestess', name: 'Priestess of the Void', role: 'Priestess', x: 0, y: 0, color: '#c084fc', dialog: 'I am the last of my order. Slay fifteen demon brutes and the way to Acheron\'s throne will open.', shop: { name: "Void Reliquary", items: [{ id: 'super_health_potion', price: 200, stock: 10 }, { id: 'super_health_potion', price: 200, stock: 10 }, { id: 'hierophant_robe', price: 320, stock: 1 }] }, quest: 'void_brutes' },
+  { id: 'void priestess', name: 'Priestess of the Void', role: 'Priestess', x: 0, y: 0, color: '#c084fc', dialog: 'I am the last of my order. Slay fifteen demon brutes and the way to Acheron\'s throne will open.', shop: { name: "Void Reliquary", items: [{ id: 'super_health_potion', price: 200, stock: 10 }, { id: 'super_mana_potion', price: 200, stock: 10 }, { id: 'hierophant_robe', price: 320, stock: 1 }] }, quest: 'void_brutes' },
   { id: 'void blacksmith', name: 'Void Smith', role: 'Blacksmith', x: 0, y: 0, color: '#525252', dialog: 'I forge with starlight and despair. Bring me ten wyrm scales and I will reforge any weapon you possess.', shop: { name: "Void Forge", items: [{ id: 'dragonscale', price: 900, stock: 1 }, { id: 'plate_armor', price: 280, stock: 2 }, { id: 'crown_of_flames', price: 450, stock: 1 }] }, quest: 'void_scales' },
   { id: 'void sage', name: 'Void Sage', role: 'Sage', x: 0, y: 0, color: '#a78bfa', dialog: 'The Voidlord was once a god, you know. Acheron, the jealous one. He sought to unmake creation.', shop: null, quest: 'void_history' },
   { id: 'void shade', name: 'Wandering Shade', role: 'Lost Soul', x: 0, y: 0, color: '#1e1b4b', dialog: 'I am lost between worlds. Slay twenty shadow demons and the void will release me.', shop: null, quest: 'void_shadows' },
@@ -405,10 +405,10 @@ export function placeNpcs(islandId) {
   const cx = Math.floor(w / 2), cy = Math.floor(h / 2)
   // building positions (matching placeVillage in islandGenerator)
   const buildings = [
-    { x: cx - 7, y: cy - 5, w: 5, h: 4 },
-    { x: cx + 2, y: cy - 5, w: 5, h: 4 },
-    { x: cx - 7, y: cy + 1, w: 6, h: 4 },
-    { x: cx + 2, y: cy + 1, w: 5, h: 4 },
+    { x: cx - 7, y: cy - 5, w: 5, h: 4, buildingType: 'shop' },
+    { x: cx + 2, y: cy - 5, w: 5, h: 4, buildingType: 'forge' },
+    { x: cx - 7, y: cy + 1, w: 6, h: 4, buildingType: 'inn' },
+    { x: cx + 2, y: cy + 1, w: 5, h: 4, buildingType: 'hut' },
   ]
   // also use village square positions
   const squarePositions = [
@@ -456,6 +456,35 @@ export function placeNpcs(islandId) {
     return { ...npc, x: pos.x, y: pos.y }
   })
   return npcs
+}
+
+// Return building positions for an island (used by server + client for rendering)
+export function getIslandBuildings(islandId) {
+  const def = ISLAND_DEFS[islandId]
+  if (!def) return []
+  const map = getIslandMap(islandId)
+  const h = map.length, w = map[0].length
+  const cx = Math.floor(w / 2), cy = Math.floor(h / 2)
+  // Biome-specific building types
+  const biome = def.biome || 'lumina'
+  const biomeBuildings = {
+    lumina: ['shop', 'forge', 'inn', 'hut'],
+    emberfall: ['forge', 'tower', 'inn', 'shop'],
+    frostpeak: ['hut', 'forge', 'inn', 'shop'],
+    mistwood: ['apothecary', 'shop', 'hut', 'tower'],
+    sunscar: ['shop', 'tower', 'inn', 'apothecary'],
+    tidehaven: ['dock', 'shop', 'inn', 'fishShack'],
+    shadowfen: ['apothecary', 'hut', 'tower', 'shop'],
+    skyreach: ['tower', 'inn', 'shop', 'apothecary'],
+    voidheart: ['tower', 'forge', 'temple', 'shop'],
+  }
+  const types = biomeBuildings[biome] || biomeBuildings.lumina
+  return [
+    { x: cx - 7, y: cy - 5, w: 5, h: 4, buildingType: types[0] },
+    { x: cx + 2, y: cy - 5, w: 5, h: 4, buildingType: types[1] },
+    { x: cx - 7, y: cy + 1, w: 6, h: 4, buildingType: types[2] },
+    { x: cx + 2, y: cy + 1, w: 5, h: 4, buildingType: types[3] },
+  ]
 }
 
 function isWalkableCheck(map, x, y) {

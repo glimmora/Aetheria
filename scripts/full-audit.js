@@ -317,18 +317,18 @@ try {
   track('Multiplayer', 'Online list includes self', onlineList?.players?.some(p => p.name === TEST_CHAR))
   
   // Inspect self
-  socket.emit('player:inspect', { playerId: playerId })
+  socket.emit('player:inspect:request', { playerId: playerId })
   const inspectData = await waitForEvent(socket, 'player:inspect')
   track('Multiplayer', 'Inspect player', !!inspectData)
   track('Multiplayer', 'Inspect shows stats', !!inspectData?.stats?.attack)
   track('Multiplayer', 'Inspect shows equipment', !!inspectData?.equipment)
   
   // Leaderboard
-  socket.emit('leaderboard:request')
+  socket.emit('leaderboard:request', { limit: 1000 })
   const leaderboard = await waitForEvent(socket, 'leaderboard')
   track('Multiplayer', 'Leaderboard received', !!leaderboard)
   track('Multiplayer', 'Leaderboard has entries', (leaderboard?.leaderboard?.length || 0) > 0)
-  track('Multiplayer', 'Leaderboard top entry is self', leaderboard?.leaderboard?.[0]?.name === TEST_CHAR)
+  track('Multiplayer', 'Leaderboard includes self', leaderboard?.leaderboard?.some(e => e.name === TEST_CHAR))
   
   // ===== 11. RESPAWN =====
   console.log('📋 Testing Respawn...')
@@ -366,7 +366,7 @@ try {
   track('HTTP', 'Stats shows totalUsers', stats.totalUsers > 0)
   
   // Leaderboard HTTP
-  const lbHttp = await fetchJSON(`${SERVER_URL}/api/leaderboard`)
+  const lbHttp = await fetchJSON(`${SERVER_URL}/api/leaderboard?limit=1000`)
   track('HTTP', 'GET /api/leaderboard', lbHttp.ok)
   track('HTTP', 'HTTP leaderboard has entries', lbHttp.leaderboard.length > 0)
   

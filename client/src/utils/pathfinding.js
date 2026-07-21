@@ -30,8 +30,17 @@ export function findPath(map, startX, startY, endX, endY, maxIterations = 2000) 
   const queue = [startY * w + startX]
   visited[startY * w + startX] = 1
 
-  const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+  const dirs = [
+    [0, -1], [0, 1], [-1, 0], [1, 0],
+    [1, -1], [1, 1], [-1, 1], [-1, -1],
+  ]
   let iterations = 0
+
+  const walkable = (x, y) => {
+    if (x < 0 || x >= w || y < 0 || y >= h) return false
+    const info = TILE_INFO[map[y][x]]
+    return !!info && !!info.walkable
+  }
 
   while (queue.length > 0 && iterations < maxIterations) {
     iterations++
@@ -63,6 +72,10 @@ export function findPath(map, startX, startY, endX, endY, maxIterations = 2000) 
       const tile = map[ny][nx]
       const info = TILE_INFO[tile]
       if (!info || !info.walkable) continue
+      // Diagonal: prevent corner cutting through blocked orthogonal neighbors
+      if (dx !== 0 && dy !== 0) {
+        if (!walkable(cx + dx, cy) || !walkable(cx, cy + dy)) continue
+      }
       visited[idx] = 1
       parent[idx] = current
       queue.push(idx)

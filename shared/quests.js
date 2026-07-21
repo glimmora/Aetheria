@@ -4,6 +4,8 @@
 // Quest types: kill, collect, talk, travel, boss
 // ============================================================
 
+import { addItemToInventory } from './inventory.js'
+
 export const QUESTS = {
   // ============================================================
   // LUMINA ISLE QUESTS
@@ -1219,21 +1221,12 @@ export function turnInQuest(player, inventory, questProgress, questId) {
   newPlayer.gold = (newPlayer.gold || 0) + (quest.reward.gold || 0)
   if (quest.reward.items) {
     for (const item of quest.reward.items) {
-      newInv = addItemToInventoryHelper(newInv, item.id, item.qty)
+      newInv = addItemToInventory(newInv, item.id, item.qty)
     }
   }
   // XP handled separately to show level-up animation
   newPlayer.pendingXp = (newPlayer.pendingXp || 0) + (quest.reward.xp || 0)
   return { player: newPlayer, inventory: newInv, questProgress: updated }
-}
-
-function addItemToInventoryHelper(inventory, itemId, qty) {
-  // mirror of inventory.js
-  const existing = inventory.find(i => i.id === itemId)
-  if (existing) {
-    return inventory.map(i => i.id === itemId ? { ...i, qty: i.qty + qty } : i)
-  }
-  return [...inventory, { id: itemId, qty }]
 }
 
 // Get progress text for a quest

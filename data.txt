@@ -1,0 +1,610 @@
+================================================================================
+MYTHRAL - GAME DATA COMPENDIUM
+Complete reference of characters (classes & NPCs) and items in the game
+================================================================================
+
+This document is generated from the source data files in /shared/:
+  - classes.js  (playable classes + skills)
+  - items.js    (all items)
+  - monsters.js (all monsters)
+  - islands.js  (all islands + NPCs + island monster spawns)
+  - quests.js   (all quests)
+  - combat.js / inventory.js / tiles.js (supporting data)
+
+
+================================================================================
+PART 1: PLAYABLE CHARACTER CLASSES
+================================================================================
+
+There are 4 playable classes. Base stats are at level 1; "growth" is added per
+level (stat gained = baseStat + growth * (level-1), rounded).
+
+--------------------------------------------------------------------------------
+1. WARRIOR  (⚔, color #dc2626)
+--------------------------------------------------------------------------------
+Description : A stalwart melee fighter who thrives in the front line. High
+              health, heavy armor, and crushing blows define the Warrior.
+Base Stats  : HP 150 | MP 30 | ATK 14 | DEF 10 | MAG 2 | SPD 4
+Growth/Level: HP +18 | MP +3 | ATK +3 | DEF +2.5 | MAG +0.5 | SPD +0.5
+Starting Items :
+  - Rusted Sword x1
+  - Leather Armor x1
+  - Health Potion x5
+  - Bread x3
+Starting Skills : power_strike
+
+--------------------------------------------------------------------------------
+2. MAGE  (✦, color #7c3aed)
+--------------------------------------------------------------------------------
+Description : A scholar of arcane arts. Fragile in melee but devastating from
+              afar with fire, frost, and lightning.
+Base Stats  : HP 80 | MP 120 | ATK 6 | DEF 4 | MAG 16 | SPD 5
+Growth/Level: HP +8 | MP +18 | ATK +1 | DEF +1 | MAG +3.5 | SPD +0.8
+Starting Items :
+  - Apprentice Staff x1
+  - Apprentice Robe x1
+  - Mana Potion x5
+  - Bread x3
+Starting Skills : firebolt, lesser_heal
+
+--------------------------------------------------------------------------------
+3. RANGER  (➹, color #15803d)
+--------------------------------------------------------------------------------
+Description : A keen-eyed hunter who strikes from distance with bow and trap.
+              Quick, precise, and deadly.
+Base Stats  : HP 110 | MP 60 | ATK 12 | DEF 7 | MAG 5 | SPD 7
+Growth/Level: HP +13 | MP +7 | ATK +2.8 | DEF +1.6 | MAG +1.2 | SPD +1.4
+Starting Items :
+  - Short Bow x1
+  - Leather Armor x1
+  - Health Potion x5
+  - Bread x3
+Starting Skills : quick_shot, bear_trap
+
+--------------------------------------------------------------------------------
+4. HEALER  (✚, color #fbbf24)
+--------------------------------------------------------------------------------
+Description : A devoted servant of light who mends allies and smites undead.
+              Balanced in combat and support.
+Base Stats  : HP 100 | MP 100 | ATK 8 | DEF 8 | MAG 12 | SPD 5
+Growth/Level: HP +12 | MP +14 | ATK +2 | DEF +2 | MAG +2.8 | SPD +0.7
+Starting Items :
+  - Oak Mace x1
+  - Acolyte Vestments x1
+  - Health Potion x3
+  - Mana Potion x3
+  - Bread x5
+Starting Skills : heal, smite
+
+
+================================================================================
+PART 2: SKILLS (by class)
+================================================================================
+Each skill: manaCost, cooldown(ms), range(tiles), damageMultiplier (vs weapon/
+magic), optional element, aoe, debuff/buff, healMultiplier, unlockLevel.
+
+--- WARRIOR ---
+power_strike  : MP 8,  CD 3000, range 1, x2.2 dmg. "Focused melee blow 220%."
+whirlwind     : MP 18, CD 8000, range 1, x1.6 dmg, AoE. (unlock L6)
+berserk       : MP 25, CD 20000, range 0, buff ATK+50% for 8s. (unlock L12)
+
+--- MAGE ---
+firebolt      : MP 6,  CD 1200, range 6, x1.8 dmg, fire.
+frost_nova    : MP 16, CD 7000, range 5, x1.4 dmg, ice, roots foes, AoE. (L6)
+meteor        : MP 35, CD 15000, range 7, x3.5 dmg, fire, AoE. (L14)
+
+--- RANGER ---
+quick_shot    : MP 5,  CD 1500, range 6, x1.5 dmg.
+bear_trap     : MP 12, CD 9000, range 3, x1.2 dmg, roots foe 4s. (L5)
+multi_shot    : MP 22, CD 10000, range 6, x1.4 dmg, AoE (all foes). (L12)
+
+--- HEALER ---
+heal          : MP 10, CD 2000, range 0, heals 250% of MAG as HP.
+lesser_heal   : MP 8,  CD 2500, range 0, heals 180% of MAG as HP. (Mage class)
+smite         : MP 9,  CD 2000, range 5, x1.7 dmg, holy, +150% vs undead.
+sanctuary     : MP 30, CD 18000, range 0, heals 300% MAG + DEFx2 buff 8s. (L12)
+
+
+================================================================================
+PART 3: ITEMS
+================================================================================
+Fields: type, slot (for equipment), class (restriction), stat bonuses, value
+(gold), reqLevel, and description.
+
+--------------------------------------------------------------------------------
+WEAPONS
+--------------------------------------------------------------------------------
+Warrior:
+  rusted_sword      weapon/weapon  ATK +4            value 5
+  iron_sword        weapon/weapon  ATK +10           value 60
+  steel_longsword   weapon/weapon  ATK +18           value 180   (req L6)
+  flamebrand        weapon/weapon  ATK +30, fire     value 600   (req L14)
+Mage:
+  apprentice_staff  weapon/weapon  MAG +4            value 5
+  oak_staff         weapon/weapon  MAG +10           value 70
+  arcane_focus      weapon/weapon  MAG +20           value 240   (req L8)
+  staff_of_storms   weapon/weapon  MAG +34           value 720   (req L16)
+Ranger:
+  short_bow         weapon/weapon  ATK +5            value 8
+  yew_bow           weapon/weapon  ATK +12           value 80
+  crossbow          weapon/weapon  ATK +22           value 260   (req L8)
+  phoenix_bow       weapon/weapon  ATK +36, fire     value 780   (req L16)
+Healer:
+  oak_mace          weapon/weapon  ATK +4, MAG +2    value 8
+  blessed_mace      weapon/weapon  ATK +8, MAG +8    value 90
+  sun_scepter       weapon/weapon  ATK +14, MAG +18  value 280   (req L8)
+  dawnbringer       weapon/weapon  ATK +22, MAG +30  value 800   (req L16)
+
+--------------------------------------------------------------------------------
+ARMOR - Body
+--------------------------------------------------------------------------------
+  leather_armor     armor/armor   DEF +4             value 15
+  chainmail         armor/armor   DEF +9             value 90    (req L5)
+  plate_armor       armor/armor   DEF +16            value 280   (req L12)
+  dragonscale       armor/armor   DEF +26           value 900   (req L20)
+  apprentice_robe   armor/armor   DEF +2, MAG +3     value 10
+  sorcerer_robe     armor/armor   DEF +5, MAG +10    value 110   (req L5)
+  archmage_robe     armor/armor   DEF +10, MAG +22   value 350   (req L14)
+  acolyte_vestments armor/armor   DEF +3, MAG +4     value 12
+  priest_vestments  armor/armor   DEF +6, MAG +9     value 100   (req L5)
+  hierophant_robe   armor/armor   DEF +11, MAG +20   value 320   (req L14)
+
+--------------------------------------------------------------------------------
+ARMOR - Helmet
+--------------------------------------------------------------------------------
+  leather_cap       armor/helmet  DEF +1             value 5
+  iron_helm         armor/helmet  DEF +3             value 40    (req L4)
+  arcane_circlet    armor/helmet  DEF +2, MAG +6     value 120   (req L6)
+  crown_of_flames   armor/helmet  DEF +6, MAG +10    value 450   (req L16)
+
+--------------------------------------------------------------------------------
+ARMOR - Shield
+--------------------------------------------------------------------------------
+  wooden_shield     armor/shield  DEF +2             value 10
+  iron_shield       armor/shield  DEF +5             value 60    (req L4)
+  tower_shield      armor/shield  DEF +10            value 200   (req L12)
+
+--------------------------------------------------------------------------------
+ARMOR - Boots
+--------------------------------------------------------------------------------
+  leather_boots     armor/boots   DEF +1             value 5
+  swift_boots       armor/boots   DEF +2, SPD +2     value 80    (req L6)
+  boots_of_striding armor/boots   DEF +4, SPD +3     value 220   (req L12)
+
+--------------------------------------------------------------------------------
+CONSUMABLES
+--------------------------------------------------------------------------------
+  health_potion         value 25   heals 60 HP
+  greater_health_potion value 70   heals 180 HP  (req L8)
+  super_health_potion   value 200  heals 450 HP  (req L16)
+  mana_potion           value 30   restores 60 MP
+  greater_mana_potion   value 80   restores 160 MP (req L8)
+  super_mana_potion     value 200  restores 400 MP (req L16)
+  bread                 value 4    heals 15 HP
+  roasted_meat          value 12   heals 40 HP
+  apple                 value 2    heals 8 HP
+  elixir_of_might       value 100  buff ATK +5 for 60s
+
+--------------------------------------------------------------------------------
+MATERIALS / LOOT
+--------------------------------------------------------------------------------
+  wolf_pelt        value 8    coarse gray pelt
+  rat_tail         value 2    hairless rat tail
+  goblin_ear       value 6    proof of slain goblin
+  spider_silk      value 10   strong sticky thread
+  iron_ore         value 12   chunk of raw iron
+  frost_shard      value 25   sliver of eternal ice
+  ember_essence    value 30   glowing liquid fire
+  bone_fragment    value 5    yellowed bone shard
+  wyrm_scale       value 80   shimmering dragon scale
+  void_crystal     value 200  crystal of pure darkness
+  pearl            value 50   lustrous ocean pearl
+  sunstone         value 75   warm, glows at night
+  mist_petal       value 18   petal from Mistwood bloom
+  gold_coin        value 1    currency of Mythral
+
+--------------------------------------------------------------------------------
+KEYS / QUEST ITEMS
+--------------------------------------------------------------------------------
+  rusty_key        value 0   opens something forgotten
+  cellar_key       value 0   opens Mira's cellar
+  ancient_talisman value 0   carved bone talisman from Sunscar ruins
+  captain_ledger   value 0   smuggler records from Tidehaven docks
+  voidheart_relic  value 0   pulsing orb of pure darkness
+
+--------------------------------------------------------------------------------
+TRINKETS (ring/amulet slot)
+--------------------------------------------------------------------------------
+  copper_ring        trinket/trinket  DEF +1              value 30
+  ring_of_vigor      trinket/trinket  HP +30              value 150  (req L5)
+  ring_of_wisdom     trinket/trinket  MP +30              value 150  (req L5)
+  amulet_of_warding  trinket/trinket  DEF +4              value 200  (req L8)
+
+
+================================================================================
+PART 4: MONSTERS
+================================================================================
+Fields: level, HP, ATK, DEF, SPD, XP, gold[min,max], element, drops, aggro
+(true=attacks player), aggroRange, attackRange, moveCooldown(ms), boss flag.
+
+--------------------------------------------------------------------------------
+LUMINA ISLE (beginner)
+--------------------------------------------------------------------------------
+  Cave Rat        L1  HP 18   ATK 4  DEF 1  SPD 3  XP 6   gold [1,3]
+                  element none. Drops: rat_tail(70%), gold_coin(50%,x1-2)
+                  aggro:false range4 atkR1 cd600
+  Wild Dog        L2  HP 28   ATK 6  DEF 2  SPD 5  XP 9   gold [2,5]
+                  element none. Drops: wolf_pelt(40%), gold_coin(60%,x1-3)
+                  aggro:true range5 atkR1 cd500
+  Forest Goblin   L3  HP 38   ATK 8  DEF 3  SPD 4  XP 14  gold [3,8]
+                  element none. Drops: goblin_ear(65%), leather_cap(5%),
+                  gold_coin(70%,x2-5)  aggro:true range5 atkR1 cd550
+  Giant Spider    L4  HP 55   ATK 11 DEF 4  SPD 4  XP 22  gold [5,12]
+                  element none. Drops: spider_silk(60%), health_potion(10%),
+                  gold_coin(80%,x4-8)  aggro:true range6 atkR1 cd600
+  Dire Wolf       L5  HP 70   ATK 14 DEF 5  SPD 6  XP 30  gold [6,14]
+                  element none. Drops: wolf_pelt(70%), iron_ore(5%),
+                  gold_coin(85%,x5-10)  aggro:true range7 atkR1 cd450
+
+--------------------------------------------------------------------------------
+EMBERFALL ISLE (fire)
+--------------------------------------------------------------------------------
+  Fire Beetle     L6  HP 80   ATK 16 DEF 6  SPD 4  XP 38  gold [8,18]
+                  fire. Drops: ember_essence(50%), gold_coin(85%,x6-12)
+                  aggro:false range4 atkR1 cd600
+  Lava Imp        L8  HP 110  ATK 22 DEF 7  SPD 5  XP 55  gold [12,24]
+                  fire. Drops: ember_essence(60%), greater_hp_pot(8%),
+                  gold_coin(90%,x10-18)  aggro:true range6 atkR4 cd700
+  Magma Hound     L10 HP 160  ATK 28 DEF 9  SPD 7  XP 80  gold [15,32]
+                  fire. Drops: ember_essence(70%), flamebrand(2%),
+                  gold_coin(95%,x12-22)  aggro:true range7 atkR1 cd450
+  Volcanic Golem  L14 HP 320  ATK 38 DEF 18 SPD 2  XP 160 gold [30,60]
+                  fire. Drops: ember_essence(85%,x2-4), iron_ore(50%,x2-4),
+                  plate_armor(5%), gold_coin(100%,x25-50)  aggro:false cd900
+  Emberlord Pyros L18 HP 800  ATK 55 DEF 22 SPD 3  XP 500 gold [120,200]
+                  fire. BOSS. Drops: flamebrand(100%), dragonscale(100%),
+                  ember_essence(100%,x5-10), gold_coin(100%,x100-180)
+                  aggro:true range8 atkR2 cd700
+
+--------------------------------------------------------------------------------
+FROSTPEAK ISLE (ice)
+--------------------------------------------------------------------------------
+  Frost Wisp      L7  HP 90   ATK 18 DEF 5  SPD 5  XP 45  gold [10,20]
+                  ice. Drops: frost_shard(55%), gold_coin(85%,x8-15)
+                  aggro:true range6 atkR4 cd700
+  Ice Wolf        L9  HP 130  ATK 24 DEF 8  SPD 6  XP 65  gold [12,26]
+                  ice. Drops: frost_shard(60%), wolf_pelt(50%),
+                  gold_coin(90%,x10-20)  aggro:true range7 atkR1 cd500
+  Yeti            L13 HP 280  ATK 36 DEF 14 SPD 3  XP 140 gold [25,55]
+                  ice. Drops: frost_shard(75%,x2-3), plate_armor(4%),
+                  gold_coin(95%,x22-45)  aggro:true range6 atkR1 cd700
+  Frost Dragon    L20 HP 950  ATK 62 DEF 25 SPD 4  XP 600 gold [150,250]
+                  ice. BOSS. Drops: crown_of_flames(100%), wyrm_scale(100%,x3-6),
+                  frost_shard(100%,x5-10), gold_coin(100%,x130-220)
+                  aggro:true range9 atkR3 cd650
+
+--------------------------------------------------------------------------------
+MISTWOOD ISLE (forest/magic)
+--------------------------------------------------------------------------------
+  Moss Snake        L7  HP 95   ATK 17 DEF 6  SPD 4  XP 42  gold [9,18]
+                    none. Drops: mist_petal(50%), gold_coin(85%,x7-14)
+                    aggro:false range4 atkR1 cd600
+  Dryad Guardian    L11 HP 200  ATK 30 DEF 12 SPD 4  XP 110 gold [20,42]
+                    none. Drops: mist_petal(70%,x2-3), arcane_focus(4%),
+                    gold_coin(92%,x16-35)  aggro:false range4 atkR5 cd700
+  Treant            L15 HP 380  ATK 42 DEF 20 SPD 1  XP 200 gold [35,75]
+                    none. Drops: mist_petal(80%,x3-5), iron_ore(30%,x2-4),
+                    boots_of_striding(5%), gold_coin(100%,x30-60)  cd1000
+  Whispering Wraith L17 HP 280  ATK 50 DEF 10 SPD 6  XP 280 gold [40,80]
+                    shadow. Drops: void_crystal(15%), arcane_circlet(6%),
+                    gold_coin(100%,x35-70)  aggro:true range8 atkR4 cd600
+  Wraith Queen Sylvana L18 HP 1100 ATK 60 DEF 18 SPD 5 XP 700 gold [180,300]
+                    shadow. BOSS. Drops: arcane_focus(100%), archmage_robe(100%),
+                    void_crystal(100%,x3-5), gold_coin(100%,x160-280)
+                    aggro:true range10 atkR5 cd600
+
+--------------------------------------------------------------------------------
+SUNSCAR ISLE (desert)
+--------------------------------------------------------------------------------
+  Sand Scorpion   L8  HP 120  ATK 21 DEF 9  SPD 4  XP 60  gold [10,22]
+                  none. Drops: iron_ore(40%), gold_coin(90%,x8-16)
+                  aggro:true range6 atkR1 cd600
+  Desert Raider   L11 HP 190  ATK 28 DEF 11 SPD 5  XP 105 gold [22,45]
+                  none. Drops: iron_sword(8%), chainmail(5%),
+                  gold_coin(95%,x18-38)  aggro:true range7 atkR1 cd550
+  Mummy Lord      L16 HP 350  ATK 45 DEF 16 SPD 2  XP 240 gold [40,85]
+                  shadow. Drops: ancient_talisman(15%), sunstone(25%),
+                  arcane_focus(5%), gold_coin(100%,x35-70)  aggro:false cd800
+  Sun Titan       L22 HP 1100 ATK 70 DEF 28 SPD 3  XP 700 gold [180,300]
+                  fire. BOSS. Drops: dawnbringer(100%), sunstone(100%,x3-6),
+                  crown_of_flames(50%), gold_coin(100%,x160-280)
+                  aggro:true range8 atkR3 cd750
+
+--------------------------------------------------------------------------------
+TIDEHAVEN ISLE (coastal/water)
+--------------------------------------------------------------------------------
+  Giant Crab      L7  HP 110  ATK 16 DEF 10 SPD 3  XP 50  gold [8,18]
+                  none. Drops: pearl(10%), gold_coin(85%,x6-14)
+                  aggro:false range4 atkR1 cd700
+  Murloc          L9  HP 140  ATK 22 DEF 7  SPD 5  XP 70  gold [12,26]
+                  water. Drops: pearl(15%), health_potion(12%),
+                  gold_coin(90%,x10-22)  aggro:true range6 atkR1 cd550
+  Sea Serpent    L14 HP 300  ATK 40 DEF 13 SPD 5  XP 170 gold [30,65]
+                  water. Drops: pearl(40%,x1-2), tower_shield(5%),
+                  gold_coin(100%,x25-55)  aggro:true range7 atkR3 cd600
+  The Kraken      L20 HP 1000 ATK 65 DEF 24 SPD 3  XP 650 gold [160,280]
+                  water. BOSS. Drops: staff_of_storms(100%), pearl(100%,x5-10),
+                  tower_shield(60%), gold_coin(100%,x150-250)
+                  aggro:true range9 atkR4 cd700
+
+--------------------------------------------------------------------------------
+SHADOWFEN ISLE (swamp/undead)
+--------------------------------------------------------------------------------
+  Bog Spirit      L10 HP 160  ATK 24 DEF 6  SPD 5  XP 85  gold [14,30]
+                  shadow. Drops: bone_fragment(40%), gold_coin(90%,x12-25)
+                  aggro:true range7 atkR4 cd650
+  Skeleton Warrior L12 HP 200  ATK 30 DEF 10 SPD 4  XP 115 gold [16,35]
+                  shadow. Drops: bone_fragment(70%), iron_sword(6%),
+                  iron_helm(8%), gold_coin(95%,x14-30)  aggro:true range6 atkR1
+  Plague Lich     L17 HP 380  ATK 48 DEF 14 SPD 3  XP 260 gold [40,80]
+                  shadow. Drops: bone_fragment(80%,x2-3), arcane_circlet(8%),
+                  greater_mana_pot(20%), gold_coin(100%,x35-70)  atkR5 cd700
+  Death Knight    L19 HP 600  ATK 58 DEF 22 SPD 4  XP 420 gold [80,150]
+                  shadow. Drops: steel_longsword(30%), plate_armor(20%),
+                  void_crystal(25%), gold_coin(100%,x70-130)  atkR1 cd500
+  Lich Queen Mortis L22 HP 1300 ATK 75 DEF 26 SPD 3 XP 850 gold [220,380]
+                  shadow. BOSS. Drops: voidheart_relic(100%), hierophant_robe(100%),
+                  void_crystal(100%,x3-6), gold_coin(100%,x200-350)
+                  aggro:true range9 atkR5 cd650
+
+--------------------------------------------------------------------------------
+SKYREACH ISLE (floating, elementals)
+--------------------------------------------------------------------------------
+  Cloud Sprite    L12 HP 180  ATK 26 DEF 8  SPD 7  XP 110 gold [16,32]
+                  air. Drops: gold_coin(90%,x14-28), swift_boots(5%)
+                  aggro:false range5 atkR4 cd500
+  Harpy           L14 HP 240  ATK 35 DEF 10 SPD 8  XP 150 gold [22,45]
+                  air. Drops: gold_coin(95%,x18-38), swift_boots(8%),
+                  ring_of_vigor(5%)  aggro:true range8 atkR2 cd450
+  Storm Elemental L16 HP 320  ATK 44 DEF 12 SPD 5  XP 220 gold [35,70]
+                  air. Drops: arcane_focus(10%), ring_of_wisdom(8%),
+                  gold_coin(100%,x30-60)  aggro:true range7 atkR5 cd600
+  Thunder Drake   L20 HP 950  ATK 68 DEF 22 SPD 6  XP 620 gold [150,260]
+                  air. BOSS. Drops: staff_of_storms(100%), wyrm_scale(100%,x4-7),
+                  crown_of_flames(40%), gold_coin(100%,x140-240)
+                  aggro:true range9 atkR4 cd550
+
+--------------------------------------------------------------------------------
+VOIDHEART ISLE (end-game demons)
+--------------------------------------------------------------------------------
+  Void Spawn      L18 HP 380  ATK 50 DEF 15 SPD 6  XP 290 gold [45,90]
+                  shadow. Drops: void_crystal(30%), super_hp_pot(15%),
+                  gold_coin(100%,x40-75)  aggro:true range8 atkR3 cd550
+  Demon Brute     L20 HP 550  ATK 62 DEF 20 SPD 4  XP 400 gold [70,130]
+                  fire. Drops: void_crystal(35%), flamebrand(6%),
+                  dragonscale(4%), gold_coin(100%,x60-110)  atkR1 cd550
+  Shadow Demon    L22 HP 700  ATK 72 DEF 18 SPD 7  XP 520 gold [90,170]
+                  shadow. Drops: void_crystal(50%,x1-2), arcane_circlet(10%),
+                  amulet_of_warding(8%), gold_coin(100%,x80-150)  atkR4 cd500
+  Voidlord Acheron L25 HP 2000 ATK 95 DEF 32 SPD 4  XP 1500 gold [400,700]
+                  shadow. FINAL BOSS. Drops: dragonscale(100%), crown_of_flames(100%),
+                  void_crystal(100%,x10-15), gold_coin(100%,x380-650)
+                  aggro:true range10 atkR5 cd600
+
+
+================================================================================
+PART 5: ISLANDS & NPCS
+================================================================================
+9 islands, each with NPCs (dialogue, shops, quests, travel). Monster spawn
+lists per island shown. Level ranges indicate progression path.
+
+--------------------------------------------------------------------------------
+ISLAND 1: LUMINA ISLE  "The First Spark"  (level 1-5)
+--------------------------------------------------------------------------------
+Biome: lumina | 60x50 | bg #87ceeb | Portal -> Emberfall (L5)
+Spawns: rat(8), wild_dog(6), forest_goblin(5), giant_spider(4), dire_wolf(3)
+NPCs (8):
+  Elder Ravenna      Village Elder    quest lumina_goblins
+  Mira the Baker     Baker            shop (bread/apple/roasted_meat) quest lumina_rats
+  Thom Blacksmith    Blacksmith       shop (iron_sword/leather_armor/wooden_shield/leather_cap) quest lumina_ore
+  Old Pip            Fisherman        quest lumina_dog
+  Sister Lyra        Healer           shop (hp/mana/elixir) quest lumina_herbs
+  Finn the Hunter    Hunter           shop (short_bow/leather_boots) quest lumina_wolves
+  Marcus the Sailor  Sailor           travel -> Emberfall (L5)
+  Antique Collector  Collector        quest lumina_silk
+
+--------------------------------------------------------------------------------
+ISLAND 2: EMBERFALL ISLE  "Where Fire Walks"  (level 5-10)
+--------------------------------------------------------------------------------
+Biome: emberfall | 65x55 | bg #450a0a | Portal -> Frostpeak (L8)
+Spawns: fire_beetle(8), lava_imp(6), magma_hound(5), volcanic_golem(3), emberlord_pyros(1)
+NPCs (12):
+  Warden Kael        Volcano Warden  quest ember_beetles
+  Smitty the Smith   Master Smith    shop (steel_longsword/chainmail/iron_helm/iron_shield) quest ember_essence
+  Priestess Ember    Flame Priestess shop (greater hp/mana/ring_of_vigor) quest ember_pyros
+  Cinder             Imp Hunter      quest ember_imps
+  Torvin the Miner   Miner           shop (iron_ore/leather_armor) quest ember_mining
+  Granny Coal        Hermit          quest ember_hounds
+  Sergeant Drake     Guard Captain   quest ember_pass
+  Ignis the Mage     Arcane Scholar shop (oak_staff/sorcerer_robe/arcane_circlet)
+  Captain Reef       Sailor          travel -> Frostpeak(L8)/Lumina(L1)
+  Ember Broker       Merchant        shop (ember_essence/health_potion) quest ember_essence_trade
+  Lavana             Innkeeper        shop (roasted_meat/bread/greater_hp_pot)
+  Volcano Historian  Historian       quest ember_history
+
+--------------------------------------------------------------------------------
+ISLAND 3: FROSTPEAK ISLE  "The Frozen Crown"  (level 6-12)
+--------------------------------------------------------------------------------
+Biome: frostpeak | 65x55 | bg #cffafe | Portal -> Mistwood (L9)
+Spawns: frost_wisp(7), ice_wolf(6), yeti(4), frost_dragon(1)
+NPCs (10):
+  Chieftain Borin    Clan Chief      quest frost_wisps
+  Helga Brewmaster   Brewmaster      shop (roasted_meat/greater_hp/elixir) quest frost_shards
+  Runa the Seer      Seer            shop (arcane_focus/circlet/mana) quest frost_dragon
+  Bjorn Icebreaker   Warrior         quest frost_yetis
+  Sigrid the Tanner  Tanner          shop (leather_armor/boots/swift_boots) quest frost_pelts
+  Olaf the Drunk     Drunkard        quest frost_mead
+  Theresa Healer     Healer          shop (hp/greater_hp/super_hp) quest frost_cure
+  Skald the Bard     Bard            (no quest)
+  Captain Elsa       Sailor          travel -> Mistwood(L9)/Emberfall(L5)
+  Rune Keeper        Runemaster      quest frost_thralls
+
+--------------------------------------------------------------------------------
+ISLAND 4: MISTWOOD ISLE  "The Whispering Forest"  (level 7-13)
+--------------------------------------------------------------------------------
+Biome: mistwood | 70x60 | bg #166534 | Portal -> Sunscar (L10)
+Spawns: moss_snake(8), dryad_guardian(6), treant(4), whispering_wraith(5), wraith_queen_sylvana(1)
+NPCs (14):
+  Archdruid Thorne   Archdruid       quest mist_wraiths, mist_wraith_queen
+  Sylva Herbalist    Herbalist       shop (hp/mana/mist_petal/greater_hp) quest mist_petals
+  King Aldric        Forest King     quest mist_treants
+  Elara Enchantress  Enchantress     shop (arcane_focus/sorcerer_robe/ring_of_wisdom/boots_of_striding) quest mist_enchant
+  Woodcutter Pip     Woodcutter      quest mist_snakes
+  Brother Oak        Treant Elder    quest mist_wraith_hunt
+  Morrigan Witch     Witch           shop (greater_mana/mana) quest mist_dryads
+  Wandering Traveler Traveler        quest mist_secret
+  Captain Moss       Sailor          travel -> Sunscar(L10)/Frostpeak(L6)
+  Lyra the Bard      Bard            quest mist_wraith_count
+  Petals Collector   Collector       quest mist_petals_trade
+  Robin Hoodlum      Outlaw          quest mist_silk
+  Innkeeper Willow   Innkeeper       shop (bread/meat/apple)
+  Forest Scout       Scout           quest mist_scout
+
+--------------------------------------------------------------------------------
+ISLAND 5: SUNSCAR ISLE  "Desert of Sun"  (level 8-14)
+--------------------------------------------------------------------------------
+Biome: sunscar | Portal -> Tidehaven (L11)
+NPCs (11):
+  Vizier Khalid      Royal Vizier    quest sun_titan
+  Merchant Zara      Caravan Master  shop (hp/greater_hp/iron_sword/chainmail) quest sun_scorpions
+  Scholar Omar       Historian       quest sun_talismans
+  Princess Leyla     Princess        quest sun_raiders
+  Ahmed the Smith    Blacksmith      shop (steel_longsword/iron_helm/iron_shield) quest sun_iron
+  Fatima the Seer    Oracle          shop (greater_mana/mana) quest sun_mummies
+  Carter Explorer    Explorer        quest sun_tomb
+  Yusuf Spice        Spice Merchant  shop (bread/meat/elixir) quest sun_phoenix
+  Captain Scarab     Sailor          travel -> Tidehaven(L11)/Mistwood(L7)
+  Guard Captain Tariq Guard Captain  quest sun_patrol
+  Innkeeper Hassan   Innkeeper       shop (bread/meat/apple/greater_hp)
+
+--------------------------------------------------------------------------------
+ISLAND 6: TIDEHAVEN ISLE  "Coastal Waters"  (level 9-15)
+--------------------------------------------------------------------------------
+Biome: tidehaven | Portal -> Shadowfen (L12)
+NPCs (13):
+  Harbor Master Jorah Harbor Master  quest tide_smugglers
+  Captain Neri       Pirate Hunter   quest tide_kraken
+  Mira the Fisher    Fisherwoman     shop (bread/meat/apple) quest tide_crabs
+  Old Sal            Retired Pirate  quest tide_murlocs
+  Sister Mira        Nun             shop (hp/mana/blessed_mace) quest tide_serpents
+  Bryn Blacksmith    Blacksmith      shop (chainmail/iron_shield/iron_helm) quest tide_pearls
+  Marcus Merchant    Merchant        shop (greater_hp/mana/leather_boots) quest tide_pearl_trade
+  Lighthouse Keeper  Keeper          quest tide_light
+  Captain Wave       Sailor          travel -> Shadowfen(L12)/Sunscar(L8)
+  Dockmaster Rurik   Dockmaster      quest tide_warehouse
+  Selina Seamstress  Seamstress      shop (leather_armor/apprentice_robe) quest tide_silk
+  Rum Roger          Bartender       shop (bread/meat/hp)
+  Maritime Historian Historian       quest tide_history
+
+--------------------------------------------------------------------------------
+ISLAND 7: SHADOWFEN ISLE  "The Swamp of Shadows"  (level 10-18)
+--------------------------------------------------------------------------------
+Biome: shadowfen | Portal -> Skyreach (L14)
+NPCs (16):
+  Witch Morgana      Swamp Witch     quest sf_lich_queen
+  Kael the Exile     Exiled Knight   quest sf_death_knights
+  Mother Hag          Crone           shop (super_hp/mana/elixir) quest sf_bones
+  Brother Cole        Monk            shop (blessed_mace/priest_vestments/hp) quest sf_skeletons
+  Vera Apothecary    Apothecary      shop (greater_hp/mana/super_hp) quest sf_spirits
+  Gravekeeper Tomas   Gravekeeper     quest sf_grave
+  Lady Mortis         Mysterious Noble quest sf_liches
+  Smuggler Jack       Smuggler        shop (amulet/rings) quest sf_void
+  Captain Rot         Ferryman        travel -> Skyreach(L14)/Tidehaven(L9)
+  Necromancer Scholar Scholar        quest sf_study
+  Innkeeper Bess      Innkeeper       shop (bread/meat/greater_hp)
+  Swamp Hunter        Hunter          quest sf_plague
+  Weeping Widow       Widow           quest sf_widow
+  Gravedigger Sam     Gravedigger     quest sf_gravedigger
+  Alchemist Vex       Alchemist       quest sf_alchemist
+
+--------------------------------------------------------------------------------
+ISLAND 8: SKYREACH ISLE  "The Floating Realm"  (level 12-20)
+--------------------------------------------------------------------------------
+Biome: skyreach | Portal -> Voidheart (L18)
+NPCs (12):
+  Archmage Solara    Archmage        quest sky_drake
+  Captain Aerie      Sky Knight      shop (steel_longsword/crossbow/tower_shield/swift_boots) quest sky_harpies
+  Mistress Luna       Cloud Weaver    shop (arcane_focus/archmage_robe/circlet) quest sky_sprites
+  Stormrider Thane    Stormrider      quest sky_elementals
+  Brother Wind        Monk            quest sky_whispers
+  Sky Merchant        Merchant        shop (super_hp/mana/elixir) quest sky_scales
+  The Sky Oracle      Oracle          shop (archmage_robe/hierophant_robe/crown_of_flames)
+  Captain Gale        Airsailor       travel -> Voidheart(L18)/Shadowfen(L10)
+  Star Watcher        Astronomer      quest sky_stars
+  Cloud Herbalist     Herbalist       quest sky_feathers
+  Sky Templar         Templar         shop (plate_armor/tower_shield/dragonscale) quest sky_drake-related
+  Skyreach Keeper     Keeper          (no quest)
+
+--------------------------------------------------------------------------------
+ISLAND 9: VOIDHEART ISLE  "The End of All Things"  (level 18-25)
+--------------------------------------------------------------------------------
+Biome: voidheart | end-game
+NPCs (18):
+  Watcher Aza        Void Watcher    quest void_acheron
+  Fallen Hero Kael   Fallen Hero     quest void_spawns
+  Void Merchant      Merchant        shop (flamebrand/staff_of_storms/phoenix_bow/dawnbringer/dragonscale) quest void_crystals
+  Priestess of Void  Priestess       shop (super_hp/mana/hierophant_robe) quest void_brutes
+  Void Smith         Blacksmith      shop (dragonscale/plate_armor/crown_of_flames) quest void_scales
+  Void Sage          Sage            quest void_history
+  Wandering Shade    Lost Soul       quest void_shadows
+  Void Knight        Cursed Knight   quest void_knight
+  Void Alchemist     Alchemist       shop (elixir/super_hp) quest void_alchemist
+  Void Captain       Ferryman        travel -> Skyreach(L12)
+  Void Mystic        Mystic          quest void_fearless
+  Frozen Merchant    Merchant        shop (super_hp/mana/amulet_of_warding)
+  Final Oracle       Oracle          (no quest)
+  Mourner            Mourner         (no quest)
+  Void Armorer       Armorer         shop (plate_armor/tower_shield) quest void_plate
+  Chronicler         Chronicler      (no quest)
+  Silent Watcher     Watcher         (no quest)
+  Last Keeper        Keeper          (no quest)
+
+
+================================================================================
+PART 6: QUESTS (summary)
+================================================================================
+quests.js contains 89 quest entries. Quest types: "kill" (slay N of a monster),
+"collect" (gather N of an item), "boss" (kill a boss monster). Rewards are XP,
+gold, and item(s).
+
+Examples:
+  lumina_rats    kill rat x5         -> XP 30, gold 15, bread x3
+  lumina_dog     kill wild_dog x3    -> XP 35, gold 20, health_potion x2
+  lumina_ore     collect iron_ore x5 -> XP 50, gold 40, iron_sword x1
+  lumina_wolves  kill dire_wolf x5   -> XP 80, gold 60, short_bow x1
+  lumina_goblins kill forest_goblin x8 -> XP 100, gold 75, leather_armor x1
+  ember_essence  collect ember_essence x6 -> XP 250, gold 100, steel_longsword x1
+  ember_pyros    (boss) kill Emberlord Pyros -> rewards + island progression
+  frost_dragon   (boss) kill Frost Dragon
+  ... (and so on for all 9 islands, including 8 island boss quests and the
+      final boss Voidlord Acheron quest void_acheron)
+
+Each island chain culminates in a boss quest that unlocks travel to the next
+island via the portal / sailor NPCs with reqLevel gates.
+
+
+================================================================================
+PART 7: SUPPORTING MECHANICS (combat.js / inventory.js / tiles.js)
+================================================================================
+- TILE: base tile size 32px. Tile types defined in tiles.js (grass, water,
+  stone, sand, snow, lava, etc.) with autotiling sprites.
+- Inventory: equipment slots = weapon, armor, helmet, shield, boots, trinket.
+  isEquipment() returns true for type weapon/armor/trinket.
+- Combat (combat.js): damage formula uses attack vs defense, magic for spells,
+  elemental modifiers (fire/ice/water/air/shadow/holy), and buffs/debuffs
+  (attack/defense/speed, roots via speed:0).
+- Server connection: client connects to ws://<host>:12400 (dynamic per host).
+
+================================================================================
+END OF DATA COMPENDIUM
+================================================================================

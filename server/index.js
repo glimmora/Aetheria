@@ -30,7 +30,7 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
 const PORT = parseInt(process.env.PORT) || 12400
 const HOST = process.env.HOST || '0.0.0.0'
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:12000'
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://152.53.102.150'
 const CLIENT_ORIGIN_PRODUCTION = process.env.CLIENT_ORIGIN // explicit, no fallback in prod
 const BODY_LIMIT = process.env.BODY_LIMIT || '64kb'
 const PING_INTERVAL = parseInt(process.env.SOCKET_PING_INTERVAL) || 10000
@@ -224,6 +224,11 @@ io.on('connection', (socket) => {
   console.log(`[socket] ${socket.userPayload.username} connected (${socket.id})`)
   socket.emit(SERVER_EVENTS.WELCOME, { username: socket.userPayload.username })
 
+  // Debug: log all events received
+  socket.onAny((event, ...args) => {
+    console.log(`[socket] ${socket.userPayload.username} ← ${event}${event === 'move' ? ' dx=' + args[0]?.dx + ' dy=' + args[0]?.dy : ''}`)
+  })
+
   // Wrapper: catch errors in handlers so one bad event doesn't crash the server
   function safeHandler(fn) {
     return (...args) => {
@@ -251,17 +256,17 @@ io.on('connection', (socket) => {
   }))
 
   // ---- Character create ----
-  socket.on(CLIENT_EVENTS.CHARACTER_CREATE, (data = {}) => {
+  socket.on(CLIENT_EVENTS.CHARACTER_CREATE, safeHandler((data = {}) => {
     if (!generalLimiter.check(socket.id)) {
       socket.emit(SERVER_EVENTS.ERROR, { message: 'Too many requests. Slow down.' })
       return
     }
-    const { name, classId } = data
+    const { name, classId, gender } = data
     if (!isStr(name) || !isStr(classId)) {
       socket.emit(SERVER_EVENTS.ERROR, { message: 'Invalid character data' })
       return
     }
-    const result = world.createCharacter(socket.userPayload.username, name, classId)
+    const result = world.createCharacter(socket.userPayload.username, name, classId, gender)
     if (result.error) {
       socket.emit(SERVER_EVENTS.ERROR, { message: result.error })
       return
@@ -270,10 +275,10 @@ io.on('connection', (socket) => {
       id: result.character.id, name: result.character.name,
       class: result.character.class, level: result.character.level,
     })
-  })
+  }))
 
   // ---- Character select (enter game) ----
-  socket.on(CLIENT_EVENTS.CHARACTER_SELECT, (data = {}) => {
+  socket.on(CLIENT_EVENTS.CHARACTER_SELECT, safeHandler((data = {}) => {
     const { characterId } = data
     if (!isStr(characterId)) {
       socket.emit(SERVER_EVENTS.ERROR, { message: 'Invalid character' })
@@ -290,11 +295,11 @@ io.on('connection', (socket) => {
     if (!char.classDef) {
       char.classDef = CLASSES[char.class]
     }
-    const session = world.createSession(socket, char)
+    const session =     world.createSession(socket, char)
     world.playerJoinIsland(session, char.currentIsland)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.CHARACTER_DELETE, (data = {}) => {
+  socket.on(CLIENT_EVENTS.CHARACTER_DELETE, safeHandler((data = {}) => {
     const { characterId } = data
     if (!isStr(characterId)) return
     const char = db.getCharacter(characterId)
@@ -308,87 +313,87 @@ io.on('connection', (socket) => {
     }
     db.deleteCharacter(characterId)
     socket.emit(SERVER_EVENTS.CHARACTER_DELETED, { id: characterId })
-  })
+  }))
 
   // ---- In-game events (all require active session) ----
   function requireSession() {
     return world.sessions.get(socket.id)
   }
 
-  socket.on(CLIENT_EVENTS.MOVE, (data = {}) => {
+  socket.on(CLIENT_EVENTS.MOVE, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     const { dx, dy } = data
     if (!Number.isInteger(dx) || !Number.isInteger(dy)) return
     if (Math.abs(dx) > 1 || Math.abs(dy) > 1) return
-    if (dx !== 0 && dy !== 0) return  // no diagonal
+    if (dx === 0 && dy === 0) return
     world.playerMove(session, dx, dy)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.ATTACK, (data = {}) => {
+  socket.on(CLIENT_EVENTS.ATTACK, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.monsterId)) return
     world.playerAttack(session, data.monsterId)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.SKILL, (data = {}) => {
+  socket.on(CLIENT_EVENTS.SKILL, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.skillId)) return
     const target = isStr(data.targetMonsterId) ? data.targetMonsterId : null
     world.playerUseSkill(session, data.skillId, target)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.USE_ITEM, (data = {}) => {
+  socket.on(CLIENT_EVENTS.USE_ITEM, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.itemId)) return
     world.playerUseItem(session, data.itemId)
-  })
-  socket.on(CLIENT_EVENTS.EQUIP_ITEM, (data = {}) => {
+  }))
+  socket.on(CLIENT_EVENTS.EQUIP_ITEM, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.itemId)) return
     world.playerEquip(session, data.itemId)
-  })
-  socket.on(CLIENT_EVENTS.UNEQUIP_ITEM, (data = {}) => {
+  }))
+  socket.on(CLIENT_EVENTS.UNEQUIP_ITEM, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     const slot = data.slot
     if (!['weapon', 'armor', 'helmet', 'shield', 'boots', 'trinket'].includes(slot)) return
     world.playerUnequip(session, slot)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.BUY_ITEM, (data = {}) => {
+  socket.on(CLIENT_EVENTS.BUY_ITEM, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.npcId) || !isStr(data.itemId)) return
     const qty = sanitizeQty(data.qty)
     world.playerBuy(session, data.npcId, data.itemId, qty)
-  })
-  socket.on(CLIENT_EVENTS.SELL_ITEM, (data = {}) => {
+  }))
+  socket.on(CLIENT_EVENTS.SELL_ITEM, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.itemId)) return
     const qty = sanitizeQty(data.qty)
     world.playerSell(session, data.itemId, qty)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.ACCEPT_QUEST, (data = {}) => {
+  socket.on(CLIENT_EVENTS.ACCEPT_QUEST, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.questId)) return
     world.playerAcceptQuest(session, data.questId)
-  })
-  socket.on(CLIENT_EVENTS.TURN_IN_QUEST, (data = {}) => {
+  }))
+  socket.on(CLIENT_EVENTS.TURN_IN_QUEST, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.questId)) return
     world.playerTurnInQuest(session, data.questId)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.TRAVEL, (data = {}) => {
+  socket.on(CLIENT_EVENTS.TRAVEL, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.islandId)) return
@@ -397,39 +402,40 @@ io.on('connection', (socket) => {
       return
     }
     world.playerTravel(session, data.islandId)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.RESPAWN, () => {
+  socket.on(CLIENT_EVENTS.RESPAWN, safeHandler(() => {
     const session = requireSession()
     if (!session) return
     world.playerRespawn(session)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.CHAT, (data = {}) => {
+  socket.on(CLIENT_EVENTS.CHAT, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     const msg = data.message
     if (typeof msg !== 'string') return
     world.playerChat(session, msg)
-  })
+  }))
 
   // ---- New: online players, inspect, leaderboard ----
-  socket.on(CLIENT_EVENTS.REQUEST_ONLINE, () => {
+  socket.on(CLIENT_EVENTS.REQUEST_ONLINE, safeHandler(() => {
     const list = world.getOnlinePlayersList()
     socket.emit(SERVER_EVENTS.ONLINE_PLAYERS, { players: list })
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.INSPECT_PLAYER, (data = {}) => {
+  socket.on(CLIENT_EVENTS.INSPECT_PLAYER, safeHandler((data = {}) => {
     const session = requireSession()
     if (!session) return
     if (!isStr(data.playerId)) return
     world.inspectPlayer(session, data.playerId)
-  })
+  }))
 
-  socket.on(CLIENT_EVENTS.REQUEST_LEADERBOARD, () => {
-    const leaderboard = world.getLeaderboard()
+  socket.on(CLIENT_EVENTS.REQUEST_LEADERBOARD, safeHandler((data = {}) => {
+    const limit = Math.min(parseInt(data.limit) || CONFIG.LEADERBOARD_SIZE, CONFIG.LEADERBOARD_SIZE)
+    const leaderboard = world.getLeaderboard(limit)
     socket.emit(SERVER_EVENTS.LEADERBOARD, { leaderboard })
-  })
+  }))
 
   socket.on('disconnect', (reason) => {
     console.log(`[socket] ${socket.userPayload?.username || '?'} disconnected (${socket.id}) — ${reason}`)

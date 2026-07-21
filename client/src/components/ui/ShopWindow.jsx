@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react'
 import { getItem, isEquipment } from '../../../../shared/items.js'
+import PriceChart from './PriceChart.jsx'
 
 export default function ShopWindow({ activeShop, player, inventory, onClose, onBuy, onSell }) {
   const [mode, setMode] = useState('buy')
@@ -92,6 +93,9 @@ export default function ShopWindow({ activeShop, player, inventory, onClose, onB
 
           {selected && (
             <div className="shop-buy-panel">
+              {mode === 'buy' && (
+                <PriceChart basePrice={selected.price} seedKey={`${npc.id}:${selected.id}`} />
+              )}
               <div className="shop-buy-info">
                 <span className="text-gold font-bold">{selected.item.name}</span>
                 <span className="text-dim text-sm">x{qty} = 🪙 {selected.price * qty}</span>

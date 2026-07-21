@@ -1,0 +1,307 @@
+{
+  "project": "Mythral — Isometric MMORPG Asset Catalog",
+  "version": "2.0.0",
+  "generatedAt": "2026-07-21T04:18:16Z",
+  "totalFramesInManifest": 989,
+  "assetAtlases": [
+    {
+      "file": "tiles.png",
+      "size": "1024x100 px",
+      "description": "Isometric terrain tiles for all biomes"
+    },
+    {
+      "file": "props.png",
+      "size": "1024x107 px",
+      "description": "Static decorations: trees, rocks, buildings, signs"
+    },
+    {
+      "file": "chars.png",
+      "size": "1024x575 px",
+      "description": "Playable characters: 4 classes × 2 genders × anim states"
+    },
+    {
+      "file": "villagers.png",
+      "size": "1024x83 px",
+      "description": "NPC villagers with 2-frame idle bob animation"
+    },
+    {
+      "file": "monsters.png",
+      "size": "1024x397 px",
+      "description": "Monster sprites: 8 types × anim states"
+    },
+    {
+      "file": "ui.png",
+      "size": "1024x101 px",
+      "description": "UI chrome: panels, HP/MP/XP bars, buttons, icons"
+    },
+    {
+      "file": "fx.png",
+      "size": "1024x35 px",
+      "description": "Particle effects: glows, sparkles, shadows, embers"
+    }
+  ],
+
+  "isometricSpecs": {
+    "engine": "2D isometric diamond projection (tiled)",
+    "projection": "2:1 dimetric (isometric-style, angle ~26.565°)",
+    "nativeResolution": 32,
+    "tileNativeSize": "32×32 px (square source)",
+    "tileIsoSize": "64×32 px (diamond rendered)",
+    "tileIsoRatio": "2:1 (width = 2 × height)",
+    "gridType": "staggered diamond map",
+    "lightSource": "top-left (shadows cast to bottom-right)",
+    "pixelStyle": "pixel art, integer scaling only, crisp edges",
+    "upscalePolicy": "nearest-neighbor (imageSmoothingEnabled = false)",
+    "colorDepth": "RGBA 8888 (32-bit), full alpha transparency",
+    "maxAtlasWidth": 1024
+  },
+
+  "colorSystem": {
+    "description": "Each material has a 5-stop ramp",
+    "rampStops": ["deepShadow", "shadow", "base", "light", "highlight"],
+    "topLeftHighlight": true,
+    "dithering": "Bayer-ish / noise-based for smooth pixel gradients",
+    "materials": [
+      "grass", "grassDark", "sand", "path", "water", "waterDeep",
+      "stone", "stoneDark", "wood", "woodDark", "roof", "gold", "metal",
+      "snow", "ice", "desert", "lava", "swamp", "crystal", "cloud", "void",
+      "skin", "skinDark",
+      "hairBrown", "hairBlonde", "hairBlack", "hairRed",
+      "clothRed", "clothPurple", "clothGreen", "clothBlue", "clothBrown",
+      "clothWhite", "clothTeal", "leather",
+      "armorSteel", "armorGold",
+      "fire", "iceFx", "waterFx", "holyFx", "shadowFx", "airFx", "poisonFx"
+    ]
+  },
+
+  "categories": {
+    "spriteSheetRequired": {
+      "label": "REQUIRES SPRITESHEET",
+      "description": "Animated entities with frame-by-frame movement and multi-directional sprites. Must be packed into a spritesheet atlas.",
+      "reasoning": "These assets have multiple animation states (idle, walk, attack, etc.), 3-4 facing directions, and multiple frames per state. A single PNG cannot represent them.",
+      "entries": [
+        {
+          "type": "playable_character",
+          "count": 8,
+          "atlas": "chars.png",
+          "description": "4 playable classes × 2 genders",
+          "specs": {
+            "canvasSize": "32×40 px",
+            "anchorPoint": "feet at bottom-center (pixel 16, 38)",
+            "bodyHeight": "28-30 px (tall, fitted within 40px canvas)",
+            "facingDirections": ["down", "up", "side"],
+            "mirroring": "left-facing sprites = right-facing mirrored in code (no extra frames needed)",
+            "animationStates": {
+              "idle": { "frames": 2, "description": "Gentle breathing bob" },
+              "walk": { "frames": 4, "description": "Leg swing + body bob cycle" },
+              "attack": { "frames": 3, "description": "Weapon swing / strike" },
+              "cast": { "frames": 3, "description": "Spell casting pose" },
+              "hurt": { "frames": 2, "description": "Damage reaction (red flash)" },
+              "death": { "frames": 4, "description": "Collapse to ground" }
+            },
+            "genderVariants": {
+              "male": { "shoulderWidth": 5, "torsoShape": "broader", "armOffset": "further out", "hair": "short" },
+              "female": { "shoulderWidth": 4, "torsoShape": "narrower/curved", "armOffset": "closer to body", "hair": "long (extends below head, 5 extra px)" }
+            },
+            "classVisualDiffs": {
+              "warrior": { "color": "red tunic", "gear": "sword + shield", "hairMale": "brown", "hairFemale": "red" },
+              "mage": { "color": "purple tunic", "gear": "staff with gem tip + wide hat/hair", "hairMale": "blonde", "hairFemale": "blonde (lighter)" },
+              "ranger": { "color": "green tunic", "gear": "bow + hood", "hairMale": "brown", "hairFemale": "brown (lighter)" },
+              "healer": { "color": "white tunic", "gear": "mace + holy glow", "hair": "black (both genders)" }
+            },
+            "frameNaming": "char.{class}.{gender}.{state}.{direction}.{frameIndex}",
+            "examples": [
+              "char.warrior.male.idle.down.0",
+              "char.warrior.female.walk.side.2",
+              "char.mage.male.attack.up.1"
+            ]
+          }
+        },
+        {
+          "type": "npc_villager",
+          "count": 10,
+          "atlas": "villagers.png",
+          "description": "Friendly NPCs with 2-frame idle animation",
+          "specs": {
+            "canvasSize": "32×40 px",
+            "anchorPoint": "feet at bottom-center (pixel 16, 38)",
+            "facingDirections": ["down", "up", "side"],
+            "animationStates": {
+              "idle": { "frames": 2, "description": "Subtle breathing bob" }
+            },
+            "roles": ["sailor", "guard", "merchant", "healer", "elder", "smith", "mage", "farmer", "innkeeper", "default"],
+            "frameNaming": "npc.{role}.{state}.{direction}.{frameIndex}",
+            "examples": ["npc.sailor.idle.down.0", "npc.merchant.idle.side.1"]
+          }
+        },
+        {
+          "type": "monster",
+          "count": 8,
+          "atlas": "monsters.png",
+          "description": "Enemy creatures with full animation set",
+          "specs": {
+            "canvasSize": "32×32 px",
+            "anchorPoint": "feet at bottom-center (pixel 16, 30)",
+            "bodySize": "20-26 px tall",
+            "facingDirections": ["down", "up", "side"],
+            "animationStates": {
+              "idle": { "frames": 2, "description": "Gentle idle movement" },
+              "walk": { "frames": 4, "description": "Movement with body bob" },
+              "attack": { "frames": 3, "description": "Lunge or strike" },
+              "hurt": { "frames": 2, "description": "Flinch with red flash" },
+              "death": { "frames": 4, "description": "Collapse with fade-out particles" }
+            },
+            "types": [
+              { "id": "rat", "color": "brown", "features": "ears, tail, whiskers" },
+              { "id": "wild_dog", "color": "brown/dark", "features": "snout, tooth" },
+              { "id": "goblin", "color": "dark green", "features": "ears, club, belt" },
+              { "id": "spider", "color": "dark gray", "features": "8 legs, fangs, red eyes" },
+              { "id": "wolf", "color": "brown/dark", "features": "ears, fang, tail" },
+              { "id": "beetle", "color": "red/fire", "features": "shell, mandibles" },
+              { "id": "slime", "color": "green/poison", "features": "blob, slime trail" },
+              { "id": "boss_giant", "color": "red", "features": "large body, fists, horns, fiery eyes" }
+            ],
+            "frameNaming": "mon.{type}.{state}.{direction}.{frameIndex}",
+            "examples": ["mon.rat.walk.down.0", "mon.goblin.attack.side.2"]
+          }
+        }
+      ]
+    },
+
+    "singlePng": {
+      "label": "SINGLE PNG (NO SPRITESHEET)",
+      "description": "Static assets with no frame animation or direction changes. Each is a single image stored in an atlas for packing efficiency.",
+      "reasoning": "These are one-frame images used as ground tiles, background decorations, buildings, UI elements, and particle effects. They do not change over time or per direction.",
+      "entries": [
+        {
+          "subcategory": "isometric_tiles",
+          "atlas": "tiles.png",
+          "description": "Landscape/terrain tiles — each variant is a separate static 64×32 isometric diamond drawn from a 32×32 square source",
+          "generation": "Drawn as 32×32 square → projected to 64×32 isometric diamond via coordinate transform",
+          "totalVariants": 68,
+          "list": [
+            { "id": "tile.grass", "variants": 4, "description": "Green grass with blade tufts + optional flowers/stones" },
+            { "id": "tile.darkGrass", "variants": 4, "description": "Darker, denser grass" },
+            { "id": "tile.flowers", "variants": 1, "description": "Grass covered with flower clusters" },
+            { "id": "tile.sand", "variants": 3, "description": "Sandy ground with grain texture" },
+            { "id": "tile.path", "variants": 3, "description": "Cobblestone/dirt path" },
+            { "id": "tile.water", "variants": 3, "description": "Blue water with wave highlights" },
+            { "id": "tile.deepWater", "variants": 3, "description": "Darker deep water" },
+            { "id": "tile.woodFloor", "variants": 2, "description": "Planked wooden floor" },
+            { "id": "tile.stoneFloor", "variants": 2, "description": "Stone/brick floor" },
+            { "id": "tile.wall", "variants": 2, "description": "Stone wall (top-down)" },
+            { "id": "tile.door", "variants": 1, "description": "Wooden door opening" },
+            { "id": "tile.bridge", "variants": 1, "description": "Wooden bridge segment" },
+            { "id": "tile.ruins", "variants": 2, "description": "Ruined stone blocks on grass" },
+            { "id": "tile.mushroom", "variants": 1, "description": "Magic mushroom cluster" },
+            { "id": "tile.forest", "variants": 1, "description": "Single tree on grass tile" },
+            { "id": "tile.denseForest", "variants": 1, "description": "Dense canopy cover" },
+            { "id": "tile.mountain", "variants": 1, "description": "Rocky peak with snow cap" },
+            { "id": "tile.snow", "variants": 2, "description": "Snow-covered ground" },
+            { "id": "tile.lava", "variants": 2, "description": "Glowing lava with embers" },
+            { "id": "tile.swamp", "variants": 2, "description": "Swampy marsh with lily pads" },
+            { "id": "tile.desert", "variants": 2, "description": "Sandy desert with wind lines" },
+            { "id": "tile.cloud", "variants": 1, "description": "Cloud platform" },
+            { "id": "tile.void", "variants": 1, "description": "Dark void with crystal shards" }
+          ]
+        },
+        {
+          "subcategory": "decorations_props",
+          "atlas": "props.png",
+          "description": "Static environment objects with no animation",
+          "note": "Props are drawn at final isometric size (no 32×32 source). Height varies by object.",
+          "list": [
+            { "id": "building.tower", "size": "40×80", "description": "Tall stone tower with conical roof" },
+            { "id": "building.temple", "size": "56×72", "description": "Marble temple with columns and gold accents" },
+            { "id": "building.forge", "size": "56×68", "description": "Dark forge with anvil and fire glow" },
+            { "id": "building.inn", "size": "56×68", "description": "Timber-framed inn with warm windows" },
+            { "id": "building.bakery", "size": "52×64", "description": "Bakery with red roof and sign" },
+            { "id": "building.elderHut", "size": "50×62", "description": "Stone elder hut with banner" },
+            { "id": "building.apothecary", "size": "48×60", "description": "Green-roofed apothecary with herbs" },
+            { "id": "building.shop", "size": "50×58", "description": "General shop with awning" },
+            { "id": "prop.oak", "size": "40×56", "description": "Large oak tree with layered canopy" },
+            { "id": "building.outpost", "size": "46×56", "description": "Wooden outpost" },
+            { "id": "prop.pine", "size": "36×52", "description": "Tall pine tree with triangular foliage" },
+            { "id": "building.fishShack", "size": "44×52", "description": "Rundown fishing shack" },
+            { "id": "building.dock", "size": "60×48", "description": "Wooden dock with moored boat" },
+            { "id": "building.hut", "size": "40×48", "description": "Small thatched hut" },
+            { "id": "prop.statue", "size": "30×46", "description": "Stone warrior statue" },
+            { "id": "prop.lamp", "size": "22×44", "description": "Iron lamp post with warm glow" },
+            { "id": "prop.fountain", "size": "48×40", "description": "Stone fountain with water spout" },
+            { "id": "prop.well", "size": "36×36", "description": "Stone well with roof" },
+            { "id": "prop.flowerPatch", "size": "32×32", "description": "Small flower patch" },
+            { "id": "prop.fence", "size": "32×32", "description": "Wooden fence segment" },
+            { "id": "prop.sign", "size": "26×30", "description": "Wooden signpost" },
+            { "id": "prop.barrel", "size": "24×30", "description": "Wooden barrel with metal hoops" },
+            { "id": "prop.crate", "size": "28×28", "description": "Wooden crate with X-brace" },
+            { "id": "prop.bush", "size": "32×26", "description": "Green bush with berries" },
+            { "id": "prop.rock", "size": "30×24", "description": "Multi-faceted gray rock" }
+          ]
+        },
+        {
+          "subcategory": "visual_effects",
+          "atlas": "fx.png",
+          "description": "Particle sprites used for visual effects in combat and environment",
+          "note": "Each is a small single-image sprite (not animated strips; animation is handled via particle system moving/rotating them)",
+          "list": [
+            { "id": "fx.glow.fire", "size": "33×33", "description": "Orange/red radial glow for fire spells" },
+            { "id": "fx.glow.holy", "size": "33×33", "description": "Golden/white radial glow for holy spells" },
+            { "id": "fx.glow.magic", "size": "33×33", "description": "Purple radial glow for arcane magic" },
+            { "id": "fx.glow.water", "size": "33×33", "description": "Blue radial glow for water magic" },
+            { "id": "fx.ring.fire", "size": "16×16", "description": "Fire ring/shockwave" },
+            { "id": "fx.ring.holy", "size": "16×16", "description": "Holy ring/shockwave" },
+            { "id": "fx.ring.magic", "size": "16×16", "description": "Magic ring/shockwave" },
+            { "id": "fx.shadow", "size": "24×10", "description": "Entity ground shadow (ellipse)" },
+            { "id": "fx.smoke", "size": "10×10", "description": "Gray smoke puff" },
+            { "id": "fx.leaf", "size": "8×8", "description": "Falling green leaf" },
+            { "id": "fx.sparkle", "size": "7×7", "description": "Cross-shaped sparkle" },
+            { "id": "fx.ember", "size": "6×6", "description": "Fire ember with glow" },
+            { "id": "fx.drop", "size": "3×6", "description": "Water droplet with highlight" },
+            { "id": "fx.butterfly", "size": "8×6", "description": "Small purple butterfly" },
+            { "id": "fx.petal", "size": "6×6", "description": "Falling flower petal" },
+            { "id": "fx.spark", "size": "5×5", "description": "White/yellow cross spark" },
+            { "id": "fx.snow", "size": "4×4", "description": "Snowflake particle" },
+            { "id": "fx.dust", "size": "4×4", "description": "Dust particle (semi-transparent)" }
+          ]
+        },
+        {
+          "subcategory": "ui_chrome",
+          "atlas": "ui.png",
+          "description": "User interface elements: panels, bars, buttons, icons",
+          "list": [
+            { "id": "ui.panel.wood", "size": "64×64", "description": "Wooden 9-slice panel frame" },
+            { "id": "ui.panel.gold", "size": "64×64", "description": "Gold-trimmed 9-slice panel" },
+            { "id": "ui.panel.stone", "size": "64×64", "description": "Stone 9-slice panel" },
+            { "id": "ui.bar.hp", "frames": 9, "description": "HP bar (track + 8 fill levels)" },
+            { "id": "ui.bar.mp", "frames": 9, "description": "MP bar (track + 8 fill levels)" },
+            { "id": "ui.bar.xp", "frames": 9, "description": "XP bar (track + 8 fill levels)" },
+            { "id": "ui.btn.normal", "size": "48×24", "description": "Default blue button" },
+            { "id": "ui.btn.primary", "size": "48×24", "description": "Green primary button" },
+            { "id": "ui.btn.danger", "size": "48×24", "description": "Red danger button" },
+            { "id": "ui.icon.sword", "size": "16×16", "description": "Sword weapon icon" },
+            { "id": "ui.icon.shield", "size": "16×16", "description": "Shield armor icon" },
+            { "id": "ui.icon.potion", "size": "16×16", "description": "Red potion icon" },
+            { "id": "ui.icon.coin", "size": "16×16", "description": "Gold coin icon" },
+            { "id": "ui.icon.quest", "size": "16×16", "description": "Quest scroll icon" },
+            { "id": "ui.icon.heart", "size": "16×16", "description": "Heart HP icon" },
+            { "id": "ui.icon.skill.{element}", "variants": 7, "description": "Skill icons for: fire, ice, water, holy, shadow, air, none" }
+          ]
+        }
+      ]
+    }
+  },
+
+  "aiGenerationGuidelines": {
+    "style": "fantasy pixel art, CraftPix-like quality, vibrant saturated colors",
+    "grid": "All sprites align to a 32px native grid",
+    "anchoring": "All entities anchor at bottom-center of their sprite (feet/ base touching the ground plane)",
+    "isoProjection": "Tiles are 32×32 square source → 64×32 diamond (2:1). All tile generation must follow this projection.",
+    "transparency": "All non-tile sprites must have transparent backgrounds (alpha channel)",
+    "palette": "Use 5-stop ramps per material with top-left lighting. Palettes defined in palette.js.",
+    "atlasPacking": "All frames are packed into 1024px-wide atlas PNGs with 1px padding between frames",
+    "namingConvention": "{category}.{subtype}.{state?}.{direction?}.{frameIndex?}",
+    "noExternalAssets": "All assets are generated procedurally by JS generators. No hand-painted or external image files.",
+    "animFps": "~10 FPS for walk, ~6 FPS for attack, ~8 FPS for idle",
+    "deathAnimation": "Death frames collapse the sprite downward with increasing vertical offset + random pixel scatter"
+  }
+}

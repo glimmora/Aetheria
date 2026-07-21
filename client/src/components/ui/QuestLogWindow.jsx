@@ -3,7 +3,7 @@
 // ============================================================
 
 import React, { useState } from 'react'
-import { QUESTS, getQuestsForIsland } from '../../../../shared/quests.js'
+import { QUESTS } from '../../../../shared/quests.js'
 import { QUEST_STATUS, getQuestProgressText } from '../../../../shared/quests.js'
 import { ISLAND_DEFS } from '../../../../shared/islands.js'
 import { getItem } from '../../../../shared/items.js'

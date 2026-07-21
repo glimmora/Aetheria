@@ -230,7 +230,36 @@ export function SettingsWindow({ active, settings, onUpdate, onClose, onLogout }
               <button
                 className={`mode-btn ${(settings.movementMode || 'both') === 'both' ? 'active' : ''}`}
                 onClick={() => onUpdate({ movementMode: 'both' })}
-              >Both</button>
+                >Both</button>
+            </div>
+          </div>
+          <div className="settings-row">
+            <div>
+              <div className="font-bold">Compact HUD</div>
+              <div className="text-xs text-dim">Hide less-critical info for more screen space</div>
+            </div>
+            <button className={`toggle-btn ${settings.compactHud ? 'on' : 'off'}`} onClick={toggle('compactHud')}>
+              {settings.compactHud ? 'ON' : 'OFF'}
+            </button>
+          </div>
+          <div className="settings-row">
+            <div>
+              <div className="font-bold">Left-handed</div>
+              <div className="text-xs text-dim">Swap joystick & actions to opposite thumbs</div>
+            </div>
+            <button className={`toggle-btn ${settings.leftHanded ? 'on' : 'off'}`} onClick={toggle('leftHanded')}>
+              {settings.leftHanded ? 'ON' : 'OFF'}
+            </button>
+          </div>
+          <div className="settings-row">
+            <div>
+              <div className="font-bold">Joystick Size</div>
+              <div className="text-xs text-dim">On-screen movement control size</div>
+            </div>
+            <div className="settings-mode-buttons">
+              <button className={`mode-btn ${(settings.joystickSize || 'medium') === 'small' ? 'active' : ''}`} onClick={() => onUpdate({ joystickSize: 'small' })}>S</button>
+              <button className={`mode-btn ${(settings.joystickSize || 'medium') === 'medium' ? 'active' : ''}`} onClick={() => onUpdate({ joystickSize: 'medium' })}>M</button>
+              <button className={`mode-btn ${(settings.joystickSize || 'medium') === 'large' ? 'active' : ''}`} onClick={() => onUpdate({ joystickSize: 'large' })}>L</button>
             </div>
           </div>
           <div className="settings-divider" />
@@ -301,18 +330,21 @@ export function MiniMap({ map, player, monsters, npcs, otherPlayers, currentIsla
 }
 
 // ---- Connection status indicator ----
-export function ConnectionIndicator({ connectionState }) {
+export function ConnectionIndicator({ connectionState, kickReason }) {
   const config = {
     connected: { color: '#4ade80', label: 'Connected' },
     connecting: { color: '#fbbf24', label: 'Connecting...' },
-    disconnected: { color: '#f87171', label: 'Disconnected' },
+    disconnected: { color: '#f87171', label: kickReason || 'Disconnected' },
     kicked: { color: '#dc2626', label: 'Kicked' },
   }
   const c = config[connectionState] || config.disconnected
+  const showSpinner = connectionState === 'connecting'
   return (
-    <div className="connection-indicator">
+    <div className={`connection-indicator ${connectionState !== 'connected' ? 'connection-warn' : ''}`}>
       <span className="connection-dot" style={{ background: c.color }} />
+      {showSpinner && <span className="connection-spin" />}
       <span style={{ color: c.color }}>{c.label}</span>
+      {kickReason && <span className="text-dim text-xs" style={{ marginLeft: 6 }}>{kickReason}</span>}
     </div>
   )
 }

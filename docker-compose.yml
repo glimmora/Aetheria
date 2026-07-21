@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  mythral:
+    build: .
+    ports:
+      - "12400:12400"
+    environment:
+      - NODE_ENV=production
+      - PORT=12400
+      - JWT_SECRET=f2c55aeacc34822ce1491219d3c63d33a46e0d97cfbd9a26abde859b00d98a01b10e637337c757f8f9e6749ffc9f9eaf
+      - CLIENT_ORIGIN=*
+      - MAX_LEVEL=100
+      - XP_CURVE_BASE=128
+      - XP_CURVE_GROWTH=1.16
+      - TICK_RATE_HZ=10
+      - AUTOSAVE_INTERVAL_MS=30000
+      - MONSTER_RESPAWN_MIN_MS=60000
+      - MONSTER_RESPAWN_MAX_MS=120000
+      - BOSS_RESPAWN_MS=120000
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:12400/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
