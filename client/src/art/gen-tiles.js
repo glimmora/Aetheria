@@ -11,6 +11,34 @@ import { PALETTE as P, TILE as TS } from './palette.js'
 const ISO_W = 64
 const ISO_H = 32
 
+function paintModernMeadow(variation, rand) {
+  const b = new PixelBuffer(TS, TS)
+  b.noiseFill(0, 0, TS, TS, P.grass.light, P.grass.base, rand, 0.18)
+  for (let i = 0; i < 18; i++) {
+    const x = (rand() * TS) | 0
+    const y = 5 + (rand() * (TS - 8) | 0)
+    b.set(x, y, P.grassDark.base)
+    b.set(x + 1, y - 1, P.grass.light)
+    if (variation % 2 === 0) b.set(x + 2, y - 2, P.grassBladeLight)
+  }
+  if (variation === 1) drawFlowers(b, rand)
+  if (variation === 2) b.disc(20, 20, 2, P.stone.light)
+  if (variation === 3) { b.set(8, 10, P.flower.yellow); b.set(9, 10, P.flower.white) }
+  return b
+}
+
+function paintModernWater(variation, rand) {
+  const b = new PixelBuffer(TS, TS)
+  b.vGradient(0, 0, TS, TS, P.water.light, P.water.shadow)
+  for (let i = 0; i < 7; i++) {
+    const y = 3 + (rand() * 25 | 0)
+    const x = 2 + (rand() * 22 | 0)
+    b.rect(x, y, 4 + (rand() * 6 | 0), 1, P.water.highlight)
+    if (variation === 2) b.set(x + 1, y + 1, P.water.light)
+  }
+  return b
+}
+
 // ---- low-level tile drawing helpers ----
 
 function baseFill(buf, ramp, rand, noiseAmt = 0.12) {
@@ -434,10 +462,9 @@ function paintVoidTile(variation, rand) {
   return buf
 }
 
-// registry of painters
 export const TILE_PAINTERS = {
-  grass: paintGrass, darkGrass: paintDarkGrass, flowers: paintFlowers,
-  sand: paintSand, path: paintPath, water: paintWater, deepWater: (v, r) => paintWater(v, r, true),
+  grass: paintModernMeadow, darkGrass: paintDarkGrass, flowers: paintFlowers,
+  sand: paintSand, path: paintPath, water: paintModernWater, deepWater: (v, r) => paintModernWater(v, r),
   woodFloor: paintWoodFloor, stoneFloor: paintStoneFloor, wall: paintWall,
   door: paintDoor, bridge: paintBridge, ruins: paintRuins, mushroom: paintMushroom,
   forest: paintForest, denseForest: paintDenseForest, mountain: paintMountain,
@@ -472,12 +499,12 @@ function projectToIso(src) {
 }
 
 // Generate all frames for a set of tile types; returns {key: PixelBuffer}
-export function generateTiles(types) {
+export function generateTiles(types, variantOverrides = {}) {
   const out = {}
   for (const type of types) {
     const painter = TILE_PAINTERS[type]
     if (!painter) continue
-    const n = TILE_VARIATIONS[type] || 1
+    const n = variantOverrides[type] || TILE_VARIATIONS[type] || 1
     for (let v = 0; v < n; v++) {
       const rand = mulberry32(hash2(type.length, v, 9001) * 1e9 | 0)
       const src = painter(v, rand)

@@ -3,7 +3,36 @@
    Design system: dark glassmorphism + neon accents
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');:root {
+  --bg-void: #071512;
+  --bg-deep: #0d241b;
+  --bg-panel: #173b2b;
+  --bg-panel-light: #27583d;
+  --bg-glass: rgba(12, 35, 26, 0.9);
+  --bg-glass-light: rgba(30, 72, 47, 0.84);
+  --neon-cyan: #7be3d0;
+  --neon-cyan-soft: rgba(123, 227, 208, 0.45);
+  --neon-magenta: #ff9e62;
+  --neon-violet: #c7e36a;
+  --neon-gold: #ffc65c;
+  --neon-gold-bright: #ffe99a;
+  --neon-emerald: #9be45b;
+  --neon-rose: #ff8567;
+  --neon-amber: #ffac4c;
+  --text-primary: #f6f2d8;
+  --text-secondary: #c9d6a2;
+  --text-muted: #89ad85;
+  --text-faint: #527564;
+  --border-glass: rgba(255, 198, 92, 0.32);
+  --border-accent: rgba(123, 227, 208, 0.44);
+  --border-gold: rgba(255, 198, 92, 0.62);
+  --glow-cyan: 0 0 18px rgba(123, 227, 208, 0.32);
+  --glow-gold: 0 0 18px rgba(255, 198, 92, 0.36);
+  --glow-magenta: 0 0 18px rgba(255, 158, 98, 0.28);
+  --shadow-panel: 0 18px 48px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(255, 198, 92, 0.12);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.46);
+}
+
 
  :root {
   /* ---- Core palette (fantasy pixel-art) ---- */
@@ -692,3 +721,68 @@ input {
 .worldmap-island:nth-child(7) { animation: spring-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; animation-delay: 360ms; }
 .worldmap-island:nth-child(8) { animation: spring-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; animation-delay: 420ms; }
 .worldmap-island:nth-child(9) { animation: spring-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; animation-delay: 480ms; }
+.auth-bg, .char-select-bg { background-color: #0b2118; background-image: radial-gradient(ellipse at 18% 15%, rgba(117, 193, 70, 0.22), transparent 34%), radial-gradient(ellipse at 85% 78%, rgba(55, 177, 177, 0.18), transparent 38%), linear-gradient(145deg, rgba(8, 28, 21, 0.95), rgba(24, 62, 39, 0.82)); }
+.auth-bg::before, .char-select-bg::before { opacity: 0.5; }
+.auth-logo-title, .mythral-title { background: linear-gradient(135deg, #fff8c4 0%, #ffd35c 42%, #79d9ae 100%); -webkit-background-clip: text; background-clip: text; }
+.auth-logo-glow { background: linear-gradient(135deg, #ffd35c, #55c9a2); -webkit-background-clip: text; background-clip: text; }
+.auth-logo-sub { color: #a8d76d; }
+.mythral-panel, .char-card, .char-select-empty { background: linear-gradient(145deg, rgba(25, 69, 46, 0.93), rgba(9, 31, 23, 0.96)); border-color: rgba(255, 198, 92, 0.32); box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42), inset 0 1px rgba(255, 255, 210, 0.08); }
+.auth-input { background: rgba(3, 18, 13, 0.72); border-color: rgba(123, 227, 208, 0.28); }
+.mythral-btn-primary, .mythral-btn-success { background: linear-gradient(135deg, #3b8e63, #7aaa3e); border-color: #b9df6e; color: #102218; text-shadow: none; box-shadow: 0 7px 0 #1d4d36, 0 12px 22px rgba(0, 0, 0, 0.3); }
+.mythral-btn-primary:hover:not(:disabled), .mythral-btn-success:hover:not(:disabled) { background: linear-gradient(135deg, #61b780, #b9d95a); color: #0b1d15; }
+.char-card:hover { border-color: #a8d76d; box-shadow: 0 0 22px rgba(155, 228, 91, 0.24), 0 15px 30px rgba(0, 0, 0, 0.45); }
+
+/* Modern isometric adventure skin inspired by bright low-poly tilesets. */
+:root {
+  --bg-void: #08131a;
+  --bg-deep: #10252a;
+  --bg-panel: #173239;
+  --bg-panel-light: #24464b;
+  --bg-glass: rgba(15, 35, 40, 0.94);
+  --bg-glass-light: rgba(27, 59, 60, 0.9);
+  --neon-cyan: #6ee7c8;
+  --neon-cyan-soft: rgba(110, 231, 200, 0.35);
+  --neon-magenta: #f39a74;
+  --neon-violet: #a9d86e;
+  --neon-gold: #f4c95d;
+  --neon-gold-bright: #ffe6a2;
+  --neon-emerald: #8fd36f;
+  --neon-rose: #ff8b7b;
+  --neon-amber: #f5a94a;
+  --text-primary: #f8f0d4;
+  --text-secondary: #d6d5b4;
+  --text-muted: #92b0a0;
+  --text-faint: #5e7b73;
+  --border-glass: rgba(243, 221, 145, 0.28);
+  --border-accent: rgba(110, 231, 200, 0.42);
+  --border-gold: rgba(244, 201, 93, 0.62);
+  --shadow-panel: 0 18px 48px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(244, 201, 93, 0.14);
+  --shadow-card: 0 9px 24px rgba(0, 0, 0, 0.42);
+}
+
+:root {
+  --bg-void: #0b181b;
+  --bg-deep: #102b2a;
+  --bg-panel: #173b38;
+  --bg-panel-light: #24514a;
+  --bg-glass: rgba(15, 42, 40, .94);
+  --bg-glass-light: rgba(35, 78, 68, .9);
+  --neon-cyan: #75d6be;
+  --neon-cyan-soft: rgba(117, 214, 190, .35);
+  --neon-magenta: #ec9b68;
+  --neon-violet: #8dbb68;
+  --neon-gold: #eac568;
+  --neon-gold-bright: #fff0ae;
+  --neon-emerald: #82cc65;
+  --text-primary: #f5f1d9;
+  --text-secondary: #d5dfbd;
+  --text-muted: #a6bd9d;
+  --text-faint: #668579;
+  --border-glass: rgba(229, 195, 103, .32);
+  --border-accent: rgba(117, 214, 190, .42);
+  --border-gold: rgba(234, 197, 104, .56);
+  --glow-cyan: 0 0 22px rgba(117, 214, 190, .22);
+  --glow-gold: 0 0 22px rgba(234, 197, 104, .25);
+  --shadow-panel: 0 22px 55px rgba(4, 18, 18, .62), 0 0 0 1px rgba(234,197,104,.12);
+  --shadow-card: 0 9px 24px rgba(4, 18, 18, .48);
+}

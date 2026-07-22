@@ -36,8 +36,9 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
       <div className="char-select-content">
         <div className="char-select-header">
           <div>
-            <h1 className="mythral-title" style={{ fontSize: 28 }}>Your Heroes</h1>
-            <div className="text-dim text-sm">Welcome back, <span className="text-gold">{username}</span> · {characters.length}/{max} characters</div>
+            <div className="screen-kicker">ADVENTURE BOARD</div>
+            <h1 className="mythral-title" style={{ fontSize: 28 }}>Choose your hero</h1>
+            <div className="text-dim text-sm">Welcome back, <span className="text-gold">{username}</span> · {characters.length}/{max} characters ready to sail</div>
           </div>
           <button className="mythral-btn" onClick={onLogout}>Logout</button>
         </div>
@@ -58,8 +59,9 @@ export default function CharSelectScreen({ username, characters, maxCharacters, 
                 const isl = ISLAND_DEFS[c.currentIsland]
                 return (
                   <div key={c.id} className="char-card">
-                    <div className="char-card-portrait" style={{ background: cls?.color }}>
-                      {cls?.icon}
+                    <div className="char-card-portrait" style={{ background: `linear-gradient(145deg, ${cls?.color || '#3f833f'}, #173d3b)` }}>
+                      <span>{cls?.icon}</span>
+                      <i className="char-card-spark" />
                     </div>
                     <div className="char-card-info">
                       <div className="char-card-name">{c.name}</div>

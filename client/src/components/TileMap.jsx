@@ -267,16 +267,18 @@ export default function TileMap({
             if (prop) list.push({ x: tx, y: ty, kind: 'prop', prop })
           }
         }
-        // Buildings (anchored to building center, rendered before entities on same tile)
+        const inBuf = (e) => e.x >= rax - 1 && e.x < rax + bufW + 1 && e.y >= ray - 1 && e.y < ray + bufH + 1
         for (const b of w.buildings) {
           if (inBuf(b)) list.push({ x: b.x + (b.w >> 1), y: b.y + (b.h >> 1), kind: 'building', buildingType: b.buildingType, bw: b.w, bh: b.h })
         }
-        const inBuf = (e) => e.x >= rax - 1 && e.x < rax + bufW + 1 && e.y >= ray - 1 && e.y < ray + bufH + 1
         for (const m of w.monsters) if (inBuf(m)) list.push({ ...m, _kind: 'mon' })
         for (const op of w.otherPlayers) if (inBuf(op)) list.push({ ...op, _kind: 'pl' })
         for (const n of w.npcs) if (inBuf(n)) list.push({ ...n, _kind: 'npc' })
         if (p && pp) list.push({ ...p, x: pp.x, y: pp.y, _kind: 'me' })
-        list.sort((a, b) => (a.x + a.y) - (b.x + b.y))
+        list.sort((a, b) => {
+          const depth = (item) => item.x + item.y + (item.kind === 'building' ? (item.bh || 1) * 0.5 : 0)
+          return depth(a) - depth(b)
+        })
 
         for (const e of list) {
           const lx = e.x - rax, ly = e.y - ray

@@ -1,0 +1,1181 @@
+{
+  "generatedAt": "2026-07-21T04:18:16Z",
+  "totalFrames": 989,
+  "project": "Mythral Isometric MMORPG Asset Catalog",
+
+  "categories": {
+    "spriteSheetRequired": {
+      "description": "Animated entities with frame-by-frame movement and multi-directional sprites. Must be packed into a sprite sheet atlas.",
+      "entries": [
+        {
+          "name": "Warrior (Male)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "male",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.warrior.male"
+        },
+        {
+          "name": "Warrior (Female)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "female",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.warrior.female"
+        },
+        {
+          "name": "Mage (Male)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "male",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.mage.male"
+        },
+        {
+          "name": "Mage (Female)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "female",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.mage.female"
+        },
+        {
+          "name": "Ranger (Male)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "male",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.ranger.male"
+        },
+        {
+          "name": "Ranger (Female)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "female",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.ranger.female"
+        },
+        {
+          "name": "Healer (Male)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "male",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.healer.male"
+        },
+        {
+          "name": "Healer (Female)",
+          "type": "Character",
+          "atlas": "chars.png",
+          "gender": "female",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "cast", "hurt", "death"],
+          "totalFrames": 54,
+          "keyPrefix": "char.healer.female"
+        },
+        {
+          "name": "NPC Sailor",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.sailor"
+        },
+        {
+          "name": "NPC Guard",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.guard"
+        },
+        {
+          "name": "NPC Merchant",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.merchant"
+        },
+        {
+          "name": "NPC Healer",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.healer"
+        },
+        {
+          "name": "NPC Elder",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.elder"
+        },
+        {
+          "name": "NPC Smith",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.smith"
+        },
+        {
+          "name": "NPC Mage",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.mage"
+        },
+        {
+          "name": "NPC Farmer",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.farmer"
+        },
+        {
+          "name": "NPC Innkeeper",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.innkeeper"
+        },
+        {
+          "name": "NPC Default",
+          "type": "Villager/NPC",
+          "atlas": "villagers.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle"],
+          "totalFrames": 6,
+          "keyPrefix": "npc.default"
+        },
+        {
+          "name": "Monster Rat",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.rat"
+        },
+        {
+          "name": "Monster Wild Dog",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.wild_dog"
+        },
+        {
+          "name": "Monster Goblin",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.goblin"
+        },
+        {
+          "name": "Monster Spider",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.spider"
+        },
+        {
+          "name": "Monster Wolf",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.wolf"
+        },
+        {
+          "name": "Monster Beetle",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.beetle"
+        },
+        {
+          "name": "Monster Slime",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.slime"
+        },
+        {
+          "name": "Monster Boss Giant",
+          "type": "Monster",
+          "atlas": "monsters.png",
+          "directions": ["down", "up", "side"],
+          "states": ["idle", "walk", "attack", "hurt", "death"],
+          "totalFrames": 45,
+          "keyPrefix": "mon.boss_giant"
+        }
+      ]
+    },
+
+    "singlePng": {
+      "description": "Static single-image assets without animation. Stored as individual PNGs packed into atlases.",
+      "entries": [
+        {
+          "name": "Tile grass",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 4,
+          "key": "tile.grass"
+        },
+        {
+          "name": "Tile darkGrass",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 4,
+          "key": "tile.darkGrass"
+        },
+        {
+          "name": "Tile flowers",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.flowers"
+        },
+        {
+          "name": "Tile sand",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 3,
+          "key": "tile.sand"
+        },
+        {
+          "name": "Tile path",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 3,
+          "key": "tile.path"
+        },
+        {
+          "name": "Tile water",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 3,
+          "key": "tile.water"
+        },
+        {
+          "name": "Tile deepWater",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 3,
+          "key": "tile.deepWater"
+        },
+        {
+          "name": "Tile woodFloor",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.woodFloor"
+        },
+        {
+          "name": "Tile stoneFloor",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.stoneFloor"
+        },
+        {
+          "name": "Tile wall",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.wall"
+        },
+        {
+          "name": "Tile door",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.door"
+        },
+        {
+          "name": "Tile bridge",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.bridge"
+        },
+        {
+          "name": "Tile ruins",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.ruins"
+        },
+        {
+          "name": "Tile mushroom",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.mushroom"
+        },
+        {
+          "name": "Tile forest",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.forest"
+        },
+        {
+          "name": "Tile denseForest",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.denseForest"
+        },
+        {
+          "name": "Tile mountain",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.mountain"
+        },
+        {
+          "name": "Tile snow",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.snow"
+        },
+        {
+          "name": "Tile lava",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.lava"
+        },
+        {
+          "name": "Tile swamp",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.swamp"
+        },
+        {
+          "name": "Tile desert",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 2,
+          "key": "tile.desert"
+        },
+        {
+          "name": "Tile cloud",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.cloud"
+        },
+        {
+          "name": "Tile void",
+          "type": "Tile",
+          "atlas": "tiles.png",
+          "size": "64x32",
+          "variants": 1,
+          "key": "tile.void"
+        },
+        {
+          "name": "Tower",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "40x80",
+          "variants": 1,
+          "key": "building.tower"
+        },
+        {
+          "name": "Temple",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "56x72",
+          "variants": 1,
+          "key": "building.temple"
+        },
+        {
+          "name": "Forge",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "56x68",
+          "variants": 1,
+          "key": "building.forge"
+        },
+        {
+          "name": "Inn",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "56x68",
+          "variants": 1,
+          "key": "building.inn"
+        },
+        {
+          "name": "Bakery",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "52x64",
+          "variants": 1,
+          "key": "building.bakery"
+        },
+        {
+          "name": "Elder Hut",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "50x62",
+          "variants": 1,
+          "key": "building.elderHut"
+        },
+        {
+          "name": "Apothecary",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "48x60",
+          "variants": 1,
+          "key": "building.apothecary"
+        },
+        {
+          "name": "Shop",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "50x58",
+          "variants": 1,
+          "key": "building.shop"
+        },
+        {
+          "name": "Oak Tree",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "40x56",
+          "variants": 1,
+          "key": "prop.oak"
+        },
+        {
+          "name": "Outpost",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "46x56",
+          "variants": 1,
+          "key": "building.outpost"
+        },
+        {
+          "name": "Pine Tree",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "36x52",
+          "variants": 1,
+          "key": "prop.pine"
+        },
+        {
+          "name": "Fish Shack",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "44x52",
+          "variants": 1,
+          "key": "building.fishShack"
+        },
+        {
+          "name": "Dock",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "60x48",
+          "variants": 1,
+          "key": "building.dock"
+        },
+        {
+          "name": "Hut",
+          "type": "Building",
+          "atlas": "props.png",
+          "size": "40x48",
+          "variants": 1,
+          "key": "building.hut"
+        },
+        {
+          "name": "Statue",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "30x46",
+          "variants": 1,
+          "key": "prop.statue"
+        },
+        {
+          "name": "Lamp Post",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "22x44",
+          "variants": 1,
+          "key": "prop.lamp"
+        },
+        {
+          "name": "Fountain",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "48x40",
+          "variants": 1,
+          "key": "prop.fountain"
+        },
+        {
+          "name": "Well",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "36x36",
+          "variants": 1,
+          "key": "prop.well"
+        },
+        {
+          "name": "Flower Patch",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "32x32",
+          "variants": 1,
+          "key": "prop.flowerPatch"
+        },
+        {
+          "name": "Fence",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "32x32",
+          "variants": 1,
+          "key": "prop.fence"
+        },
+        {
+          "name": "Signpost",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "26x30",
+          "variants": 1,
+          "key": "prop.sign"
+        },
+        {
+          "name": "Barrel",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "24x30",
+          "variants": 1,
+          "key": "prop.barrel"
+        },
+        {
+          "name": "Crate",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "28x28",
+          "variants": 1,
+          "key": "prop.crate"
+        },
+        {
+          "name": "Bush",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "32x26",
+          "variants": 1,
+          "key": "prop.bush"
+        },
+        {
+          "name": "Rock",
+          "type": "Prop/Decor",
+          "atlas": "props.png",
+          "size": "30x24",
+          "variants": 1,
+          "key": "prop.rock"
+        },
+        {
+          "name": "Panel Wood",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "64x64",
+          "variants": 1,
+          "key": "ui.panel.wood"
+        },
+        {
+          "name": "Panel Gold",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "64x64",
+          "variants": 1,
+          "key": "ui.panel.gold"
+        },
+        {
+          "name": "Panel Stone",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "64x64",
+          "variants": 1,
+          "key": "ui.panel.stone"
+        },
+        {
+          "name": "Button Normal",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "48x24",
+          "variants": 1,
+          "key": "ui.btn.normal"
+        },
+        {
+          "name": "Button Primary",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "48x24",
+          "variants": 1,
+          "key": "ui.btn.primary"
+        },
+        {
+          "name": "Button Danger",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "48x24",
+          "variants": 1,
+          "key": "ui.btn.danger"
+        },
+        {
+          "name": "Icon Sword",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.sword"
+        },
+        {
+          "name": "Icon Shield",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.shield"
+        },
+        {
+          "name": "Icon Potion",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.potion"
+        },
+        {
+          "name": "Icon Coin",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.coin"
+        },
+        {
+          "name": "Icon Quest",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.quest"
+        },
+        {
+          "name": "Icon Heart",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.heart"
+        },
+        {
+          "name": "Icon Skill Fire",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.fire"
+        },
+        {
+          "name": "Icon Skill Ice",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.ice"
+        },
+        {
+          "name": "Icon Skill Water",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.water"
+        },
+        {
+          "name": "Icon Skill Holy",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.holy"
+        },
+        {
+          "name": "Icon Skill Shadow",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.shadow"
+        },
+        {
+          "name": "Icon Skill Air",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.air"
+        },
+        {
+          "name": "Icon Skill None",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "ui.icon.skill.none"
+        },
+        {
+          "name": "HP Bar Track",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.track"
+        },
+        {
+          "name": "HP Bar 0",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.0"
+        },
+        {
+          "name": "HP Bar 1",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.1"
+        },
+        {
+          "name": "HP Bar 2",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.2"
+        },
+        {
+          "name": "HP Bar 3",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.3"
+        },
+        {
+          "name": "HP Bar 4",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.4"
+        },
+        {
+          "name": "HP Bar 5",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.5"
+        },
+        {
+          "name": "HP Bar 6",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.6"
+        },
+        {
+          "name": "HP Bar 7",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.7"
+        },
+        {
+          "name": "HP Bar 8",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.hp.8"
+        },
+        {
+          "name": "MP Bar Track",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.track"
+        },
+        {
+          "name": "MP Bar 0",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.0"
+        },
+        {
+          "name": "MP Bar 1",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.1"
+        },
+        {
+          "name": "MP Bar 2",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.2"
+        },
+        {
+          "name": "MP Bar 3",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.3"
+        },
+        {
+          "name": "MP Bar 4",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.4"
+        },
+        {
+          "name": "MP Bar 5",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.5"
+        },
+        {
+          "name": "MP Bar 6",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.6"
+        },
+        {
+          "name": "MP Bar 7",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.7"
+        },
+        {
+          "name": "MP Bar 8",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "96x12",
+          "variants": 1,
+          "key": "ui.bar.mp.8"
+        },
+        {
+          "name": "XP Bar Track",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.track"
+        },
+        {
+          "name": "XP Bar 0",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.0"
+        },
+        {
+          "name": "XP Bar 1",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.1"
+        },
+        {
+          "name": "XP Bar 2",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.2"
+        },
+        {
+          "name": "XP Bar 3",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.3"
+        },
+        {
+          "name": "XP Bar 4",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.4"
+        },
+        {
+          "name": "XP Bar 5",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.5"
+        },
+        {
+          "name": "XP Bar 6",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.6"
+        },
+        {
+          "name": "XP Bar 7",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.7"
+        },
+        {
+          "name": "XP Bar 8",
+          "type": "UI",
+          "atlas": "ui.png",
+          "size": "120x8",
+          "variants": 1,
+          "key": "ui.bar.xp.8"
+        },
+        {
+          "name": "Glow Fire",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "33x33",
+          "variants": 1,
+          "key": "fx.glow.fire"
+        },
+        {
+          "name": "Glow Holy",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "33x33",
+          "variants": 1,
+          "key": "fx.glow.holy"
+        },
+        {
+          "name": "Glow Magic",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "33x33",
+          "variants": 1,
+          "key": "fx.glow.magic"
+        },
+        {
+          "name": "Glow Water",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "33x33",
+          "variants": 1,
+          "key": "fx.glow.water"
+        },
+        {
+          "name": "Ring Fire",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "fx.ring.fire"
+        },
+        {
+          "name": "Ring Holy",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "fx.ring.holy"
+        },
+        {
+          "name": "Ring Magic",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "16x16",
+          "variants": 1,
+          "key": "fx.ring.magic"
+        },
+        {
+          "name": "Shadow",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "24x10",
+          "variants": 1,
+          "key": "fx.shadow"
+        },
+        {
+          "name": "Smoke",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "10x10",
+          "variants": 1,
+          "key": "fx.smoke"
+        },
+        {
+          "name": "Leaf",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "8x8",
+          "variants": 1,
+          "key": "fx.leaf"
+        },
+        {
+          "name": "Sparkle",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "7x7",
+          "variants": 1,
+          "key": "fx.sparkle"
+        },
+        {
+          "name": "Ember",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "6x6",
+          "variants": 1,
+          "key": "fx.ember"
+        },
+        {
+          "name": "Drop",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "3x6",
+          "variants": 1,
+          "key": "fx.drop"
+        },
+        {
+          "name": "Butterfly",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "8x6",
+          "variants": 1,
+          "key": "fx.butterfly"
+        },
+        {
+          "name": "Petal",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "6x6",
+          "variants": 1,
+          "key": "fx.petal"
+        },
+        {
+          "name": "Spark",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "5x5",
+          "variants": 1,
+          "key": "fx.spark"
+        },
+        {
+          "name": "Snow",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "4x4",
+          "variants": 1,
+          "key": "fx.snow"
+        },
+        {
+          "name": "Dust",
+          "type": "Effect",
+          "atlas": "fx.png",
+          "size": "4x4",
+          "variants": 1,
+          "key": "fx.dust"
+        }
+      ]
+    }
+  }
+}

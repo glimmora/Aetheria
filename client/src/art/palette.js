@@ -24,8 +24,8 @@ function ramp(base, shadow, light, highlight) {
 
 export const PALETTE = {
   // ---- Grassland / generic nature ----
-  grass: ramp('#5a9e3f', '#3f7a2b', '#6fb84e', '#8fd66a'),
-  grassDark: ramp('#3c7a2c', '#28531c', '#4c9440', '#6cbf52'),
+  grass: ramp('#74b93d', '#3b7d28', '#8ed04a', '#c2ee72'),
+  grassDark: ramp('#4f9d31', '#245a20', '#62b83d', '#9bdb58'),
   grassBlade: '#4a8e35',
   grassBladeDark: '#2d6a1e',
   grassBladeLight: '#7cc058',
@@ -33,24 +33,24 @@ export const PALETTE = {
     pink: '#f06ea9', red: '#e24b4b', yellow: '#f6c945', blue: '#5aa9e6',
     purple: '#a974e6', white: '#f3f0e7', orange: '#f0964a', darkRed: '#b83a3a',
   },
-  sand: ramp('#e8d29a', '#c9ad6f', '#f2e0b0', '#fff2cf'),
-  water: ramp('#2f6fb0', '#1d4d82', '#3f8fd0', '#7fc4ef'),
-  waterDeep: ramp('#1d3f7a', '#102a55', '#274f99', '#3f7ec0'),
-  waterFoam: '#b8daf0',
-  dirt: ramp('#7a5230', '#5a3a20', '#946b3f', '#b08a55'),
-  path: ramp('#b8a079', '#8f7350', '#cdaf86', '#e7d2ad'),
+  sand: ramp('#d89a3f', '#9c5b26', '#efbd58', '#ffe08a'),
+  water: ramp('#237bb1', '#10456c', '#35a9d5', '#9ce6ee'),
+  waterDeep: ramp('#175487', '#0b2d52', '#1b79a9', '#56bfd6'),
+  waterFoam: '#c8f4e8',
+  dirt: ramp('#7a3f26', '#3b211b', '#a55b32', '#d58a43'),
+  path: ramp('#b77947', '#633624', '#d49355', '#f0c477'),
   mud: ramp('#6b4423', '#4a2e16', '#8a5a30', '#a9743f'),
 
   // ---- Stone / architecture ----
-  stone: ramp('#8d8a86', '#5f5c59', '#a7a39e', '#cbc7c1'),
-  stoneDark: ramp('#5a5652', '#3a3733', '#736e69', '#8f8a84'),
-  stoneBrick: ramp('#7a7570', '#504c48', '#948e88', '#aca6a0'),
-  wood: ramp('#7a4a26', '#543014', '#946033', '#b87c45'),
-  woodDark: ramp('#543014', '#361e0c', '#6e4220', '#8a552c'),
+  stone: ramp('#909ba0', '#4c5960', '#b2bcc0', '#e2e7df'),
+  stoneDark: ramp('#59656a', '#273238', '#727f83', '#aeb9b4'),
+  stoneBrick: ramp('#7e8789', '#424b4e', '#aab1ad', '#d0d5c9'),
+  wood: ramp('#9b542c', '#4d241b', '#c47035', '#ed9c4d'),
+  woodDark: ramp('#65301e', '#2c1514', '#823f25', '#b76832'),
   woodPlank: ramp('#8a5a30', '#5e3c1c', '#a47040', '#c08850'),
-  roof: ramp('#9c3b2e', '#6e241b', '#bb4d3d', '#d96b57'),
-  roofShingle: '#8a3428',
-  roofShingleLight: '#b84e3c',
+  roof: ramp('#b74136', '#641f25', '#d95b43', '#ff9270'),
+  roofShingle: '#8e2d2c',
+  roofShingleLight: '#e1684d',
   roofBlue: ramp('#37618f', '#24415f', '#4a7cb0', '#6fa0d0'),
   gold: ramp('#c79a3a', '#8f6a1e', '#e7bb52', '#ffe79a'),
   metal: ramp('#9aa3ad', '#666e78', '#bcc4cd', '#e4e9ef'),
@@ -149,3 +149,13 @@ export const BIOME_TINT = {
 export const TILE = 32
 
 export const C = { hexToRgb, rgbToHex, mix }
+
+export const MODERN_ISO = {
+  land: ramp('#397c3b', '#22532b', '#5aa84e', '#9bd45b'),
+  landEdge: ramp('#704528', '#432918', '#986036', '#c98245'),
+  water: ramp('#1f7180', '#12465e', '#2f9aae', '#72d4c0'),
+  path: ramp('#b48754', '#70452e', '#d0a56c', '#f0ce91'),
+  foliage: ramp('#2d6e39', '#174a2c', '#4f9d45', '#9dca59'),
+  rock: ramp('#59676a', '#303f45', '#849395', '#b8c5b7'),
+  roof: ramp('#874034', '#4b2625', '#bd5a3e', '#e48c55'),
+}

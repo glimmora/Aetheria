@@ -27,7 +27,8 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
         <div className="auth-logo">
           <div className="auth-logo-glow">MYTHRAL</div>
           <h1 className="auth-logo-title">MYTHRAL</h1>
-          <div className="auth-logo-sub">Realm of Legends</div>
+          <div className="auth-logo-sub">ISLANDS OF LEGEND</div>
+          <div className="auth-hero-tag">A living world of bright shores, ancient ruins, and wild frontiers.</div>
         </div>
 
         <div className="auth-card mythral-panel">
@@ -43,6 +44,8 @@ export default function AuthScreen({ authError, onLogin, onRegister }) {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
+            <div className="auth-form-heading">Enter the world</div>
+            <div className="auth-form-copy">Your next adventure begins beyond the shoreline.</div>
             <label className="auth-label">USERNAME</label>
             <input
               type="text"

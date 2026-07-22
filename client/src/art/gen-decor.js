@@ -673,8 +673,44 @@ function outpost(seed) {
   return buf
 }
 
+function modernOakTree(seed) {
+  const W = 48, H = 72
+  const b = new PixelBuffer(W, H)
+  const r = mulberry32(seed)
+  const cx = W >> 1
+  b.ellipse(cx, H - 4, 16, 5, 'rgba(25,45,28,0.34)')
+  b.rect(cx - 3, H - 34, 6, 30, P.woodDark.shadow)
+  b.rect(cx - 1, H - 34, 4, 27, P.wood.base)
+  b.line(cx, H - 38, cx - 8, H - 49, P.wood.base)
+  b.line(cx + 1, H - 42, cx + 11, H - 53, P.woodDark.base)
+  for (const [x, y, rx, ry] of [[cx - 10, 20, 15, 13], [cx + 10, 22, 16, 13], [cx, 12, 17, 12], [cx, 30, 14, 11]]) {
+    b.ellipse(x, y, rx, ry, P.grassDark.shadow)
+    b.ellipse(x - 2, y - 3, rx - 2, ry - 2, P.grass.base)
+    b.disc(x - 5 + (r() * 8 | 0), y - 6 + (r() * 6 | 0), 3, P.grass.light)
+  }
+  return b
+}
+
+function modernPineTree(seed) {
+  const W = 42, H = 72
+  const b = new PixelBuffer(W, H)
+  const cx = W >> 1
+  b.ellipse(cx, H - 3, 14, 4, 'rgba(25,45,28,0.34)')
+  b.rect(cx - 2, H - 28, 4, 25, P.woodDark.base)
+  for (let i = 0; i < 4; i++) {
+    const top = 6 + i * 12
+    const base = top + 22
+    for (let y = top; y < base; y++) {
+      const half = Math.max(2, ((y - top) / 22) * (10 + i * 2))
+      for (let x = cx - half; x <= cx + half; x++) b.set(x, y, y < top + 3 ? P.grass.light : P.grassDark.base)
+    }
+    b.line(cx, top, cx - 10 - i, base - 3, P.grassDark.shadow)
+  }
+  return b
+}
+
 export const PROP_PAINTERS = {
-  oak: oakTree, pine: pineTree, bush: bush, rock: rock, flowerPatch: flowerPatch,
+  oak: modernOakTree, pine: modernPineTree, bush: bush, rock: rock, flowerPatch: flowerPatch,
   sign: sign, barrel: barrel, crate: crate, lamp: lamp, statue: statue,
   fountain: fountain, fence: fence, well: well,
   bakery: bakery, forge: forge, apothecary: apothecary, dock: dock,
